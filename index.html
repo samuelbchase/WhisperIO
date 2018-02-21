@@ -59,19 +59,6 @@
                 obj.userID = "test";
                 obj.message = message;
                 console.log(obj);
-
-                $.ajax({
-                    type:"POST",
-                    url:"http://localhost:8989",
-                    data: obj,
-                    success:success,
-                    dataType:typeof(obj)
-                });
-                function success()
-                {
-                    console.log("success");
-                }
-
                 var socket = io();
                 socket.emit('chat message', message);
 
