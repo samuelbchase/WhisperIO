@@ -72,30 +72,39 @@
                     console.log("success");
                 }
 
+                var socket = io();
+                socket.emit('chat message', message);
+
                 var div = document.createElement('div');
-                    if(i === 0)
-                    {
-                        div.className = 'yourMessage';
-                        i++;
-                    }
-                    else
-                    {
-                        div.className = 'theirMessage';
-                        i--;
-                    }
+                    div.className = 'yourMessage';
                     div.textContent = message;
                     document.getElementById('chatbox').appendChild(div);
                     return 0;
             }
 
+            $(function () {
+                socket.on('chat message', function(msg){
+                    var div = document.createElement('div');
+                    div.className = 'theirMessage';
+                    div.textContent = msg;
+                    document.getElementById('chatbox').appendChild(div);
+                });
+            });
+
         </script>
           <!-- JQuery Script-->
-        <script src="js/vendor/jquery.js"></script>
-        <script src="js/vendor/foundation.js"></script>
+        <script src="vendor/jquery.js"></script>
+        <script src="vendor/foundation.js"></script>
 
         <script>
             $(document).foundation();
         </script>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io();
+        </script>
+
 
 </body>
 </html>
