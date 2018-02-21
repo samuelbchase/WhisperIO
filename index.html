@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/foundation.css">
+    <link rel="stylesheet" href="css/app.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <title>Whisper.io</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+</head>
+
+<body style="background:#073642">
+        <div class="grid-x" style="background:#073642">
+            <!--side bar -->
+            <div class="cell large-1" style="background:#073642">
+                <div>
+                    <h3 class="horizcenter"> Friends </h3>
+                    <ul class="list-group" id="users"></ul>
+                </div>
+                <ul class="vertical menu">
+                    <li class=".is-active"><a href="#">Friend 1</a></li>
+                    <li><a href="#">Friend 2</a></li>
+                    <li><a href="#">Friend 3</a></li>
+                    <li><a href="#">Friend 4</a></li>
+                </ul>
+            </div>
+            <!--main chat interface-->
+            <div id="chatbox" class="cell large-11">
+            </div>
+            <div class="cell large-11 large-offset-1" style="height:50px;background:#002B36" >
+                <form id="messenger">
+                        <div class="grid-container">
+                            <div class="grid-x grid-padding-x">
+                                <div class="medium-6 cell">
+                                    <label>
+                                        <input id="messageSender" type="text" placeholder="Send a Message">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            $('#messenger').keypress(function (e) {
+                if (e.which === 13) {
+                    addMessage();
+                    document.getElementById("messageSender").value = "";
+                    return false;
+                }
+            });
+            var i = 0;
+            function addMessage()
+            {
+                    var div = document.createElement('div');
+                    if(i === 0)
+                    {
+                        div.className = 'yourMessage';
+                        i++;
+                    }
+                    else
+                    {
+                        div.className = 'theirMessage';
+                        i--;
+                    }
+                    div.textContent = 'Hello world.';
+                    document.getElementById('chatbox').appendChild(div);
+                    return 0;
+            }
+
+
+
+        </script>
+          <!-- JQuery Script-->
+        <script src="js/vendor/jquery.js"></script>
+        <script src="js/vendor/foundation.js"></script>
+
+        <script>
+            $(document).foundation();
+        </script>
+
+</body>
+</html>
