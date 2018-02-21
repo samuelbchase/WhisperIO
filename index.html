@@ -53,7 +53,26 @@
             var i = 0;
             function addMessage()
             {
-                    var div = document.createElement('div');
+                //Object is created and posted here
+                var message = $('#messageSender').val();
+                var obj = new Object;
+                obj.userID = "test";
+                obj.message = message;
+                console.log(obj);
+
+                $.ajax({
+                    type:"POST",
+                    url:"http://localhost:8989",
+                    data: obj,
+                    success:success,
+                    dataType:typeof(obj)
+                });
+                function success()
+                {
+                    console.log("success");
+                }
+
+                var div = document.createElement('div');
                     if(i === 0)
                     {
                         div.className = 'yourMessage';
@@ -64,12 +83,10 @@
                         div.className = 'theirMessage';
                         i--;
                     }
-                    div.textContent = 'Hello world.';
+                    div.textContent = message;
                     document.getElementById('chatbox').appendChild(div);
                     return 0;
             }
-
-
 
         </script>
           <!-- JQuery Script-->
