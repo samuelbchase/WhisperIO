@@ -18,7 +18,7 @@
                     <ul class="list-group" id="users"></ul>
                 </div>
                 <ul class="vertical menu">
-                    <li class=".is-active"><a href="#">Friend 1</a></li>
+                    <li class="activeFriend"><a href="#">Friend 1</a></li>
                     <li><a href="#">Friend 2</a></li>
                     <li><a href="#">Friend 3</a></li>
                     <li><a href="#">Friend 4</a></li>
@@ -28,22 +28,27 @@
             <div id="chatbox" class="cell large-11">
             </div>
             <div class="cell large-11 large-offset-1" style="height:50px;background:#002B36" >
-                <form id="messenger">
-                        <div class="grid-container">
-                            <div class="grid-x grid-padding-x">
-                                <div class="medium-6 cell">
-                                    <label>
-                                        <input id="messageSender" type="text" placeholder="Send a Message">
-                                    </label>
-                                </div>
-                            </div>
+            <form id="messenger">
+                <div class="grid-container">
+                    <div class="grid-x grid-padding-x">
+                        <div class="medium-6 cell">
+                            <label>
+                                <input id="messageSender" type="text" placeholder="Send a Message">
+                            </label>
                         </div>
-                </form>
-            </div>
+                    </div>
+                </div>
+            </form>
+        </div>
         </div>
 
         <script>
+            var whisperIOUser = localStorage['whisperIOUser'] || 'defaultValue';
+            var whisperIOPassword = localStorage['whisperIOPassword'] || 'defaultValue';
+            console.log(whisperIOUser);
+            console.log(whisperIOPassword);
 
+            //Add Send Button
             $('#messenger').keypress(function (e) {
                 if (e.which === 13) {
                     addMessage();
@@ -56,12 +61,8 @@
             {
                 //Object is created and posted here
                 var message = $('#messageSender').val();
-                var obj = new Object;
-                obj.userID = "test";
-                obj.message = message;
-                console.log(obj);
                 var socket = io();
-                socket.broadcast.to('sam').emit('chat message', message);
+                socket.broadcast.emit('chat message', message);
 
                 var div = document.createElement('div');
                     div.className = 'yourMessage';
@@ -88,11 +89,11 @@
             $(document).foundation();
         </script>
 
-        <script src="/socket.io/socket.io.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
         <script>
             var socket = io();
             socket.on('connect', function() {
-                socket.io.engine.id = "Sam";
+                socket.io.engine.id = whisperIOUser;
             });
         </script>
 

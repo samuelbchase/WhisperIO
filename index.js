@@ -31,6 +31,10 @@ app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
 });
 
+app.get('/login', function(req, res){
+    res.sendFile(__dirname + '/login.html');
+});
+
 io.on('connection', function(socket){
     console.log('a user connected');
 });

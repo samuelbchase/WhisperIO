@@ -13,9 +13,32 @@
 }
 
 #chatbox{
-    background:#002B36;
-    height:calc(100vh - 55px);
-    overflow-y: scroll;
+     background:#002B36;
+     height:calc(100vh - 55px);
+     overflow-y: scroll;
+ }
+
+#loginButton{
+    background:cornflowerblue;
+    width:100px;
+    height:50px;
+    line-height: 50px;
+    cursor: pointer;
+    margin: 0 0 0 35px;
+    text-align: center;
+}
+
+.activeFriend {
+    background-color:yellow;
+}
+
+#center {
+    margin:-100px 0 0 -150px;
+    width:200px;
+    height:200px;
+    position:absolute;
+    left:50%;
+    top:50%;
 }
 
 div ul li {
