@@ -37,6 +37,11 @@
                                         for (var i = 0; i < ret.length; i++) {
                                             document.getElementById(ret[i].id).style.visibility = "hidden"; //second console output
                                         }
+                                        var ret2 = document.getElementsByClassName("activeFriend");
+                                        for (i = 0; i < ret2.length; i++) {
+                                            document.getElementById(ret2[i].id).classList.remove("activeFriend"); //second console output
+                                        }
+                                        this.className+=" activeFriend ";
                                         //console.log(ret);
                                         document.getElementById("chatbox" + this.id).style.visibility = "visible";
                                     };
