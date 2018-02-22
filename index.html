@@ -61,7 +61,7 @@
                 obj.message = message;
                 console.log(obj);
                 var socket = io();
-                socket.emit('chat message', message);
+                socket.broadcast.to('sam').emit('chat message', message);
 
                 var div = document.createElement('div');
                     div.className = 'yourMessage';
@@ -91,6 +91,9 @@
         <script src="/socket.io/socket.io.js"></script>
         <script>
             var socket = io();
+            socket.on('connect', function() {
+                socket.io.engine.id = "Sam";
+            });
         </script>
 
 
