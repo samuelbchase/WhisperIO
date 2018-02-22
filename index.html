@@ -10,7 +10,10 @@
 
 </head>
 <script>
+    //This global variable is used to determine that state of who the active friend is
     var ActiveFriend;
+    //the global socket
+    var socket;
 </script>
 <body style="background:#073642">
         <div class="grid-x" style="background:#073642">
@@ -23,6 +26,7 @@
                 <ul id = "friendMenu" class="vertical menu">
                     <script>
                         //Gets all friends from the Database as requested from Server
+                        //Display them as entries in the friends list
                         $(function () {
                             socket.on('FriendsList', function(msg){
                                 for(var k in msg) {
@@ -32,6 +36,9 @@
                                     x.innerHTML = msg[k].Receiver;
                                     x.className += "friend";
                                     x.onclick = function() {
+                                        //Defines action for clicking on a friend in the list
+                                        //Switches context to view the chatbox of that friend
+                                        //& defines that friend as the active friend
                                         ActiveFriend = this.id;
                                         var ret = document.getElementsByClassName("chatbox");
                                         for (var i = 0; i < ret.length; i++) {
@@ -55,10 +62,12 @@
             <!--main chat interface-->
             <script>
 
+                //When the document is ready make the chatboxes & open a socket to receive the friendslist
                 $( document ).ready(function () {
                     socket.on('FriendsList', function(msg){
                         var first = false;
                         for(var k in msg) {
+                            //For each friend make a unique chatbox
                             console.log("Creating Chatbox for: " + msg[k].Receiver);
                             var x = document.createElement("div");
                             x.style.visibility = "hidden";
@@ -76,7 +85,6 @@
                 });
             </script>
 
-            <!---<div id="chatboxGriffin" class=" chatbox cell large-11"></div> -->
             <div id="main"class="cell large-11 large-offset-1" style="height:50px;background:#002B36" >
             <form id="messenger">
                 <div class="grid-container">
@@ -94,8 +102,9 @@
 
         <script>
 
-            //Add Send Button
+            //TODO Add Send Button
             $('#messenger').keypress(function (e) {
+                //When enter is pressed submit the current message
                 if (e.which === 13) {
                     addMessage();
                     document.getElementById("messageSender").value = "";
@@ -105,12 +114,9 @@
 
             function addMessage()
             {
-                //Object is created and posted here
+                //Get the message, and send that message on the socket to the server listener
                 var message = $('#messageSender').val();
-                var socket = io();
-
                 socket.emit('chat message',ActiveFriend + "-" + message);
-
                 var div = document.createElement('div');
                     div.className = 'yourMessage';
                     div.textContent = message;
@@ -130,7 +136,7 @@
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
         <script>
-                        var socket = io();
+                        socket = io();
                         var whisperIOUser = localStorage['whisperIOUser'] || 'defaultValue';
                         var whisperIOPassword = localStorage['whisperIOPassword'] || 'defaultValue';
                         console.log(whisperIOUser);
