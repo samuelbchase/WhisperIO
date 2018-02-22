@@ -43,6 +43,7 @@
         </div>
 
         <script>
+
             $('#messenger').keypress(function (e) {
                 if (e.which === 13) {
                     addMessage();
@@ -51,6 +52,8 @@
                 }
             });
 
+            function addMessage()
+            {
                 //Object is created and posted here
                 var message = $('#messageSender').val();
                 var obj = new Object;
@@ -64,7 +67,8 @@
                     div.className = 'yourMessage';
                     div.textContent = message;
                     document.getElementById('chatbox').appendChild(div);
-
+                    return 0;
+            }
 
             $(function () {
                 socket.on('chat message', function(msg){

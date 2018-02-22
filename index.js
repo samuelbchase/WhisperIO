@@ -3,10 +3,29 @@ var app = express();
 var http = require('http').Server(app);
 var path = require('path');
 var http = require('http').Server(app);
+var mysql = require('mysql');
 
 var io = require('socket.io')(http);
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+var con = mysql.createConnection({
+    host: "hardworlder.com",
+    user: "readOnlyWhisper",
+    password: "Einherjar255!",
+    database: "whisperio"
+});
+
+con.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected!");
+    var sql = "SELECT * FROM Friends where Host = " + "'Sam';";
+    con.query(sql, function (err, result) {
+        if (err) throw err;
+        console.log("Result: " + result);
+    });
+});
 
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
