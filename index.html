@@ -7,27 +7,72 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <title>Whisper.io</title>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-</head>
 
+</head>
+<script>
+    var ActiveFriend;
+</script>
 <body style="background:#073642">
         <div class="grid-x" style="background:#073642">
             <!--side bar -->
-            <div class="cell large-1" style="background:#073642">
+            <div id="sidebar" class="cell large-1" style="background:#073642;height:0px">
                 <div>
                     <h3 class="horizcenter"> Friends </h3>
                     <ul class="list-group" id="users"></ul>
                 </div>
-                <ul class="vertical menu">
-                    <li class="activeFriend"><a href="#">Friend 1</a></li>
-                    <li><a href="#">Friend 2</a></li>
-                    <li><a href="#">Friend 3</a></li>
-                    <li><a href="#">Friend 4</a></li>
+                <ul id = "friendMenu" class="vertical menu">
+                    <script>
+                        //Gets all friends from the Database as requested from Server
+                        $(function () {
+                            socket.on('FriendsList', function(msg){
+                                for(var k in msg) {
+                                    console.log("Creating Friend Bubble for: " + msg[k].Receiver);
+                                    var x = document.createElement("LI");
+                                    x.id = msg[k].Receiver;
+                                    x.innerHTML = msg[k].Receiver;
+                                    x.className += "friend";
+                                    x.onclick = function() {
+                                        ActiveFriend = this.id;
+                                        var ret = document.getElementsByClassName("chatbox");
+                                        for (var i = 0; i < ret.length; i++) {
+                                            document.getElementById(ret[i].id).style.visibility = "hidden"; //second console output
+                                        }
+                                        //console.log(ret);
+                                        document.getElementById("chatbox" + this.id).style.visibility = "visible";
+                                    };
+                                    document.getElementById("friendMenu").appendChild(x);
+                                }
+                            });
+                        });
+                    </script>
                 </ul>
             </div>
             <!--main chat interface-->
-            <div id="chatbox" class="cell large-11">
-            </div>
-            <div class="cell large-11 large-offset-1" style="height:50px;background:#002B36" >
+            <script>
+
+                $( document ).ready(function () {
+                    socket.on('FriendsList', function(msg){
+                        var first = false;
+                        for(var k in msg) {
+                            console.log("Creating Chatbox for: " + msg[k].Receiver);
+                            var x = document.createElement("div");
+                            x.style.visibility = "hidden";
+                            x.className += "chatbox cell large-11";
+                            x.id = "chatbox" + msg[k].Receiver;
+                            document.getElementById("main").appendChild(x);
+                            if(first === false)
+                            {
+                                console.log("Clicking "+ msg[k].Receiver);
+                                document.getElementById(msg[k].Receiver).click();
+                                first = false;
+                            }
+                        }
+                    });
+                });
+            </script>
+
+            <!---<div id="chatboxGriffin" class=" chatbox cell large-11"></div> -->
+            <div id="main"class="cell large-11 large-offset-1" style="height:50px;background:#002B36" >
             <form id="messenger">
                 <div class="grid-container">
                     <div class="grid-x grid-padding-x">
@@ -43,10 +88,6 @@
         </div>
 
         <script>
-            var whisperIOUser = localStorage['whisperIOUser'] || 'defaultValue';
-            var whisperIOPassword = localStorage['whisperIOPassword'] || 'defaultValue';
-            console.log(whisperIOUser);
-            console.log(whisperIOPassword);
 
             //Add Send Button
             $('#messenger').keypress(function (e) {
@@ -62,23 +103,16 @@
                 //Object is created and posted here
                 var message = $('#messageSender').val();
                 var socket = io();
-                socket.broadcast.emit('chat message', message);
+
+                socket.emit('chat message',ActiveFriend + "-" + message);
 
                 var div = document.createElement('div');
                     div.className = 'yourMessage';
                     div.textContent = message;
-                    document.getElementById('chatbox').appendChild(div);
+                    document.getElementById("chatbox" + ActiveFriend).appendChild(div);
                     return 0;
             }
 
-            $(function () {
-                socket.on('chat message', function(msg){
-                    var div = document.createElement('div');
-                    div.className = 'theirMessage';
-                    div.textContent = msg;
-                    document.getElementById('chatbox').appendChild(div);
-                });
-            });
 
         </script>
           <!-- JQuery Script-->
@@ -91,10 +125,12 @@
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
         <script>
-            var socket = io();
-            socket.on('connect', function() {
-                socket.io.engine.id = whisperIOUser;
-            });
+                        var socket = io();
+                        var whisperIOUser = localStorage['whisperIOUser'] || 'defaultValue';
+                        var whisperIOPassword = localStorage['whisperIOPassword'] || 'defaultValue';
+                        console.log(whisperIOUser);
+                        console.log(whisperIOPassword);
+                        socket.emit('userNameSend', whisperIOUser);
         </script>
 
 
