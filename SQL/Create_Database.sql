@@ -1,10 +1,10 @@
-CREATE TABLE User
+CREATE TABLE IF NOT EXISTS User
 (
-    username VARCHAR(255) PRIMARY KEY NOT NULL, #Unique Username
-    password CHAR(128) NOT NULL #Hashed Password
+    username VARCHAR(255) PRIMARY KEY NOT NULL,
+    password CHAR(128) NOT NULL
 );
 
-CREATE TABLE Message
+CREATE TABLE IF NOT EXISTS Message
 (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     SentFrom VARCHAR(255) NOT NULL,
@@ -14,3 +14,12 @@ CREATE TABLE Message
     CONSTRAINT SentTo_fk FOREIGN KEY (SentTo) REFERENCES User (username),
     CONSTRAINT SentFrom_fk FOREIGN KEY (SentFrom) REFERENCES User (username)
 );
+
+CREATE TABLE IF NOT EXISTS Friends
+(
+    Host VARCHAR(255),
+    Receiver VARCHAR(255),
+    CONSTRAINT Friends_pk PRIMARY KEY (Host, Receiver),
+    CONSTRAINT Host_fk FOREIGN KEY (Host) REFERENCES User (username),
+    CONSTRAINT Receiver_fk FOREIGN KEY (Receiver) REFERENCES User (username)
+)
