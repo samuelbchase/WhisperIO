@@ -41,12 +41,12 @@ io.on('connection', function(socket){
         console.log('By: ' + name);
         console.log("----------------------------");
         var socketToSendTo;
-        for(i = 0; i < sockets.length;i++)
+        for(i = 0; i < names.length;i++)
         {
             if(names[i] === userSentTo)
             {
                 socketToSendTo = sockets[i];
-                console.log("Sending to socketID" + name);
+                console.log("Sending to socketID " + names[i]);
             }
         }
         socket.broadcast.to(socketToSendTo).emit('chat message',message);
@@ -57,7 +57,7 @@ io.on('connection', function(socket){
     socket.on('userNameSend', function(userName){
         sockets.push(socket);
         names.push(userName);
-        console.log("UserNameSend sent: " + userName);
+        console.log("New User Connected: " + userName);
             var con = mysql.createConnection({
                 host: "hardworlder.com",
                 user: "readOnlyWhisper",
@@ -67,9 +67,9 @@ io.on('connection', function(socket){
             var sql = "SELECT * FROM Friends where Host = '" + userName + "';";
             con.query(sql, function (err, result) {
                 if (err) throw err;
-                console.log("Broadcasting friends to" + userName);
+                console.log("Broadcasting friends to " + userName);
                 socket.emit('FriendsList',result);
-                console.log("Friends list sent: " + result);
+                //console.log("Friends list sent: " + result);
             });
             con.end()
     });
