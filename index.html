@@ -111,9 +111,7 @@
                     return false;
                 }
             });
-            socket.on('chat message', function(message) {
-                alert("message");
-            });
+
             function addMessage()
             {
                 //Get the message, and send that message on the socket to the server listener
@@ -145,6 +143,9 @@
                         console.log(whisperIOPassword);
                         socket.emit('userNameSend', whisperIOUser);
                         console.log(whisperIOUser);
+                        socket.on('chat message', function(message) {
+                            alert("message");
+                        });
         </script>
 
 
