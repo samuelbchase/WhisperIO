@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/app.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <title>WhisperIO Login</title>
+</head>
+<body style="background: palevioletred">
+<!--- Need to actually encrypt userID--->
+<div id="center">
+    <form action="/action_page.php">
+        Username:<br>
+        <input type="text" id="user">
+        <br>
+        Password:<br>
+        <input type="password" id="password">
+        <br><br>
+    </form>
+    <div id="loginButton" onclick="processLogin()">Submit</div>
+</div>
+<p>Your password is secured with Love, and little else. This is a test site, don't give us sensitive data.</p>
+
+<script>
+
+    function processLogin() {
+        localStorage['whisperIOUser'] = $('#user').val(); // only strings
+        localStorage['whisperIOPassword'] = $('#password').val();
+        window.location = '/'
+    };
+
+</script>
+
+
+
+</body>
+</html>

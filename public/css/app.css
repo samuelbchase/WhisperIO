@@ -11,23 +11,75 @@
 .form-group{
     background-color:#D33682;
 }
+body{
+    overflow-y:hidden;
+    overflow-x:hidden;
+}
+.chatbox{
+     background:#002B36;
+     height:calc(100vh - 55px);
+     overflow-y: scroll;
+     position:absolute;
+     max-width: 93vw;
+    border: gold 1px solid;
+    box-shadow: 2px 4px;
+}
 
-#chatbox{
-    background:#002B36;
-    height:calc(100vh - 55px);
-    overflow-y: scroll;
+#loginButton{
+    background:cornflowerblue;
+    width:100px;
+    height:50px;
+    line-height: 50px;
+    cursor: pointer;
+    margin: 0 0 0 35px;
+    text-align: center;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}
+
+.activeFriend {
+    background-color:gold;
+    box-shadow: 2px 4px;
+}
+
+#center {
+    margin:-100px 0 0 -150px;
+    width:200px;
+    height:200px;
+    position:absolute;
+    left:50%;
+    top:50%;
 }
 
 div ul li {
     background-color:#2AA198;
     margin-bottom: 10px;
-    border-radius: 50px;
-    width:95%;
-    margin-left:2.5%;
+    width:100%;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
 }
 
-div ul li a {
-    color:#E0E2E4;
+div ul li:hover {
+    border: 1px gold solid;
+    margin-left:-1px;
+    margin-top:-1px;
+    margin-bottom: 9px;
+    width:100%;
+    width:101%;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}
+
+
+div ul li {
+    color:black;
+    padding-left:10px;
 
 }
 .yourMessage {
@@ -68,4 +120,6 @@ div ul li a {
     color:white;
     border-radius: 50px;
     padding-left: 20px;
+    margin-top:5px;
+    margin-bottom:0;
 }
