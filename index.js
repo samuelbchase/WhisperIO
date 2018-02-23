@@ -59,7 +59,7 @@ io.on('connection', function(socket){
             con.query(sql, function (err, result) {
                 if (err) throw err;
                 console.log("Broadcasting friends to" + userName);
-                socket.broadcast.to(userName).emit('FriendsList',result);
+                socket.emit('FriendsList',result);
                 console.log("Friends list sent: " + result);
             });
             con.end()
