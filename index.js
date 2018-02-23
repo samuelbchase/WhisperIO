@@ -21,7 +21,6 @@ var sockets = [];
 var names = [];
 
 io.on('connection', function(socket){
-    console.log('a user connected');
     socket.on('chat message', function(msg){
 
         var indexOfSeparator = msg.indexOf('-');
@@ -36,12 +35,12 @@ io.on('connection', function(socket){
             if(sockets[i] === socket)
             {
                 name = names[i];
+                console.log(name + ' connected');
             }
         }
         console.log('By: ' + name);
         console.log("----------------------------");
-
-        io.emit('chat message', message);
+        socket.broadcast.to(username).emit('chat messag',message);
     });
     socket.on('disconnect', function(){
         console.log('user disconnected');
@@ -62,7 +61,7 @@ io.on('connection', function(socket){
             var sql = "SELECT * FROM Friends where Host = '" + userName + "';";
             con.query(sql, function (err, result) {
                 if (err) throw err;
-                io.emit('FriendsList',result);
+                socket.broadcast.to(username).emit('FriendsList',result);
                 console.log("Friends list sent: " + result);
             });
             con.end()
@@ -71,10 +70,6 @@ io.on('connection', function(socket){
     });
 
 });
-
-
-
-
 
 http.listen(3000, function(){
     console.log('listening on *:3000');
