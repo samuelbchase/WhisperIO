@@ -48,7 +48,6 @@ io.on('connection', function(socket){
     socket.on('userNameSend', function(userName){
         sockets.push(socket);
         names.push(userName);
-            if (err) throw err;
             //console.log("Connected!");
             var con = mysql.createConnection({
                 host: "hardworlder.com",
