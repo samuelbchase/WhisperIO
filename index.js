@@ -58,7 +58,7 @@ io.on('connection', function(socket){
             var sql = "SELECT * FROM Friends where Host = '" + userName + "';";
             con.query(sql, function (err, result) {
                 if (err) throw err;
-                socket.broadcast.to(username).emit('FriendsList',result);
+                socket.broadcast.to(userName).emit('FriendsList',result);
                 console.log("Friends list sent: " + result);
             });
             con.end()
