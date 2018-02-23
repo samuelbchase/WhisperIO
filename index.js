@@ -35,9 +35,16 @@ io.on('connection', function(socket){
                 name = names[i];
             }
         }
+        for(i = 0; i < sockets.length;i++)
+        {
+            if(names[i] === userSentTo)
+            {
+                //Sends message to the specified user
+                sockets[i].emit('chat message',name + "-" + message);
+            }
+        }
         console.log('By: ' + name);
         console.log("----------------------------");
-        socket.broadcast.to(userSentTo).emit('chat message',message);
     });
     socket.on('disconnect', function(){
         console.log('user disconnected');
