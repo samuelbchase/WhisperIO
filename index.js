@@ -40,7 +40,7 @@ io.on('connection', function(socket){
         }
         console.log('By: ' + name);
         console.log("----------------------------");
-        socket.broadcast.to(username).emit('chat messag',message);
+        socket.broadcast.to(name).emit('chat message',message);
     });
     socket.on('disconnect', function(){
         console.log('user disconnected');
@@ -48,7 +48,7 @@ io.on('connection', function(socket){
     socket.on('userNameSend', function(userName){
         sockets.push(socket);
         names.push(userName);
-            //console.log("Connected!");
+        console.log("UserNameSend sent: " + userName);
             var con = mysql.createConnection({
                 host: "hardworlder.com",
                 user: "readOnlyWhisper",
