@@ -40,7 +40,16 @@ io.on('connection', function(socket){
         }
         console.log('By: ' + name);
         console.log("----------------------------");
-        socket.broadcast.to(name).emit('chat message',message);
+        var socket;
+        for(i = 0; i < sockets.length;i++)
+        {
+            if(names[i] === userSentTo)
+            {
+                socket = sockets[i];
+                console.log("Sending to socketID" + name);
+            }
+        }
+        socket.broadcast.to(socket).emit('chat message',message);
     });
     socket.on('disconnect', function(){
         console.log('user disconnected');
