@@ -47,23 +47,22 @@ io.on('connection', function(socket){
         names.push(userName);
         socket.id = userName;
         console.log("New User Connected: " + socket.id);
-            var con = mysql.createConnection({
-                host: "hardworlder.com",
-                user: "readOnlyWhisper",
-                password: "Einherjar255!",
-                database: "whisperio"
-            });
-            var sql = "SELECT * FROM Friends where Host = '" + userName + "';";
-            con.query(sql, function (err, result) {
-                if (err) throw err;
-                //console.log("Broadcasting friends to " + userName);
-                console.log("----------------------------");
-                socket.emit('FriendsList',result);
-                //console.log("Friends list sent: " + result);
-            });
-            con.end()
+        var con = mysql.createConnection({
+            host: "hardworlder.com",
+            user: "readOnlyWhisper",
+            password: "Einherjar255!",
+            database: "whisperio"
+        });
+        var sql = "SELECT * FROM Friends where Host = '" + userName + "';";
+        con.query(sql, function (err, result) {
+            if (err) throw err;
+            //console.log("Broadcasting friends to " + userName);
+            console.log("----------------------------");
+            socket.emit('FriendsList',result);
+            //console.log("Friends list sent: " + result);
+        });
+        con.end()
     });
-
 });
 
 http.listen(3000, function(){
