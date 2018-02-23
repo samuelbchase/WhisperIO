@@ -48,16 +48,14 @@ io.on('connection', function(socket){
     socket.on('userNameSend', function(userName){
         sockets.push(socket);
         names.push(userName);
-        var con = mysql.createConnection({
-            host: "hardworlder.com",
-            user: "readOnlyWhisper",
-            password: "Einherjar255!",
-            database: "whisperio"
-        });
-
-        con.connect(function(err) {
             if (err) throw err;
             //console.log("Connected!");
+            var con = mysql.createConnection({
+                host: "hardworlder.com",
+                user: "readOnlyWhisper",
+                password: "Einherjar255!",
+                database: "whisperio"
+            });
             var sql = "SELECT * FROM Friends where Host = '" + userName + "';";
             con.query(sql, function (err, result) {
                 if (err) throw err;
@@ -65,8 +63,6 @@ io.on('connection', function(socket){
                 console.log("Friends list sent: " + result);
             });
             con.end()
-        });
-
     });
 
 });
