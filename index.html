@@ -143,9 +143,11 @@
                         console.log(whisperIOPassword);
                         socket.emit('userNameSend', whisperIOUser);
                         console.log(whisperIOUser);
-                        socket.on('chat message', function(message) {
-                            alert("message");
+                        socket.on('chat message', function(msg){
+                            console.log("Message Received!");
+                            alert(msg);
                         });
+
         </script>
 
 
