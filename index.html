@@ -111,7 +111,9 @@
                     return false;
                 }
             });
-
+            socket.on('chat message', function(message) {
+                alert("message");
+            });
             function addMessage()
             {
                 //Get the message, and send that message on the socket to the server listener
