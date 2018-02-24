@@ -142,7 +142,6 @@
                         console.log(whisperIOUser);
                         console.log(whisperIOPassword);
                         socket.emit('userNameSend', whisperIOUser);
-                        console.log(whisperIOUser);
                         socket.on('chat message', function(msg){
                             var indexOfSeparator = msg.indexOf('-');
                             var userSentFrom = msg.slice(0,indexOfSeparator);
