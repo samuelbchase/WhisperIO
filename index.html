@@ -58,6 +58,12 @@
                         });
                     </script>
                 </ul>
+				<div id = "addFriendButton" class = "button" style = "background:#228B22">
+					<div>
+						<input type = "text" id = "newFriend"></input>
+					</div>
+					<button onclick = "addFriend()" style = "background:#adff2f;width:75px;height:25px">Add Friend</button>
+				</div>
             </div>
             <!--main chat interface-->
             <script>
@@ -156,6 +162,15 @@
                         });
 
         </script>
+		
+		<script>
+			function addFriend() {
+				console.log("adding friend");
+				var addedFriend = $('#newFriend').val();
+				socket.emit('addFriend', whisperIOUser, addedFriend	);
+			}
+		</script>
+
 
 
 </body>
