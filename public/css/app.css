@@ -21,7 +21,9 @@ body{
      overflow-y: scroll;
      position:absolute;
      max-width: 93vw;
- }
+    border: gold 1px solid;
+    box-shadow: 2px 4px;
+}
 
 #loginButton{
     background:cornflowerblue;
@@ -31,10 +33,15 @@ body{
     cursor: pointer;
     margin: 0 0 0 35px;
     text-align: center;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
 }
 
 .activeFriend {
-    background-color:yellow;
+    background-color:gold;
+    box-shadow: 2px 4px;
 }
 
 #center {
@@ -49,10 +56,26 @@ body{
 div ul li {
     background-color:#2AA198;
     margin-bottom: 10px;
-    border-radius: 50px;
-    width:95%;
-    margin-left:2.5%;
+    width:100%;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
 }
+
+div ul li:hover {
+    border: 1px gold solid;
+    margin-left:-1px;
+    margin-top:-1px;
+    margin-bottom: 9px;
+    width:100%;
+    width:101%;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}
+
 
 div ul li {
     color:black;

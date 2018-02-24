@@ -78,7 +78,7 @@
                             {
                                 console.log("Clicking "+ msg[k].Receiver);
                                 document.getElementById(msg[k].Receiver).click();
-                                first = false;
+                                first = true;
                             }
                         }
                     });
@@ -143,8 +143,15 @@
                         console.log(whisperIOPassword);
                         socket.emit('userNameSend', whisperIOUser);
                         socket.on('chat message', function(msg){
+                            var indexOfSeparator = msg.indexOf('-');
+                            var userSentFrom = msg.slice(0,indexOfSeparator);
+                            var message = msg.slice(indexOfSeparator+1);
+                            var chatbox = document.getElementById("chatbox" + userSentFrom);
+                            var div = document.createElement('div');
+                            div.className = 'theirMessage';
+                            div.textContent = message;
                             console.log("Message Received!");
-                            alert(msg);
+                            chatbox.appendChild(div);
                         });
 
         </script>

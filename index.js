@@ -22,11 +22,9 @@ var names = [];
 
 io.on('connection', function(socket){
     socket.on('chat message', function(msg){
-
         var indexOfSeparator = msg.indexOf('-');
         var userSentTo = msg.slice(0,indexOfSeparator);
         var message = msg.slice(indexOfSeparator+1);
-        console.log("----------------------------");
         console.log('message: ' + message);
         console.log('Was set to: ' + userSentTo);
         var name = "Unknown";
@@ -35,21 +33,18 @@ io.on('connection', function(socket){
             if(sockets[i] === socket)
             {
                 name = names[i];
-                console.log(name + ' connected');
+            }
+        }
+        for(i = 0; i < sockets.length;i++)
+        {
+            if(names[i] === userSentTo)
+            {
+                //Sends message to the specified user
+                sockets[i].emit('chat message',name + "-" + message);
             }
         }
         console.log('By: ' + name);
         console.log("----------------------------");
-        var socketToSendTo;
-        for(i = 0; i < names.length;i++)
-        {
-            if(names[i] === userSentTo)
-            {
-                socketToSendTo = sockets[i];
-                console.log("Sending to socketID " + names[i]);
-            }
-        }
-        socket.broadcast.to(socketToSendTo).emit('chat message',message);
     });
     socket.on('disconnect', function(){
         console.log('user disconnected');
@@ -57,23 +52,24 @@ io.on('connection', function(socket){
     socket.on('userNameSend', function(userName){
         sockets.push(socket);
         names.push(userName);
-        console.log("New User Connected: " + userName);
-            var con = mysql.createConnection({
-                host: "hardworlder.com",
-                user: "readOnlyWhisper",
-                password: "Einherjar255!",
-                database: "whisperio"
-            });
-            var sql = "SELECT * FROM Friends where Host = '" + userName + "';";
-            con.query(sql, function (err, result) {
-                if (err) throw err;
-                console.log("Broadcasting friends to " + userName);
-                socket.emit('FriendsList',result);
-                //console.log("Friends list sent: " + result);
-            });
-            con.end()
+        socket.id = userName;
+        console.log("New User Connected: " + socket.id);
+        var con = mysql.createConnection({
+            host: "hardworlder.com",
+            user: "readOnlyWhisper",
+            password: "Einherjar255!",
+            database: "whisperio"
+        });
+        var sql = "SELECT * FROM Friends where Host = '" + userName + "';";
+        con.query(sql, function (err, result) {
+            if (err) throw err;
+            //console.log("Broadcasting friends to " + userName);
+            console.log("----------------------------");
+            socket.emit('FriendsList',result);
+            //console.log("Friends list sent: " + result);
+        });
+        con.end()
     });
-
 });
 
 http.listen(3000, function(){
