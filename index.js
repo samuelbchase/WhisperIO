@@ -65,6 +65,12 @@ io.on('connection', function(socket){
         var message = msg.slice(indexOfSeparator+1);
         console.log('message: ' + message);
         console.log('Was set to: ' + userSentTo);
+	write = mysql.createConnection({
+		host: host,
+		user: readUN,
+		password: readPW,
+		database: database
+	});
         var name = "Unknown";
         for(var i = 0; i < sockets.length;i++)
         {
