@@ -67,8 +67,8 @@ io.on('connection', function(socket){
         console.log('Was set to: ' + userSentTo);
 	write = mysql.createConnection({
 		host: host,
-		user: readUN,
-		password: readPW,
+		user: writeUN,
+		password: writePW,
 		database: database
 	});
         var name = "Unknown";
