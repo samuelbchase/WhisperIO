@@ -36,23 +36,23 @@ fs.readFile('.info.txt', 'utf8', function(err, contents){
 	var index = contents.indexOf('|');
 	var old = 0;
 	host = contents.slice(old, index);
-	
+
 	old = index + 3;
 	index = contents.indexOf('|', old);
 	database = contents.slice(old, index);
-	
+
 	old = index + 3;
 	index = contents.indexOf('|', old);
 	readUN = contents.slice(old, index);
-	
+
 	old = index + 3;
-	index = contents.indexOf('|', old);	
+	index = contents.indexOf('|', old);
 	readPW = contents.slice(old, index);
-	
+
 	old = index + 3;
 	index = contents.indexOf('|', old);
 	writeUN = contents.slice(old, index);
-	
+
 	old = index + 3;
 	index = contents.indexOf('|', old);
 	writePW = contents.slice(old);
@@ -82,6 +82,11 @@ io.on('connection', function(socket){
             }
         }
         console.log('By: ' + name);
+        sql = "INSERT INTO Message (SentFrom, SentTo, Message, timestamp) VALUES ('" + name + "', '" + userSentTo + "', '" + message + "', " + Date.now() + ");";
+        //console.log(sql);
+        write.query(sql, function(err, result) {
+            if (err) throw err;
+        });
         console.log("----------------------------");
     });
     socket.on('disconnect', function(){
@@ -137,7 +142,7 @@ io.on('connection', function(socket){
 							user: writeUN,
 							password: writePW,
 							database: database,
-						});;
+						});
 						sql = "INSERT INTO Friends (Host, Receiver) VALUES ('" + currentUser + "', '" + friendToAdd + "');"
 						write.query(sql, function(err, result) {
 							if (err) throw err;
