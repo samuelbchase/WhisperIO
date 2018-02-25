@@ -10,15 +10,30 @@
 <body style="background: palevioletred">
 <!--- Need to actually encrypt userID--->
 <div id="center">
-    <form action="/action_page.php">
-        Username:<br>
-        <input type="text" id="user">
-        <br>
-        Password:<br>
-        <input type="password" id="password">
-        <br><br>
-    </form>
-    <div id="loginButton" onclick="processLogin()">Submit</div>
+	<div>
+		Login
+		<form action="/action_page.php">
+			Username:<br>
+			<input type="text" id="user">
+			<br>
+			Password:<br>
+			<input type="password" id="password">
+			<br><br>
+		</form>
+		<div id="loginButton" onclick="processLogin()">Submit</div>
+	</div>
+	<div>
+		Create New Account
+		<form action="/action_page.php">
+			Username:<br>
+			<input type="text" id="newUser">
+			<br>
+			Password:<br>
+			<input type="password" id="newPassword">
+			<br><br>
+		</form>
+		<div id="loginButton" onclick="createNewAccount()">Create User</div>
+	</div>
 </div>
 <p>Your password is secured with Love, and little else. This is a test site, don't give us sensitive data.</p>
 
@@ -30,6 +45,18 @@
         window.location = '/'
     };
 
+</script>
+
+<script>
+
+	//For now all this function does is "log you in" as the entered user
+	function createNewAccount() {
+		localStorage['whisperIOUser'] = $('#newUser').val();
+		localStorage['whisperIOPassword'] = $('#newPassword').val();
+		// find a way to allow a "create new user" function
+		window.location = '/';
+	};
+	
 </script>
 
 
