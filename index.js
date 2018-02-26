@@ -69,7 +69,7 @@ io.on('connection', function(socket){
 		host: host,
 		user: writeUN,
 		password: writePW,
-		database: database
+		database: database,
 	});
         var name = "Unknown";
         for(var i = 0; i < sockets.length;i++)
