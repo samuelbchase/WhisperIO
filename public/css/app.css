@@ -126,7 +126,6 @@ div ul li {
 
 .flash{
     background:lightgreen;
-    color:#fff;
     animation-name: flash;
     animation-duration: 1s;
     animation-timing-function: linear;
