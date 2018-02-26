@@ -39,7 +39,9 @@
                                         //Defines action for clicking on a friend in the list
                                         //Switches context to view the chatbox of that friend
                                         //& defines that friend as the active friend
+                                        $(this).removeClass("flash");
                                         ActiveFriend = this.id;
+                                        console.log(this);
                                         var ret = document.getElementsByClassName("chatbox");
                                         for (var i = 0; i < ret.length; i++) {
                                             document.getElementById(ret[i].id).style.visibility = "hidden"; //second console output
@@ -79,6 +81,7 @@
                             x.style.visibility = "hidden";
                             x.className += "chatbox cell large-11";
                             x.id = "chatbox" + msg[k].Receiver;
+
                             document.getElementById("main").appendChild(x);
                             if(first === false)
                             {
@@ -154,6 +157,10 @@
                             var message = msg.slice(indexOfSeparator+1);
                             var chatbox = document.getElementById("chatbox" + userSentFrom);
                             var div = document.createElement('div');
+                            $(document.getElementById(userSentFrom)).addClass('flash');
+                            console.log(document.getElementById(userSentFrom));
+
+
                             div.className = 'theirMessage';
                             div.textContent = message;
                             console.log("Message Received!");
