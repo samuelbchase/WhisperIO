@@ -88,8 +88,8 @@ io.on('connection', function(socket){
             }
         }
         console.log('By: ' + name);
-        sql = "INSERT INTO Message (SentFrom, SentTo, Message, timestamp) VALUES ('" + name + "', '" + userSentTo + "', '" + message + "', " + Date.now() + ");";
-        //console.log(sql);
+        sql = "INSERT INTO Message (SentFrom, SentTo, Message, timestamp) VALUES ('" + name + "', '" + userSentTo + "', '" + message + "', FROM_UNIXTIME('" + Date.now()/1000 + "'));";
+        console.log(sql);
         write.query(sql, function(err, result) {
             if (err) throw err;
         });
@@ -107,7 +107,7 @@ io.on('connection', function(socket){
 			host: host,
 			user: readUN,
 			password: readPW,
-			database: database,
+			database: database
 		});
         var sql = "SELECT * FROM Friends where Host = '" + userName + "';";
         read.query(sql, function (err, result) {
@@ -127,14 +127,14 @@ io.on('connection', function(socket){
 			host: host,
 			user: readUN,
 			password: readPW,
-			database: database,
-		});;
+			database: database
+		});
 		
 		//check to see if the friend relationship already exists
 		var sql = "SELECT * FROM Friends WHERE Host = \"" + currentUser + "\" AND Receiver = \"" + friendToAdd + "\";"
 		read.query(sql, function(err, result) {
 			if (err) throw err;
-			if (result.length == 0) // if the friend relationship doesn't exist
+			if (result.length === 0) // if the friend relationship doesn't exist
 			{
 				console.log("New friend!");
 				
