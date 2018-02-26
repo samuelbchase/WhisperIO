@@ -157,7 +157,10 @@
                             var message = msg.slice(indexOfSeparator+1);
                             var chatbox = document.getElementById("chatbox" + userSentFrom);
                             var div = document.createElement('div');
-                            $(document.getElementById(userSentFrom)).addClass('flash');
+                            if(userSentFrom === ActiveFriend)
+                            {
+                                $(document.getElementById(userSentFrom)).addClass('flash');
+                            }
                             console.log(document.getElementById(userSentFrom));
 
 
