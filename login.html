@@ -22,6 +22,7 @@
 		</form>
 		<div id="loginButton" onclick="processLogin()">Submit</div>
 	</div>
+	<!---
 	<div>
 		Create New Account
 		<form action="/action_page.php">
@@ -34,6 +35,7 @@
 		</form>
 		<div id="loginButton" onclick="createNewAccount()">Create User</div>
 	</div>
+	--->
 </div>
 <p>Your password is secured with Love, and little else. This is a test site, don't give us sensitive data.</p>
 
@@ -45,7 +47,7 @@
             alert("Unknown Username");
 		} else {
             localStorage['whisperIOPassword'] = $('#password').val();
-            window.location = '/'
+            window.location = '/main'
 		}
 
 
@@ -60,7 +62,7 @@
 		localStorage['whisperIOUser'] = $('#newUser').val();
 		localStorage['whisperIOPassword'] = $('#newPassword').val();
 		// find a way to allow a "create new user" function
-		window.location = '/';
+		window.location = '/main';
 	};
 	
 </script>
