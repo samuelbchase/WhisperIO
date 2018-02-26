@@ -9,11 +9,11 @@ var io = require('socket.io')(http);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', function(req, res){
+app.get('/main', function(req, res){
     res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/login', function(req, res){
+app.get('/', function(req, res){
     res.sendFile(__dirname + '/login.html');
 });
 
