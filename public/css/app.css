@@ -21,7 +21,9 @@ body{
      overflow-y: scroll;
      position:absolute;
      max-width: 93vw;
- }
+    border: gold 1px solid;
+    box-shadow: 2px 4px;
+}
 
 #loginButton{
     background:cornflowerblue;
@@ -31,10 +33,15 @@ body{
     cursor: pointer;
     margin: 0 0 0 35px;
     text-align: center;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
 }
 
 .activeFriend {
-    background-color:yellow;
+    background-color:gold;
+    box-shadow: 2px 4px;
 }
 
 #center {
@@ -49,10 +56,26 @@ body{
 div ul li {
     background-color:#2AA198;
     margin-bottom: 10px;
-    border-radius: 50px;
-    width:95%;
-    margin-left:2.5%;
+    width:100%;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
 }
+
+div ul li:hover {
+    border: 1px gold solid;
+    margin-left:-1px;
+    margin-top:-1px;
+    margin-bottom: 9px;
+    width:100%;
+    width:101%;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}
+
 
 div ul li {
     color:black;
@@ -94,9 +117,61 @@ div ul li {
 #messageSender {
     background-color: transparent;
     width:200%;
-    color:white;
     border-radius: 50px;
     padding-left: 20px;
     margin-top:5px;
     margin-bottom:0;
 }
+
+.flash{
+    background:yellow;
+<<<<<<< HEAD
+    color:#fff;
+    border:none;
+=======
+    border:none;
+    border-radius:5px;
+>>>>>>> 563e75ab48fcc88b5be63ee5d8d7f2ff9089cac9
+    
+    animation-name: flash;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+
+    //Firefox 1+
+    -webkit-animation-name: flash;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-iteration-count: infinite;
+
+    //Safari 3-4
+    -moz-animation-name: flash;
+    -moz-animation-duration: 1s;
+    -moz-animation-timing-function: linear;
+    -moz-animation-iteration-count: infinite;
+}
+
+@keyframes flash {  
+    0% { opacity: 1.0; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1.0; }
+}
+
+//Firefox 1+
+@-webkit-keyframes flash {  
+    0% { opacity: 1.0; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1.0; }
+}
+
+//Safari 3-4
+@-moz-keyframes flash {  
+    0% { opacity: 1.0; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1.0; }
+<<<<<<< HEAD
+}
+=======
+}
+</style>
+>>>>>>> 563e75ab48fcc88b5be63ee5d8d7f2ff9089cac9

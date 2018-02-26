@@ -10,26 +10,61 @@
 <body style="background: palevioletred">
 <!--- Need to actually encrypt userID--->
 <div id="center">
-    <form action="/action_page.php">
-        Username:<br>
-        <input type="text" id="user">
-        <br>
-        Password:<br>
-        <input type="password" id="password">
-        <br><br>
-    </form>
-    <div id="loginButton" onclick="processLogin()">Submit</div>
+	<div>
+		Login
+		<form action="/action_page.php">
+			Username:<br>
+			<input type="text" id="user">
+			<br>
+			Password:<br>
+			<input type="password" id="password">
+			<br><br>
+		</form>
+		<div id="loginButton" onclick="processLogin()">Submit</div>
+	</div>
+	<!---
+	<div>
+		Create New Account
+		<form action="/action_page.php">
+			Username:<br>
+			<input type="text" id="newUser">
+			<br>
+			Password:<br>
+			<input type="password" id="newPassword">
+			<br><br>
+		</form>
+		<div id="loginButton" onclick="createNewAccount()">Create User</div>
+	</div>
+	--->
 </div>
-<p>Your password is secured with Love, and little else. This is a test site, don't give us sensitive data.</p>
+<p>Your password is unsecured. This is a test site, don't give us sensitive data.</p>
 
 <script>
 
     function processLogin() {
         localStorage['whisperIOUser'] = $('#user').val(); // only strings
-        localStorage['whisperIOPassword'] = $('#password').val();
-        window.location = '/'
+		if($('#user').val() !== 'Abineet' && $('#user').val() !== 'Griffin' && $('#user').val() !== 'Geraldo' && $('#user').val() !== 'Sam' && $('#user').val() !== 'Matt' && $('#user').val() !== 'Skyler') {
+            alert("Unknown Username");
+		} else {
+            localStorage['whisperIOPassword'] = $('#password').val();
+            window.location = '/main'
+		}
+
+
     };
 
+</script>
+
+<script>
+
+	//For now all this function does is "log you in" as the entered user
+	function createNewAccount() {
+		localStorage['whisperIOUser'] = $('#newUser').val();
+		localStorage['whisperIOPassword'] = $('#newPassword').val();
+		// find a way to allow a "create new user" function
+		window.location = '/main';
+	};
+	
 </script>
 
 
