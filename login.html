@@ -41,12 +41,14 @@
 
     function processLogin() {
         localStorage['whisperIOUser'] = $('#user').val(); // only strings
-		if($('#user').val() !== 'Abineet' || $('#user').val() !== 'Griffin' || $('#user').val() !== 'Sam' || $('#user').val() !== 'Matt' || $('#user').val() !== 'Skyler')
-		{
-		    alert("Unknown Username");
+		if($('#user').val() !== 'Abineet' && $('#user').val() !== 'Griffin' && $('#user').val() !== 'Sam' && $('#user').val() !== 'Matt' && $('#user').val() !== 'Skyler') {
+            alert("Unknown Username");
+		} else {
+            localStorage['whisperIOPassword'] = $('#password').val();
+            window.location = '/'
 		}
-        localStorage['whisperIOPassword'] = $('#password').val();
-        window.location = '/'
+
+
     };
 
 </script>
