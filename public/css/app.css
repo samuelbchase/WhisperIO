@@ -125,15 +125,8 @@ div ul li {
 }
 
 .flash{
-    background:yellow;
-<<<<<<< HEAD
+    background:lightgreen;
     color:#fff;
-    border:none;
-=======
-    border:none;
-    border-radius:5px;
->>>>>>> 563e75ab48fcc88b5be63ee5d8d7f2ff9089cac9
-    
     animation-name: flash;
     animation-duration: 1s;
     animation-timing-function: linear;
@@ -170,9 +163,4 @@ div ul li {
     0% { opacity: 1.0; }
     50% { opacity: 0.5; }
     100% { opacity: 1.0; }
-<<<<<<< HEAD
 }
-=======
-}
-</style>
->>>>>>> 563e75ab48fcc88b5be63ee5d8d7f2ff9089cac9
