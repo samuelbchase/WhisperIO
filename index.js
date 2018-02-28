@@ -1,6 +1,14 @@
 var express = require('express');
+var fs = require("fs");
+
+var options = {
+    key: fs.readFileSync('encryption/agent2-key.key'),
+    cert: fs.readFileSync('encryption/mydomain.csr')
+};
+
 var app = express();
 var http = require('http').Server(app);
+var https = require('https');
 var path = require('path');
 var http = require('http').Server(app);
 var mysql = require('mysql');
@@ -26,7 +34,6 @@ var names = [];
 var read;
 var write;
 
-var fs = require("fs");
 var host;
 var database;
 var readUN;
@@ -232,6 +239,8 @@ io.on('connection', function(socket){
 		});
 	});
 });
+
+https.createServer(options, app).listen(443);
 
 http.listen(3000, function(){
     console.log('listening on *:3000');
