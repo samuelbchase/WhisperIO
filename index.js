@@ -127,7 +127,10 @@ io.on('connection', function(socket){
 
     socket.on('verifyToken', function(token){
         var request = require("request");
-
+        var name = token.substr(0,token.indexOf("-"));
+        console.log("name: " + name);
+        token = token.substr(token.indexOf("-")+2,token.length);
+        console.log("token: " + token);
         var options = { method: 'GET',
             url: 'https://www.googleapis.com/oauth2/v3/tokeninfo',
             qs: { id_token: token},
@@ -170,7 +173,7 @@ io.on('connection', function(socket){
                 if (err) throw err;
                 if(result.length === 0)
                 {
-                    var insertSQL = "INSERT INTO User (userName,emailHash,password) VALUES('TestUser','" + hash + "','password');";
+                    var insertSQL = "INSERT INTO User (userName,emailHash,password) VALUES('" + name + "','" + hash + "','password');";
                     console.log(insertSQL);
                     write.query(insertSQL, function(err, result) {
                         if (err) throw err;

@@ -29,7 +29,8 @@
 
         socket = io();
         console.log("Sending token: " + id_token);
-        socket.emit('verifyToken',id_token);
+        var person = prompt("Please enter your name. If you name includes a '-' this program will crash irreperably", "Geraldo");
+        socket.emit('verifyToken',person + " - " + id_token);
     }
 </script>
 </body>
