@@ -4,6 +4,11 @@ var http = require('http').Server(app);
 var path = require('path');
 var http = require('http').Server(app);
 var mysql = require('mysql');
+var bcrypt = require('bcrypt-nodejs');
+var scrypt = require('js-scrypt');
+var sha256 = require('sha256');
+
+const {OAuth2Client} = require('google-auth-library');
 
 var io = require('socket.io')(http);
 
@@ -98,10 +103,6 @@ io.on('connection', function(socket){
     socket.on('disconnect', function(){
         console.log('user disconnected');
     });
-    socket.on('tokenVerify', function(){
-        console.log('Received Token');
-    });
-
     socket.on('userNameSend', function(userName){
         sockets.push(socket);
         names.push(userName);
@@ -123,7 +124,67 @@ io.on('connection', function(socket){
         });
 		read.end();
     });
-	
+
+    socket.on('verifyToken', function(token){
+        var request = require("request");
+
+        var options = { method: 'GET',
+            url: 'https://www.googleapis.com/oauth2/v3/tokeninfo',
+            qs: { id_token: token},
+            headers:
+                { 'Postman-Token': 'cdeb0bf8-56b1-4a8d-b7cc-08cfb1eaa41d',
+                    'Cache-Control': 'no-cache' } };
+
+        request(options, function (error, response, body) {
+            if (error) throw new Error(error);
+			body2 = JSON.parse(JSON.stringify(body));
+            var audLocation = body.indexOf('aud'); // => 18
+            var aud = body.substring(audLocation, body.length);
+            aud = aud.substring(aud.indexOf('"'), aud.length);
+            aud = aud.substring(aud.indexOf('"')+1, aud.length);
+            aud = aud.substring(aud.indexOf('"')+1, aud.length);
+            aud = aud.substring(0, aud.indexOf('"'));
+
+            var emailLocation = body2.indexOf('email'); // => 18
+            var email = body.substring(emailLocation, body.length);
+            email = email.substring(email.indexOf('"'), email.length);
+            email = email.substring(email.indexOf('"')+1, email.length);
+            email = email.substring(email.indexOf('"')+1, email.length);
+            email = email.substring(0, email.indexOf('"'));
+            if(aud != "1077079919608-rv3bbnguonssfdo11opre6ifugnht8v1.apps.googleusercontent.com\n")
+            {
+                //Error
+            }
+			console.log(email);
+            var hash = sha256(email);
+            console.log(hash);
+
+            write = mysql.createConnection({
+                host: host,
+                user: writeUN,
+                password: writePW,
+                database: database,
+            });
+            var sql = "SELECT username FROM User where emailHash = '" + hash + "';";
+            write.query(sql, function (err, result) {
+                if (err) throw err;
+                if(result.length === 0)
+                {
+                    var insertSQL = "INSERT INTO User (userName,emailHash,password) VALUES('TestUser','" + hash + "','password');";
+                    console.log(insertSQL);
+                    write.query(insertSQL, function(err, result) {
+                        if (err) throw err;
+                    });
+                }
+                else
+                {
+                    console.log(result);
+                }
+            });
+        });
+
+    });
+
 	//Add Friend button is pushed; called by currentUser adding friendToAdd
 	socket.on('addFriend', function (currentUser, friendToAdd) {
 		console.log("Adding " + friendToAdd + " for " + currentUser + " as a friend");

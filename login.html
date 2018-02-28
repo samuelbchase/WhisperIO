@@ -11,70 +11,13 @@
 </head>
 <body style="background: palevioletred">
 <!--- Need to actually encrypt userID--->
-<div id="center">
-	<div>
-		Login
-		<form action="/action_page.php">
-			Username:<br>
-			<input type="text" id="user">
-			<br>
-			Password:<br>
-			<input type="password" id="password">
-			<br><br>
-		</form>
-		<div id="loginButton" onclick="processLogin()">Submit</div>
-	</div>
-	<!---
-	<div>
-		Create New Account
-		<form action="/action_page.php">
-			Username:<br>
-			<input type="text" id="newUser">
-			<br>
-			Password:<br>
-			<input type="password" id="newPassword">
-			<br><br>
-		</form>
-		<div id="loginButton" onclick="createNewAccount()">Create User</div>
-	</div>
-	--->
-	<div class="g-signin2" data-onsuccess="onSignIn"></div>
+<div class="g-signin2" data-onsuccess="onSignIn"></div>
 
-</div>
-<p>Your password is unsecured. This is a test site, don't give us sensitive data.</p>
-
-<script>
-
-    function processLogin() {
-        localStorage['whisperIOUser'] = $('#user').val(); // only strings
-		if($('#user').val() !== 'Abineet' && $('#user').val() !== 'Griffin' &&
-			$('#user').val() !== 'Geraldo' && $('#user').val() !== 'Sam' &&
-			$('#user').val() !== 'Matt' && $('#user').val() !== 'Skyler') {
-            alert("Unknown Username");
-		} else {
-            localStorage['whisperIOPassword'] = $('#password').val();
-            window.location = '/main'
-		}
-    };
-
-</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
 <script>
-    socket = io();
-</script>
-
-
-<script>
-
-	//For now all this function does is "log you in" as the entered user
-	function createNewAccount() {
-		localStorage['whisperIOUser'] = $('#newUser').val();
-		localStorage['whisperIOPassword'] = $('#newPassword').val();
-		// find a way to allow a "create new user" function
-		window.location = '/main';
-	};
 
     function onSignIn(googleUser) {
+        console.log("Begin Sign In Process");
         var profile = googleUser.getBasicProfile();
         console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
         console.log('Name: ' + profile.getName());
@@ -82,29 +25,12 @@
         console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
 
         var id_token = googleUser.getAuthResponse().id_token;
-        console.log("ID Token: " + id_token);
+        //console.log("ID Token: " + id_token);
 
-
-		/*
-        function processLogin() {
-            localStorage['whisperIOUser'] = $('#user').val(); // only strings
-            if($('#user').val() !== 'Abineet' && $('#user').val() !== 'Griffin' &&
-                $('#user').val() !== 'Geraldo' && $('#user').val() !== 'Sam' &&
-                $('#user').val() !== 'Matt' && $('#user').val() !== 'Skyler') {
-                alert("Unknown Username");
-            } else {
-                localStorage['whisperIOPassword'] = $('#password').val();
-                window.location = '/main'
-            }
-        };
-		*/
-
-
-    };
-	
+        socket = io();
+        console.log("Sending token: " + id_token);
+        socket.emit('verifyToken',id_token);
+    }
 </script>
-
-
-
 </body>
 </html>
