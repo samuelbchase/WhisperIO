@@ -149,7 +149,7 @@ io.on('connection', function(socket){
             email = email.substring(email.indexOf('"')+1, email.length);
             email = email.substring(email.indexOf('"')+1, email.length);
             email = email.substring(0, email.indexOf('"'));
-            if(aud !== "1077079919608-rv3bbnguonssfdo11opre6ifugnht8v1.apps.googleusercontent.com")
+            if(aud !== "521002119514-k8kp3p42fpoq7ia5868k9s9e62bj87n3.apps.googleusercontent.com")
             {
                 socket.emit("authFailureAppDiscrepancy","Bad! No Hacking!");
             }
