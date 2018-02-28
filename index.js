@@ -173,7 +173,7 @@ io.on('connection', function(socket){
                 if (err) throw err;
                 if(result.length === 0)
                 {
-                    var insertSQL = "INSERT INTO User (userName,emailHash,password) VALUES('" + name + "','" + hash + "','password');";
+                    var insertSQL = "INSERT INTO User (userName,emailHash) VALUES('" + name + "','" + hash + "');";
                     console.log(insertSQL);
                     write.query(insertSQL, function(err, result) {
                         if (err) throw err;
