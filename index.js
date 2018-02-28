@@ -7,6 +7,7 @@ var mysql = require('mysql');
 var bcrypt = require('bcrypt-nodejs');
 var scrypt = require('js-scrypt');
 var sha256 = require('sha256');
+var request = require("request");
 
 var io = require('socket.io')(http);
 
@@ -124,10 +125,6 @@ io.on('connection', function(socket){
     });
 
     socket.on('verifyToken', function(token){
-        var request = require("request");
-        var name = token.substr(0,token.indexOf("-"));
-        console.log("name: " + name);
-        token = token.substr(token.indexOf("-")+2,token.length);
         console.log("token: " + token);
         var options = { method: 'GET',
             url: 'https://www.googleapis.com/oauth2/v3/tokeninfo',
@@ -172,14 +169,13 @@ io.on('connection', function(socket){
                 var output = -1;
                 if(result.length === 0)
                 {
-                    var insertSQL = "INSERT INTO User (userName,emailHash) VALUES('" + name + "','" + hash + "');";
-                    console.log(insertSQL);
-                    write.query(insertSQL, function(err, res) {
-                        if (err)
-                        {
-                            throw err;
-                        }
-
+                    socket.emit("unknownPerson","whoU");
+                    socket.on('identifyMyself', function (whoIAm) {
+                        var insertSQL = "INSERT INTO User (userName,emailHash) VALUES('" + whoIAm + "','" + hash + "');";
+                        write.query(insertSQL, function(err, result) {
+                            if (err) throw err;
+                        });
+                        socket.emit("authSuccessNewUser",whoIAm);
                     });
                 }
                 else
