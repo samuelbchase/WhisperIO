@@ -98,6 +98,10 @@ io.on('connection', function(socket){
     socket.on('disconnect', function(){
         console.log('user disconnected');
     });
+    socket.on('tokenVerify', function(){
+        console.log('Received Token');
+    });
+
     socket.on('userNameSend', function(userName){
         sockets.push(socket);
         names.push(userName);
