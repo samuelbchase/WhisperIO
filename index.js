@@ -2,8 +2,8 @@ var express = require('express');
 var fs = require("fs");
 
 var options = {
-    key: fs.readFileSync('encryption/agent2-key.key'),
-    cert: fs.readFileSync('encryption/mydomain.csr')
+    key: fs.readFileSync('/encryption/agent2-key.key'),
+    cert: fs.readFileSync('/encryption/mydomain.csr')
 };
 
 var app = express();
