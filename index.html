@@ -150,10 +150,8 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
         <script>
                         socket = io();
-                        var whisperIOUser = localStorage['whisperIOUser'] || 'defaultValue';
-                        var whisperIOPassword = localStorage['whisperIOPassword'] || 'defaultValue';
+                        var whisperIOUser = sessionStorage.getItem("whisperIOUser") || 'defaultValue';
                         console.log(whisperIOUser);
-                        console.log(whisperIOPassword);
                         socket.emit('userNameSend', whisperIOUser);
                         console.log(whisperIOUser);
 

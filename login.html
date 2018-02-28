@@ -31,7 +31,18 @@
         console.log("Sending token: " + id_token);
         var person = prompt("Please enter your name. If you name includes a '-' this program will crash irreperably", "Geraldo");
         socket.emit('verifyToken',person + " - " + id_token);
+        socket.on('authSuccess', function(msg) {
+            alert("Auth Success! Hello: " + msg);
+            sessionStorage.setItem("whisperIOUser", msg);
+            window.location.href = "/main";
+        });
+
+        socket.on('authFailureAppDiscrepancy', function(msg) {
+            alert("Bad! No hacking!");
+        });
     }
+
+
 </script>
 </body>
 </html>

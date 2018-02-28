@@ -8,8 +8,6 @@ var bcrypt = require('bcrypt-nodejs');
 var scrypt = require('js-scrypt');
 var sha256 = require('sha256');
 
-const {OAuth2Client} = require('google-auth-library');
-
 var io = require('socket.io')(http);
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -154,9 +152,9 @@ io.on('connection', function(socket){
             email = email.substring(email.indexOf('"')+1, email.length);
             email = email.substring(email.indexOf('"')+1, email.length);
             email = email.substring(0, email.indexOf('"'));
-            if(aud != "1077079919608-rv3bbnguonssfdo11opre6ifugnht8v1.apps.googleusercontent.com\n")
+            if(aud !== "1077079919608-rv3bbnguonssfdo11opre6ifugnht8v1.apps.googleusercontent.com")
             {
-                //Error
+                socket.emit("authFailureAppDiscrepancy","Bad! No Hacking!");
             }
 			console.log(email);
             var hash = sha256(email);
@@ -171,17 +169,25 @@ io.on('connection', function(socket){
             var sql = "SELECT username FROM User where emailHash = '" + hash + "';";
             write.query(sql, function (err, result) {
                 if (err) throw err;
+                var output = -1;
                 if(result.length === 0)
                 {
                     var insertSQL = "INSERT INTO User (userName,emailHash) VALUES('" + name + "','" + hash + "');";
                     console.log(insertSQL);
-                    write.query(insertSQL, function(err, result) {
-                        if (err) throw err;
+                    write.query(insertSQL, function(err, res) {
+                        if (err)
+                        {
+                            throw err;
+                        }
+
                     });
                 }
                 else
                 {
-                    console.log(result);
+                    var userName = result[0].username;
+                    userName = userName.substr(0,userName.length-1);
+                    console.log(result[0].username);
+                    socket.emit("authSuccess",userName);
                 }
             });
         });
