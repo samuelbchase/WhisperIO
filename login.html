@@ -5,7 +5,9 @@
     <link rel="stylesheet" href="css/app.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <title>WhisperIO Login</title>
+	<script src="https://apis.google.com/js/platform.js" async defer></script>
+	<meta name="google-signin-client_id" content="1077079919608-rv3bbnguonssfdo11opre6ifugnht8v1.apps.googleusercontent.com">
+	<title>WhisperIO Login</title>
 </head>
 <body style="background: palevioletred">
 <!--- Need to actually encrypt userID--->
@@ -36,6 +38,8 @@
 		<div id="loginButton" onclick="createNewAccount()">Create User</div>
 	</div>
 	--->
+	<div class="g-signin2" data-onsuccess="onSignIn"></div>
+
 </div>
 <p>Your password is unsecured. This is a test site, don't give us sensitive data.</p>
 
@@ -43,14 +47,14 @@
 
     function processLogin() {
         localStorage['whisperIOUser'] = $('#user').val(); // only strings
-		if($('#user').val() !== 'Abineet' && $('#user').val() !== 'Griffin' && $('#user').val() !== 'Geraldo' && $('#user').val() !== 'Sam' && $('#user').val() !== 'Matt' && $('#user').val() !== 'Skyler') {
+		if($('#user').val() !== 'Abineet' && $('#user').val() !== 'Griffin' &&
+			$('#user').val() !== 'Geraldo' && $('#user').val() !== 'Sam' &&
+			$('#user').val() !== 'Matt' && $('#user').val() !== 'Skyler') {
             alert("Unknown Username");
 		} else {
             localStorage['whisperIOPassword'] = $('#password').val();
             window.location = '/main'
 		}
-
-
     };
 
 </script>
@@ -64,6 +68,34 @@
 		// find a way to allow a "create new user" function
 		window.location = '/main';
 	};
+
+    function onSignIn(googleUser) {
+        var profile = googleUser.getBasicProfile();
+        console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+        console.log('Name: ' + profile.getName());
+        console.log('Image URL: ' + profile.getImageUrl());
+        console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+
+        var id_token = googleUser.getAuthResponse().id_token;
+        console.log("ID Token: " + id_token);
+
+
+		/*
+        function processLogin() {
+            localStorage['whisperIOUser'] = $('#user').val(); // only strings
+            if($('#user').val() !== 'Abineet' && $('#user').val() !== 'Griffin' &&
+                $('#user').val() !== 'Geraldo' && $('#user').val() !== 'Sam' &&
+                $('#user').val() !== 'Matt' && $('#user').val() !== 'Skyler') {
+                alert("Unknown Username");
+            } else {
+                localStorage['whisperIOPassword'] = $('#password').val();
+                window.location = '/main'
+            }
+        };
+		*/
+
+
+    };
 	
 </script>
 
