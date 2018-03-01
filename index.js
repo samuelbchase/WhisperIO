@@ -109,6 +109,27 @@ io.on('connection', function(socket){
     socket.on('disconnect', function(){
         console.log('user disconnected');
     });
+
+
+    socket.on('chathistory', function (name, from, fn) {
+        //to make this better 
+        sql = "SELECT * FROM Message WHERE ('sentFrom', 'sentTo') = ('" + name + "', '" + from + "');";
+        console.log(sql);
+        read = mysql.createConnection({
+            host: host,
+            user: readUN,
+            password: readPW,
+            database: database,
+        });
+        read.query(sql, function(err, result){
+            if(err)
+                throw err; 
+            console.log(result.length + "\n"); 
+        });
+        fn(result);
+    });
+
+
     socket.on('userNameSend', function(userName){
         sockets.push(socket);
         names.push(userName);

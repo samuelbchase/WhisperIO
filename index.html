@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+yy    hyhyttgtgfty<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -36,15 +36,20 @@
                                     x.innerHTML = msg[k].Receiver;
                                     x.className += "friend";
                                     x.onclick = function() {
-
-                                        // on click removes notification toggle
+                                        //loadmessages
                                         $(this).removeClass("flash");
+                                        // on click removes notification toggle
                                         //Defines action for clicking on a friend in the list
                                         //Switches context to view the chatbox of that friend
                                         //& defines that friend as the active friend
-                                        $(this).removeClass("flash");
+
+                                        //Matt's logic for loading messages
+                                        //emit a socket call from the client to the server saying that we want the inforation in the chat history
+                                        socket.emit('chathistory', 'recieved', function(userSentFrom, userNameSend , fn) {
+                                            
+                                        }
+                                        
                                         ActiveFriend = this.id;
-                                        console.log(this);
                                         var ret = document.getElementsByClassName("chatbox");
                                         for (var i = 0; i < ret.length; i++) {
                                             document.getElementById(ret[i].id).style.visibility = "hidden"; //second console output
@@ -167,12 +172,16 @@
                             $(z).addClass("flash");
 
                             var div = document.createElement('div');
+<<<<<<< Updated upstream
                             if(userSentFrom !== ActiveFriend)
                             {
                                 $(document.getElementById(userSentFrom)).addClass('flash');
                             }
                             console.log(document.getElementById(userSentFrom));
 
+=======
+                            $(document.getElementById(userSentFrom)).addClass('flash');
+>>>>>>> Stashed changes
 
                             div.className = 'theirMessage';
                             div.textContent = message;
