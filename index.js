@@ -1,10 +1,11 @@
 var express = require('express');
 var fs = require("fs");
 
-var options = {
-    key: fs.readFileSync('/encryption/agent2-key.key'),
-    cert: fs.readFileSync('/encryption/mydomain.csr')
-};
+var privateKey  = fs.readFileSync('encryption/.private.key');
+var certificate = fs.readFileSync('encryption/.mydomain.csr');
+
+var credentials = {key: privateKey, cert: certificate};
+
 
 var app = express();
 var http = require('http').Server(app);
@@ -261,8 +262,8 @@ io.on('connection', function(socket){
 	});
 });
 
-https.createServer(options, app).listen(443);
-
+var httpsServer = https.createServer(credentials, app);
+httpsServer.listen(8443);
 http.listen(3000, function(){
     console.log('listening on *:3000');
 });
