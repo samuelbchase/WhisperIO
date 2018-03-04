@@ -241,8 +241,8 @@ io.on('connection', function(socket){
 	});
 });
 
-var httpsServer = https.createServer(credentials, app);
-httpsServer.listen(8443);
+//var httpsServer = https.createServer(credentials, app);
+//httpsServer.listen(8443);
 http.listen(3000, function(){
     console.log('listening on *:3000');
 });
