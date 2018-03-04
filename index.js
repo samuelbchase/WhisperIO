@@ -1,4 +1,5 @@
 var express = require('express');
+
 var fs = require("fs");
 
 var privateKey  = fs.readFileSync('encryption/.private.key');
@@ -18,7 +19,9 @@ var scrypt = require('js-scrypt');
 var sha256 = require('sha256');
 var request = require("request");
 
-var io = require('socket.io')(http);
+const tls = require('tls');
+//var io = require('socket.io')(http);
+var secure_socket = tls.
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -41,6 +44,14 @@ var readUN;
 var readPW;
 var writeUN;
 var writePW;
+
+const server = tls.createServer(options, (socket) => {
+    console.log('server connected',
+        socket.authorized ? 'authorized' : 'unauthorized');
+    socket.write('welcome!\n');
+    socket.setEncoding('utf8');
+    socket.pipe(socket);
+});
 
 //use this for opening a file for the read and write passwords for the DB	
 //PLEASE DON'T MESS WITH THIS FUNCTION OR .info.txt! IT WILL SCREW UP THE DATABASE QUERYS
@@ -132,6 +143,7 @@ io.on('connection', function(socket){
 		read.end();
     });
 
+    //catch verifyToken event emitted on google login
     socket.on('verifyToken', function(token){
         console.log("token: " + token);
         var options = { method: 'GET',
@@ -142,8 +154,11 @@ io.on('connection', function(socket){
                     'Cache-Control': 'no-cache' } };
 
         request(options, function (error, response, body) {
+            //parse request body
             if (error) throw new Error(error);
 			body2 = JSON.parse(JSON.stringify(body));
+
+			//parse body for API key
             var audLocation = body.indexOf('aud'); // => 18
             var aud = body.substring(audLocation, body.length);
             aud = aud.substring(aud.indexOf('"'), aud.length);
@@ -151,6 +166,7 @@ io.on('connection', function(socket){
             aud = aud.substring(aud.indexOf('"')+1, aud.length);
             aud = aud.substring(0, aud.indexOf('"'));
 
+            //parse body for user email
             var emailLocation = body2.indexOf('email'); // => 18
             var email = body.substring(emailLocation, body.length);
             email = email.substring(email.indexOf('"'), email.length);
@@ -172,13 +188,17 @@ io.on('connection', function(socket){
                 database: database,
             });
             var sql = "SELECT username FROM User where emailHash = '" + hash + "';";
+            //if user doesn't exist add them
             write.query(sql, function (err, result) {
                 if (err) throw err;
                 var output = -1;
                 if(result.length === 0)
                 {
+                    //emit unknownPerson request for first time user account creation on the front end
                     socket.emit("unknownPerson","whoU");
+                    //handle new user info emitted from the front end
                     socket.on('identifyMyself', function (whoIAm) {
+                        //add the new user to the database
                         var insertSQL = "INSERT INTO User (userName,emailHash) VALUES('" + whoIAm + "','" + hash + "');";
                         write.query(insertSQL, function(err, result) {
                             if (err) throw err;
@@ -186,6 +206,7 @@ io.on('connection', function(socket){
                         socket.emit("authSuccessNewUser",whoIAm);
                     });
                 }
+                //if user exists, authenticate them
                 else
                 {
                     var userName = result[0].username;
@@ -243,6 +264,14 @@ io.on('connection', function(socket){
 
 //var httpsServer = https.createServer(credentials, app);
 //httpsServer.listen(8443);
-http.listen(3000, function(){
+
+/*http.listen(3000, function(){
     console.log('listening on *:3000');
+});*/
+
+
+server.listen(8000, () => {
+    console.log('server bound');
 });
+
+
