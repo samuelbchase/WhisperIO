@@ -1,4 +1,4 @@
-var express = require('express');
+/*var express = require('express');
 
 var fs = require("fs");
 
@@ -23,7 +23,35 @@ const tls = require('tls');
 //var io = require('socket.io')(http);
 var secure_socket = tls.
 
+app.use(express.static(path.join(__dirname, 'public')));*/
+
+////////////////////////////////////////////////////////////////////
+var express = require('express');
+var fs = require("fs");
+
+var privateKey  = fs.readFileSync('encryption/.private.key');
+var certificate = fs.readFileSync('encryption/.mydomain.csr');
+
+var credentials = {key: privateKey, cert: certificate};
+
+
+var app = express();
+var http = require('http').Server(app);
+var https = require('https');
+var path = require('path');
+var http = require('http').Server(app);
+var mysql = require('mysql');
+var bcrypt = require('bcrypt-nodejs');
+var scrypt = require('js-scrypt');
+var sha256 = require('sha256');
+var request = require("request");
+
+var io = require('socket.io')(http);
+
+const tls = require('tls');
+
 app.use(express.static(path.join(__dirname, 'public')));
+/////////////////////////////////////////////////////////////////////
 
 app.get('/main', function(req, res){
     res.sendFile(__dirname + '/index.html');
@@ -76,14 +104,14 @@ fs.readFile('.info.txt', 'utf8', function(err, contents){
 });
 
 const options = {
-    key: fs.readFileSync('server-key.pem'),
-    cert: fs.readFileSync('server-cert.pem'),
+    key: fs.readFileSync('./keys/server.key'),
+    cert: fs.readFileSync('./keys/server.crt'),
 
     // This is necessary only if using the client certificate authentication.
     requestCert: true,
 
     // This is necessary only if the client uses the self-signed certificate.
-    ca: [ fs.readFileSync('client-cert.pem') ]
+    ca: fs.readFileSync('./keys/ca.crt')
 };
 
 //listener function is listener for 'secureConnection' event
