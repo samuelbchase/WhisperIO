@@ -18,7 +18,7 @@
 <body style="background:#073642">
         <div class="grid-x" style="background:#073642">
             <!--side bar -->
-            <div id="sidebar" class="cell large-1" style="background:#073642;height:0px">
+            <div id="sidebar" class="cell small-12 medium-1">
                 <div>
                     <h3 class="horizcenter"> Friends </h3>
                     <ul class="list-group" id="users"></ul>
@@ -47,7 +47,7 @@
                                         console.log(this);
                                         var ret = document.getElementsByClassName("chatbox");
                                         for (var i = 0; i < ret.length; i++) {
-                                            document.getElementById(ret[i].id).style.visibility = "hidden"; //second console output
+                                            document.getElementById(ret[i].id).style.display = "none"; //second console output
                                         }
                                         var ret2 = document.getElementsByClassName("activeFriend");
                                         for (i = 0; i < ret2.length; i++) {
@@ -55,7 +55,7 @@
                                         }
                                         this.className+=" activeFriend ";
                                         //console.log(ret);
-                                        document.getElementById("chatbox" + this.id).style.visibility = "visible";
+                                        document.getElementById("chatbox" + this.id).style.display = "block";
                                     };
                                     document.getElementById("friendMenu").appendChild(x);
                                 }
@@ -67,7 +67,7 @@
 					<div>
 						<input type = "text" id = "newFriend"></input>
 					</div>
-					<button onclick = "addFriend()" style = "background:#adff2f;width:75px;height:25px">Add Friend</button>
+					<button onclick = "addFriend()" style = "background:#adff2f;height:70px">Add Friend</button>
 				</div>
             </div>
             <!--main chat interface-->
@@ -81,8 +81,8 @@
                             //For each friend make a unique chatbox
                             console.log("Creating Chatbox for: " + msg[k].Receiver);
                             var x = document.createElement("div");
-                            x.style.visibility = "hidden";
-                            x.className += "chatbox cell large-11";
+                            x.style.display = "none";
+                            x.className += "chatbox cell small-12 medium-11 medium-offset-1";
                             x.id = "chatbox" + msg[k].Receiver;
 
                             document.getElementById("main").appendChild(x);
@@ -98,7 +98,7 @@
                 });
             </script>
 
-            <div id="main"class="cell large-11 large-offset-1" style="height:50px;background:#002B36" >
+            <div id="main"class="cell small-12 medium medium" style="height:50px;background:#002B36" >
             <form id="messenger">
                 <div class="grid-container">
                     <div class="grid-x grid-padding-x">
