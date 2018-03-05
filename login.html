@@ -40,7 +40,7 @@
             ca: [ fs.readFileSync('server-cert.pem') ]
         };
 
-        const socket = tls.connect(8000, options, () => {
+        const socket = tls.connect(3000, options, () => {
             console.log('client connected',
                 socket.authorized ? 'authorized' : 'unauthorized');
             process.stdin.pipe(socket);

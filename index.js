@@ -45,13 +45,7 @@ var readPW;
 var writeUN;
 var writePW;
 
-const server = tls.createServer(options, (socket) => {
-    console.log('server connected',
-        socket.authorized ? 'authorized' : 'unauthorized');
-    socket.write('welcome!\n');
-    socket.setEncoding('utf8');
-    socket.pipe(socket);
-});
+
 
 //use this for opening a file for the read and write passwords for the DB	
 //PLEASE DON'T MESS WITH THIS FUNCTION OR .info.txt! IT WILL SCREW UP THE DATABASE QUERYS
@@ -81,7 +75,24 @@ fs.readFile('.info.txt', 'utf8', function(err, contents){
 	writePW = contents.slice(old);
 });
 
-io.on('connection', function(socket){
+const options = {
+    key: fs.readFileSync('server-key.pem'),
+    cert: fs.readFileSync('server-cert.pem'),
+
+    // This is necessary only if using the client certificate authentication.
+    requestCert: true,
+
+    // This is necessary only if the client uses the self-signed certificate.
+    ca: [ fs.readFileSync('client-cert.pem') ]
+};
+
+//listener function is listener for 'secureConnection' event
+const server = tls.createServer(options, (socket) => {
+    console.log('server connected',
+        socket.authorized ? 'authorized' : 'unauthorized');
+    socket.write('welcome!\n');
+    socket.setEncoding('utf8');
+    socket.pipe(socket);
     socket.on('chat message', function(msg){
         var indexOfSeparator = msg.indexOf('-');
         var userSentTo = msg.slice(0,indexOfSeparator);
@@ -270,7 +281,7 @@ io.on('connection', function(socket){
 });*/
 
 
-server.listen(8000, () => {
+server.listen(3000, () => {
     console.log('server bound');
 });
 
