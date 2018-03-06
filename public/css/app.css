@@ -5,22 +5,24 @@
     font-family: 'Roboto', sans-serif;
     color:#A082BD;
 }
-.noise {
-    background-image: url(https://c1.staticflickr.com/1/177/419640051_d263859fb7_o.jpg);
-}
+
 .form-group{
     background-color:#D33682;
 }
 body{
-    overflow-y:hidden;
     overflow-x:hidden;
 }
+#sidebar{
+    background:#073642;
+    height:100vh;
+}
+
 .chatbox{
      background:#002B36;
      height:calc(100vh - 55px);
      overflow-y: scroll;
-     position:absolute;
      max-width: 93vw;
+    position:static;
     border: gold 1px solid;
     box-shadow: 2px 4px;
 }
@@ -80,7 +82,6 @@ div ul li:hover {
 div ul li {
     color:black;
     padding-left:10px;
-
 }
 .yourMessage {
     background-color:violet;
