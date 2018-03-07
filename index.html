@@ -18,7 +18,7 @@
 <body style="background:#073642">
         <div class="grid-x" style="background:#073642">
             <!--side bar -->
-            <div id="sidebar" class="cell small-12 medium-1">
+            <div id="sidebar" class="cell medium-12 large-1">
                 <div>
                     <h3 class="horizcenter"> Friends </h3>
                     <ul class="list-group" id="users"></ul>
@@ -82,7 +82,7 @@
                             console.log("Creating Chatbox for: " + msg[k].Receiver);
                             var x = document.createElement("div");
                             x.style.display = "none";
-                            x.className += "chatbox cell small-12 medium-11";
+                            x.className += "chatbox cell medium-12 large-11";
                             x.id = "chatbox" + msg[k].Receiver;
 
                             document.getElementById("main").appendChild(x);
@@ -98,11 +98,11 @@
                 });
             </script>
 
-            <div id="main"class="cell small-12 medium-11" style="height:50px;background:#002B36" >
+            <div id="main"class="cell medium-12 large-11" style="height:50px;background:#002B36" >
             <form id="messenger">
                 <div class="grid-container">
                     <div class="grid-x grid-padding-x">
-                        <div class="medium-6 cell">
+                        <div class="large-6 cell">
                             <label>
                                 <input id="messageSender" type="text" placeholder="Send a Message">
                             </label>
