@@ -37,11 +37,13 @@
         socket.on('authSuccess', function(msg) {
             alert("Auth Success! Hello: " + msg);
             sessionStorage.setItem("whisperIOUser", msg);
+			socket.emit('userLogin', msg);
             window.location.href = "/main";
         });
         socket.on('authSuccessNewUser', function(msg) {
             alert("Auth Success! Thank you for joining Whisper.io, " + msg);
             sessionStorage.setItem("whisperIOUser", msg);
+			socket.emit('userLogin', msg);
             window.location.href = "/main";
         });
 

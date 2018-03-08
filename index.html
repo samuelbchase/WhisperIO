@@ -35,6 +35,7 @@
                                     x.id = msg[k].Receiver;
                                     x.innerHTML = msg[k].Receiver;
                                     x.className += "friend";
+									socket.emit('isOnline', msg[k].Receiver);
                                     x.onclick = function() {
 
                                         // on click removes notification toggle
@@ -186,9 +187,34 @@
 			function addFriend() {
 				console.log("adding friend");
 				var addedFriend = $('#newFriend').val();
-				socket.emit('addFriend', whisperIOUser, addedFriend	);
+				var isAdded;
+				socket.emit('addFriend', whisperIOUser, addedFriend);
+
+				socket.on('addFriendResult', function(result){
+                    if (result == 1)
+                        alert(addedFriend + " has been added as a friend!");
+                    else if (result == 0)
+                        alert(addedFriend + " was not added as a friend: User does not exist");
+                    else
+                        alert(addedFriend + " was not added as a friend: User is already a friend");
+                    window.location.href = "./main";
+                });
 			}
 		</script>
+
+        <script>
+            socket.on('isOnlineResult', doStuff);
+
+            function doStuff(status, friendName) {
+                var onlineStatus;
+                var x = document.getElementById(friendName);
+                if (status == true)
+                    x.className += " online ";
+
+                else
+                    x.className += " offline ";
+            }
+        </script>
 
 
 
