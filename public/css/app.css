@@ -41,6 +41,14 @@ body{
     user-select:none;
 }
 
+.online {
+    background:dodgerblue;
+}
+
+.offline {
+    background:lightgrey;
+}
+
 .activeFriend {
     background-color:gold;
     box-shadow: 2px 4px;
