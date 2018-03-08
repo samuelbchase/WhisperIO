@@ -71,18 +71,32 @@ fs.readFile('.info.txt', 'utf8', function(err, contents){
 });
 
 io.on('connection', function(socket){
+	socket.on('userLogin', function(username){
+        write = mysql.createConnection({
+            host: host,
+            user: writeUN,
+            password: writePW,
+            database: database,
+        });
+
+        sql = "UPDATE User SET isOnline='Y' WHERE username='" + username + "';";
+        write.query(sql, function(err) {
+            if (err) throw err;
+        });
+    });
+	
     socket.on('chat message', function(msg){
         var indexOfSeparator = msg.indexOf('-');
         var userSentTo = msg.slice(0,indexOfSeparator);
         var message = msg.slice(indexOfSeparator+1);
         console.log('message: ' + message);
         console.log('Was set to: ' + userSentTo);
-	write = mysql.createConnection({
-		host: host,
-		user: writeUN,
-		password: writePW,
-		database: database,
-	});
+		write = mysql.createConnection({
+			host: host,
+			user: writeUN,
+			password: writePW,
+			database: database,
+		});
         var name = "Unknown";
         for(var i = 0; i < sockets.length;i++)
         {
@@ -108,7 +122,17 @@ io.on('connection', function(socket){
         console.log("----------------------------");
     });
     socket.on('disconnect', function(){
-        console.log('user disconnected');
+        write = mysql.createConnection({
+            host: host,
+            user: writeUN,
+            password: writePW,
+            database: database,
+        });
+
+        sql = "UPDATE User SET isOnline='N' WHERE username='" + this.id + "';";
+        write.query(sql, function(err) {
+            if (err) throw err;
+        });
     });
     socket.on('userNameSend', function(userName){
         sockets.push(socket);
@@ -189,7 +213,7 @@ io.on('connection', function(socket){
                 else
                 {
                     var userName = result[0].username;
-                    userName = userName.substr(0,userName.length-1);
+                    userName = userName.substr(0,userName.length);
                     console.log(result[0].username);
                     socket.emit("authSuccess",userName);
                 }
@@ -197,8 +221,28 @@ io.on('connection', function(socket){
         });
 
     });
+	
+	socket.on('isOnline', function(user) {
+        var sql = "SELECT isOnline FROM User WHERE username='" + user + "';";
 
-	//Add Friend button is pushed; called by currentUser adding friendToAdd
+        var isOnline;
+        read = mysql.createConnection({
+            host: host,
+            user: readUN,
+            password: readPW,
+            database: database,
+        });
+
+        read.query(sql, function(err, result) {
+           if (err) throw err;
+           if (result[0].isOnline == 'Y')
+               socket.emit('isOnlineResult', true, user);
+           else
+               socket.emit('isOnlineResult', false, user);
+        });
+    });
+
+    //Add Friend button is pushed; called by currentUser adding friendToAdd
 	socket.on('addFriend', function (currentUser, friendToAdd) {
 		console.log("Adding " + friendToAdd + " for " + currentUser + " as a friend");
 		read = mysql.createConnection({
@@ -216,7 +260,7 @@ io.on('connection', function(socket){
 			{
 				console.log("New friend!");
 				
-				sql = "SELECT * FROM User WHERE username = \"" + friendToAdd + "\";"
+				sql = "SELECT * FROM User WHERE username = \"" + friendToAdd + "\";";
 				read.query(sql, function(err, result) {	
 					if (err) throw err;
 					if (result.length > 0)	// make sure that the friend you're adding actually exists
@@ -227,16 +271,23 @@ io.on('connection', function(socket){
 							password: writePW,
 							database: database,
 						});
-						sql = "INSERT INTO Friends (Host, Receiver) VALUES ('" + currentUser + "', '" + friendToAdd + "');"
+						sql = "INSERT INTO Friends (Host, Receiver) VALUES ('" + currentUser + "', '" + friendToAdd + "');";
 						write.query(sql, function(err, result) {
 							if (err) throw err;
 						});
+						console.log(friendToAdd + " was added");
+                        socket.emit('addFriendResult', 1);
 					}
-					else
-						console.log("User does not exist!");
+					else {
+                        console.log("User does not exist!");
+                        socket.emit('addFriendResult', 0);
+					}
 				});
 			}
-			else console.log("Friend already exists");
+			else {
+                console.log("Friend already exists")
+                socket.emit('addFriendResult', -1);
+            }
 		});
 	});
 });
