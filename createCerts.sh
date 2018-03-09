@@ -25,7 +25,7 @@ PATH_TMP=$ROOTPATH/certs/tmp
 openssl genrsa -des3 -passout pass:$PASSWORD -out $PATH_TMP/ca.key $RSABITS
 
 # Create Authority Certificate
-openssl req -new -x509 -days 365 -key $PATH_TMP/ca.key -out $PATH_CA/ca.crt -passin pass:$PASSWORD -subj "/C=FR/ST=./L=./O=ACME Signing Authority Inc/CN=."
+openssl req -new -x509 -days 365 -key $PATH_TMP/ca.key -out $PATH_CA/ca.crt -passin pass:$PASSWORD -subj "/C=US/ST=./L=./O=ACME Signing Authority Inc/CN=."
 
 ##########
 # SERVER #
@@ -35,7 +35,7 @@ openssl req -new -x509 -days 365 -key $PATH_TMP/ca.key -out $PATH_CA/ca.crt -pas
 openssl genrsa -out $PATH_SERVER/server.key $RSABITS
 
 # Generate server cert
-openssl req -new -key $PATH_SERVER/server.key -out $PATH_TMP/server.csr -passout pass:$PASSWORD -subj "/C=FR/ST=./L=./O=ACME Signing Authority Inc/CN=$FQDN"
+openssl req -new -key $PATH_SERVER/server.key -out $PATH_TMP/server.csr -passout pass:$PASSWORD -subj "/C=US/ST=./L=./O=ACME Signing Authority Inc/CN=$FQDN"
 
 # Sign server cert with self-signed cert
 openssl x509 -req -days 365 -passin pass:$PASSWORD -in $PATH_TMP/server.csr -CA $PATH_CA/ca.crt -CAkey $PATH_TMP/ca.key -set_serial 01 -out $PATH_SERVER/server.crt
@@ -46,7 +46,7 @@ openssl x509 -req -days 365 -passin pass:$PASSWORD -in $PATH_TMP/server.csr -CA 
 
 openssl genrsa -out $PATH_CLIENT/client.key $RSABITS
 
-openssl req -new -key $PATH_CLIENT/client.key -out $PATH_TMP/client.csr -passout pass:$PASSWORD -subj "/C=FR/ST=./L=./O=ACME Signing Authority Inc/CN=CLIENT"
+openssl req -new -key $PATH_CLIENT/client.key -out $PATH_TMP/client.csr -passout pass:$PASSWORD -subj "/C=US/ST=./L=./O=ACME Signing Authority Inc/CN=CLIENT"
 
 openssl x509 -req -days 365 -passin pass:$PASSWORD -in $PATH_TMP/client.csr -CA $PATH_CA/ca.crt -CAkey $PATH_TMP/ca.key -set_serial 01 -out $PATH_CLIENT/client.crt
 

@@ -104,15 +104,14 @@ fs.readFile('.info.txt', 'utf8', function(err, contents){
 });
 
 const options = {
-    key: fs.readFileSync('./keys/server.key'),
-    cert: fs.readFileSync('./keys/server.crt'),
-
-    // This is necessary only if using the client certificate authentication.
-    requestCert: true,
-
-    // This is necessary only if the client uses the self-signed certificate.
-    ca: fs.readFileSync('./keys/ca.crt')
+   // Necessary only if using the client certificate authentication
+   key: fs.readFileSync('./certs/server-key.pem'),
+   cert: fs.readFileSync('./certs/server-cert.pem'),
+   requestCert: true,
+   // Necessary only if the server uses the self-signed certificate
+   ca: fs.readFileSync('./certs/client-cert.pem')
 };
+
 
 //listener function is listener for 'secureConnection' event
 const server = tls.createServer(options, (socket) => {
@@ -299,6 +298,11 @@ const server = tls.createServer(options, (socket) => {
 			else console.log("Friend already exists");
 		});
 	});
+});
+
+server.on("connection", (socket)=> {
+   //console.log("socket: ", socket);
+   console.log("connection event caught");
 });
 
 //var httpsServer = https.createServer(credentials, app);

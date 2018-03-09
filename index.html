@@ -149,7 +149,26 @@
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
         <script>
-                        socket = io();
+
+
+           var hostname = 'localhost';
+           var port = 3000;
+
+                       const options = {
+                          host: hostname,
+                          port: port,
+
+                          // Necessary only if using the client certificate authentication
+                          key: fs.readFileSync('certs/client-key.pem'),
+                          cert: fs.readFileSync('certs/client-cert.pem'),
+
+                          // Necessary only if the server uses the self-signed certificate
+                          ca: fs.readFileSync('certs/server-cert.pem')
+                       };
+
+                        const socket = tls.connect(options);
+
+
                         var whisperIOUser = sessionStorage.getItem("whisperIOUser") || 'defaultValue';
                         console.log(whisperIOUser);
                         socket.emit('userNameSend', whisperIOUser);

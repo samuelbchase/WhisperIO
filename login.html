@@ -31,27 +31,39 @@
 
         //socket = io();
 
+        var hostname = 'localhost';
+        var port = 3000;
+
         const options = {
+            host: hostname,
+            port: port,
+
             // Necessary only if using the client certificate authentication
-            key: fs.readFileSync('./keys/client.key'),
-            cert: fs.readFileSync('./keys/client.crt'),
+            key: fs.readFileSync('./certs/client-key.pem'),
+            cert: fs.readFileSync('./certs/client-cert.pem'),
 
             // Necessary only if the server uses the self-signed certificate
-            ca: fs.readFileSync('./keys/ca.crt')
+            ca: fs.readFileSync('./certs/server-cert.pem')
         };
 
-        const socket = tls.connect(3000, options, () => {
+
+        const socket = tls.connect(options, () => {
             console.log('client connected',
                 socket.authorized ? 'authorized' : 'unauthorized');
             process.stdin.pipe(socket);
             process.stdin.resume();
         });
-            socket.setEncoding('utf8');
-            socket.on('data', (data) => {
-                console.log(data);
+
+        socket.setEncoding('utf8');
+
+        socket.on('data', (data) => {
+            console.log("socket data event");
+            console.log(data);
         });
-            socket.on('end', () => {
-                server.close();
+
+        socket.on('end', () => {
+            console.log("socket data event");
+            server.close();
         });
 
         console.log("Sending token: " + id_token);
@@ -59,6 +71,7 @@
         //emit token to back end
         socket.emit('verifyToken',id_token);
 
+        socket.emit('secureConnection');
         //handler for first time user account creation
         socket.on('unknownPerson', function(unknownPerson) {
             var person = prompt("We are now making you an account. Please enter your name. If you name includes a '-' this program will crash irreperably", "Geraldo");
