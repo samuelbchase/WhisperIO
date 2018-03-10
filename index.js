@@ -29,20 +29,12 @@ app.use(express.static(path.join(__dirname, 'public')));*/
 var express = require('express');
 var fs = require("fs");
 
-var privateKey  = fs.readFileSync('encryption/.private.key');
-var certificate = fs.readFileSync('encryption/.mydomain.csr');
-
-var credentials = {key: privateKey, cert: certificate};
-
-
 var app = express();
 var http = require('http').Server(app);
 var https = require('https');
 var path = require('path');
 var http = require('http').Server(app);
 var mysql = require('mysql');
-var bcrypt = require('bcrypt-nodejs');
-var scrypt = require('js-scrypt');
 var sha256 = require('sha256');
 var request = require("request");
 
@@ -102,25 +94,22 @@ fs.readFile('.info.txt', 'utf8', function(err, contents){
 	index = contents.indexOf('|', old);
 	writePW = contents.slice(old);
 });
+var sslPath = "certs/"
 
-const options = {
-   // Necessary only if using the client certificate authentication
-   key: fs.readFileSync('./certs/server-key.pem'),
-   cert: fs.readFileSync('./certs/server-cert.pem'),
-   requestCert: true,
-   // Necessary only if the server uses the self-signed certificate
-   ca: fs.readFileSync('./certs/client-cert.pem')
+var options = {
+    key: fs.readFileSync(sslPath + 'privkey.pem'),
+    cert: fs.readFileSync(sslPath + 'fullchain.pem')
 };
+var server = https.createServer(options, app);
+var io = require('socket.io')(server);
+
+server.listen(3000, function() {
+    console.log('server up and running at %s port', 3000);
+});
 
 
 //listener function is listener for 'secureConnection' event
-const server = tls.createServer(options, (socket) => {
-    console.log('server connected',
-        socket.authorized ? 'authorized' : 'unauthorized');
-    socket.write('welcome!\n');
-    socket.setEncoding('utf8');
-    socket.pipe(socket);
-    socket.on('chat message', function(msg){
+    io.sockets.on('chat message', function(msg){
         var indexOfSeparator = msg.indexOf('-');
         var userSentTo = msg.slice(0,indexOfSeparator);
         var message = msg.slice(indexOfSeparator+1);
@@ -156,10 +145,16 @@ const server = tls.createServer(options, (socket) => {
         });
         console.log("----------------------------");
     });
-    socket.on('disconnect', function(){
+    io.sockets.on('disconnect', function(){
         console.log('user disconnected');
     });
-    socket.on('userNameSend', function(userName){
+    io.sockets.on('connection', function(userName) {
+        console.log("User connected");
+    });
+io.on('connection2', function(userName) {
+    console.log("User connected2");
+});
+    io.sockets.on('userNameSend', function(userName){
         sockets.push(socket);
         names.push(userName);
         socket.id = userName;
@@ -182,7 +177,7 @@ const server = tls.createServer(options, (socket) => {
     });
 
     //catch verifyToken event emitted on google login
-    socket.on('verifyToken', function(token){
+    io.sockets.on('verifyToken', function(token){
         console.log("token: " + token);
         var options = { method: 'GET',
             url: 'https://www.googleapis.com/oauth2/v3/tokeninfo',
@@ -235,7 +230,7 @@ const server = tls.createServer(options, (socket) => {
                     //emit unknownPerson request for first time user account creation on the front end
                     socket.emit("unknownPerson","whoU");
                     //handle new user info emitted from the front end
-                    socket.on('identifyMyself', function (whoIAm) {
+                    io.sockets.on('identifyMyself', function (whoIAm) {
                         //add the new user to the database
                         var insertSQL = "INSERT INTO User (userName,emailHash) VALUES('" + whoIAm + "','" + hash + "');";
                         write.query(insertSQL, function(err, result) {
@@ -258,7 +253,7 @@ const server = tls.createServer(options, (socket) => {
     });
 
 	//Add Friend button is pushed; called by currentUser adding friendToAdd
-	socket.on('addFriend', function (currentUser, friendToAdd) {
+	io.sockets.on('addFriend', function (currentUser, friendToAdd) {
 		console.log("Adding " + friendToAdd + " for " + currentUser + " as a friend");
 		read = mysql.createConnection({
 			host: host,
@@ -298,23 +293,11 @@ const server = tls.createServer(options, (socket) => {
 			else console.log("Friend already exists");
 		});
 	});
-});
-
-server.on("connection", (socket)=> {
-   //console.log("socket: ", socket);
-   console.log("connection event caught");
-});
-
 //var httpsServer = https.createServer(credentials, app);
 //httpsServer.listen(8443);
 
 /*http.listen(3000, function(){
     console.log('listening on *:3000');
 });*/
-
-
-server.listen(3000, () => {
-    console.log('server bound');
-});
 
 
