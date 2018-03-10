@@ -72,10 +72,10 @@ fs.readFile('.info.txt', 'utf8', function(err, contents){
 
 io.on('connection', function(socket){
 	socket.on('userLogin', function(username){
-        alter = mysql.createConnection({
+        write = mysql.createConnection({
             host: host,
-            user: "updateWhisper",
-            password:"Powerade Zero 42",
+            user: writeUN,
+            password: writePW,
             database: database,
         });
 
@@ -122,7 +122,17 @@ io.on('connection', function(socket){
         console.log("----------------------------");
     });
     socket.on('disconnect', function(){
-        console.log('user disconnected');
+        write = mysql.createConnection({
+            host: host,
+            user: writeUN,
+            password: writePW,
+            database: database,
+        });
+
+        sql = "UPDATE User SET isOnline='N' WHERE username='" + this.id + "';";
+        write.query(sql, function(err) {
+            if (err) throw err;
+        });
     });
 
 
