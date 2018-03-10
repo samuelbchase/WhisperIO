@@ -1,4 +1,4 @@
-yy    hyhyttgtgfty<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -14,6 +14,7 @@ yy    hyhyttgtgfty<!DOCTYPE html>
     var ActiveFriend;
     //the global socket
     var socket;
+    var userName; 
 </script>
 <body style="background:#073642">
         <div class="grid-x" style="background:#073642">
@@ -46,11 +47,33 @@ yy    hyhyttgtgfty<!DOCTYPE html>
 
                                         //Matt's logic for loading messages
                                         //emit a socket call from the client to the server saying that we want the inforation in the chat history
-                                        socket.emit('chathistory', 'recieved', function(userSentFrom, userNameSend , fn) {
-                                            
-                                        }
-                                        
+
+
                                         ActiveFriend = this.id;
+                                        socket.emit('chathistory', userName, ActiveFriend);
+                                           
+
+                                        socket.on('messageHistory', (history) => {
+                                            var numItems = $('.chatbox + ActiveFriend').length;
+                                            console.log(numItems);
+
+                                            if(numItems < history.length)
+                                            {
+                                                for(x in history) {
+                                                    var div = document.createElement('div');
+                                                    if(ActiveFriend == history[x].SentFrom) {
+                                                        div.className = 'theirMessage';
+                                                    }
+                                                    else {
+                                                        div.className = 'yourMessage';
+                                                    }
+                                                    div.textContent = history[x].Message;
+                                                    document.getElementById("chatbox" + ActiveFriend).appendChild(div);
+                                                }
+                                            }
+                                            
+                                        });
+
                                         var ret = document.getElementsByClassName("chatbox");
                                         for (var i = 0; i < ret.length; i++) {
                                             document.getElementById(ret[i].id).style.display = "none"; //second console output
@@ -158,6 +181,7 @@ yy    hyhyttgtgfty<!DOCTYPE html>
                         socket = io();
                         var whisperIOUser = sessionStorage.getItem("whisperIOUser") || 'defaultValue';
                         console.log(whisperIOUser);
+                        userName = whisperIOUser;
                         socket.emit('userNameSend', whisperIOUser);
                         console.log(whisperIOUser);
 
@@ -173,16 +197,11 @@ yy    hyhyttgtgfty<!DOCTYPE html>
                             $(z).addClass("flash");
 
                             var div = document.createElement('div');
-<<<<<<< Updated upstream
                             if(userSentFrom !== ActiveFriend)
                             {
                                 $(document.getElementById(userSentFrom)).addClass('flash');
                             }
                             console.log(document.getElementById(userSentFrom));
-
-=======
-                            $(document.getElementById(userSentFrom)).addClass('flash');
->>>>>>> Stashed changes
 
                             div.className = 'theirMessage';
                             div.textContent = message;
