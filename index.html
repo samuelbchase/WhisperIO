@@ -155,7 +155,12 @@ yy    hyhyttgtgfty<!DOCTYPE html>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
         <script>
-                        socket = io();
+
+
+            var URL_SERVER = 'https://localhost:3000';
+            var socket = io.connect(URL_SERVER);
+            socket.setEncoding('utf8');
+
                         var whisperIOUser = sessionStorage.getItem("whisperIOUser") || 'defaultValue';
                         console.log(whisperIOUser);
                         socket.emit('userNameSend', whisperIOUser);
