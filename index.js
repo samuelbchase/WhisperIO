@@ -342,9 +342,6 @@ io.on('connection', function(socket) {
             else console.log("Friend already exists");
         });
     });
-            database: database,
-        });
-
         read.query(sql, function(err, result) {
            if (err) throw err;
            if (result[0].isOnline == 'Y')
@@ -404,6 +401,5 @@ io.on('connection', function(socket) {
 	});
 });
 
-});
 //var httpsServer = https.createServer(credentials, app);
 //httpsServer.listen(8443);
