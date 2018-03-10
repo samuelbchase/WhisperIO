@@ -183,6 +183,7 @@ io.on('connection', function(socket){
             email = email.substring(0, email.indexOf('"'));
             if(aud !== "521002119514-k8kp3p42fpoq7ia5868k9s9e62bj87n3.apps.googleusercontent.com")
             {
+                //If you're attempting to login with a token for another app
                 socket.emit("authFailureAppDiscrepancy","Bad! No Hacking!");
             }
 			console.log(email);
