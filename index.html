@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+yy    hyhyttgtgfty<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -18,7 +18,7 @@
 <body style="background:#073642">
         <div class="grid-x" style="background:#073642">
             <!--side bar -->
-            <div id="sidebar" class="cell large-1" style="background:#073642;height:0px">
+            <div id="sidebar" class="cell medium-12 large-1">
                 <div>
                     <h3 class="horizcenter"> Friends </h3>
                     <ul class="list-group" id="users"></ul>
@@ -35,19 +35,25 @@
                                     x.id = msg[k].Receiver;
                                     x.innerHTML = msg[k].Receiver;
                                     x.className += "friend";
+									socket.emit('isOnline', msg[k].Receiver);
                                     x.onclick = function() {
-
-                                        // on click removes notification toggle
+                                        //loadmessages
                                         $(this).removeClass("flash");
+                                        // on click removes notification toggle
                                         //Defines action for clicking on a friend in the list
                                         //Switches context to view the chatbox of that friend
                                         //& defines that friend as the active friend
-                                        $(this).removeClass("flash");
+
+                                        //Matt's logic for loading messages
+                                        //emit a socket call from the client to the server saying that we want the inforation in the chat history
+                                        socket.emit('chathistory', 'recieved', function(userSentFrom, userNameSend , fn) {
+                                            
+                                        }
+                                        
                                         ActiveFriend = this.id;
-                                        console.log(this);
                                         var ret = document.getElementsByClassName("chatbox");
                                         for (var i = 0; i < ret.length; i++) {
-                                            document.getElementById(ret[i].id).style.visibility = "hidden"; //second console output
+                                            document.getElementById(ret[i].id).style.display = "none"; //second console output
                                         }
                                         var ret2 = document.getElementsByClassName("activeFriend");
                                         for (i = 0; i < ret2.length; i++) {
@@ -55,7 +61,7 @@
                                         }
                                         this.className+=" activeFriend ";
                                         //console.log(ret);
-                                        document.getElementById("chatbox" + this.id).style.visibility = "visible";
+                                        document.getElementById("chatbox" + this.id).style.display = "block";
                                     };
                                     document.getElementById("friendMenu").appendChild(x);
                                 }
@@ -67,7 +73,7 @@
 					<div>
 						<input type = "text" id = "newFriend"></input>
 					</div>
-					<button onclick = "addFriend()" style = "background:#adff2f;width:75px;height:25px">Add Friend</button>
+					<button onclick = "addFriend()" style = "background:#adff2f;height:70px">Add Friend</button>
 				</div>
             </div>
             <!--main chat interface-->
@@ -81,8 +87,8 @@
                             //For each friend make a unique chatbox
                             console.log("Creating Chatbox for: " + msg[k].Receiver);
                             var x = document.createElement("div");
-                            x.style.visibility = "hidden";
-                            x.className += "chatbox cell large-11";
+                            x.style.display = "none";
+                            x.className += "chatbox cell medium-12 large-11";
                             x.id = "chatbox" + msg[k].Receiver;
 
                             document.getElementById("main").appendChild(x);
@@ -98,11 +104,11 @@
                 });
             </script>
 
-            <div id="main"class="cell large-11 large-offset-1" style="height:50px;background:#002B36" >
+            <div id="main"class="cell medium-12 large-11" style="height:50px;background:#002B36" >
             <form id="messenger">
                 <div class="grid-container">
                     <div class="grid-x grid-padding-x">
-                        <div class="medium-6 cell">
+                        <div class="large-6 cell">
                             <label>
                                 <input id="messageSender" type="text" placeholder="Send a Message">
                             </label>
@@ -172,12 +178,16 @@
                             $(z).addClass("flash");
 
                             var div = document.createElement('div');
+<<<<<<< Updated upstream
                             if(userSentFrom !== ActiveFriend)
                             {
                                 $(document.getElementById(userSentFrom)).addClass('flash');
                             }
                             console.log(document.getElementById(userSentFrom));
 
+=======
+                            $(document.getElementById(userSentFrom)).addClass('flash');
+>>>>>>> Stashed changes
 
                             div.className = 'theirMessage';
                             div.textContent = message;
@@ -191,9 +201,34 @@
 			function addFriend() {
 				console.log("adding friend");
 				var addedFriend = $('#newFriend').val();
-				socket.emit('addFriend', whisperIOUser, addedFriend	);
+				var isAdded;
+				socket.emit('addFriend', whisperIOUser, addedFriend);
+
+				socket.on('addFriendResult', function(result){
+                    if (result == 1)
+                        alert(addedFriend + " has been added as a friend!");
+                    else if (result == 0)
+                        alert(addedFriend + " was not added as a friend: User does not exist");
+                    else
+                        alert(addedFriend + " was not added as a friend: User is already a friend");
+                    window.location.href = "./main";
+                });
 			}
 		</script>
+
+        <script>
+            socket.on('isOnlineResult', doStuff);
+
+            function doStuff(status, friendName) {
+                var onlineStatus;
+                var x = document.getElementById(friendName);
+                if (status == true)
+                    x.className += " online ";
+
+                else
+                    x.className += " offline ";
+            }
+        </script>
 
 
 
