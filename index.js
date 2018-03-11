@@ -92,7 +92,7 @@ io.on('connection', function(socket) {
         database: database,
     });
     socket.on('userLogin', function (username) {
-
+        console.log(username + " has logged in");
         sql = "UPDATE User SET isOnline='Y' WHERE username='" + username + "';";
         write.query(sql, function (err) {
             if (err) throw err;
@@ -296,7 +296,7 @@ io.on('connection', function(socket) {
 		var sql = "SELECT * FROM Friends WHERE Host = \"" + currentUser + "\" AND Receiver = \"" + friendToAdd + "\";"
 		read.query(sql, function(err, result) {
 			if (err) throw err;
-			if (result.length === 0) // if the friend relationship doesn't exist
+			if (result.length == 0) // if the friend relationship doesn't exist
 			{
 				console.log("New friend!");
 				
