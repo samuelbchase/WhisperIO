@@ -10,12 +10,12 @@
 	<title>WhisperIO Login</title>
 </head>
 <body style="background: palevioletred">
-<!--- Need to actually encrypt userID--->
+<!--- Need to actually encrypt userID, onSignIn event is emitted once the user logs in with google--->
 <div class="g-signin2" data-onsuccess="onSignIn"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
 <script>
-
+    //event handler triggered once google login takes place
     function onSignIn(googleUser) {
         console.log("Begin Sign In Process");
         var profile = googleUser.getBasicProfile();
@@ -24,22 +24,37 @@
         console.log('Image URL: ' + profile.getImageUrl());
         console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
 
+        //id token sent to back end for authentication
         var id_token = googleUser.getAuthResponse().id_token;
         //console.log("ID Token: " + id_token);
 
-        socket = io();
+        //socket = io();
+
+        //var socket2 = io.connect('https://localhost:80/', {rejectUnauthorized: false,secure:true);
+        var URL_SERVER = 'https://localhost:3000';
+        var socket = io.connect(URL_SERVER);
         console.log("Sending token: " + id_token);
+
+        //emit token to back end
         socket.emit('verifyToken',id_token);
+        console.log("Token sent");
+        socket.emit('secureConnection');
+        //handler for first time user account creation
         socket.on('unknownPerson', function(unknownPerson) {
             var person = prompt("We are now making you an account. Please enter your name. If you name includes a '-' this program will crash irreperably", "Geraldo");
+            //emit identifyMyself event to the backend with new user info
             socket.emit('identifyMyself',person);
         });
+        //handle authSuccess event emitted from backend when user authentication
+        //is successful for an already existing use
         socket.on('authSuccess', function(msg) {
             alert("Auth Success! Hello: " + msg);
             sessionStorage.setItem("whisperIOUser", msg);
 			socket.emit('userLogin', msg);
             window.location.href = "/main";
         });
+        //handle authSuccess for a new user that was not already in the
+        //database
         socket.on('authSuccessNewUser', function(msg) {
             alert("Auth Success! Thank you for joining Whisper.io, " + msg);
             sessionStorage.setItem("whisperIOUser", msg);
