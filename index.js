@@ -224,7 +224,6 @@ io.on('connection', function(socket) {
             socket.emit('FriendsList',result);
             //console.log("Friends list sent: " + result);
         });
-        read.end();
     });
 
     //catch verifyToken event emitted on google login
