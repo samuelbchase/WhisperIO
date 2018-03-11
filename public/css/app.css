@@ -97,9 +97,19 @@ div ul li {
     -moz-user-select:none;
     -ms-user-select:none;
     user-select:none;
+    color:black;
+    padding-left:10px;
 }
 
-div ul li:hover {
+@media (max-width: 1081px) {
+        div ul li {
+            height:200px;
+            font-size: 4em;
+            text-align:center;
+        }
+    }
+
+    div ul li:hover {
     border: 1px gold solid;
     margin-left:-1px;
     margin-top:-1px;
@@ -112,11 +122,6 @@ div ul li:hover {
     user-select:none;
 }
 
-
-div ul li {
-    color:black;
-    padding-left:10px;
-}
 .yourMessage {
     background-color:violet;
     border-radius: 50px;

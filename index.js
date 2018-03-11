@@ -92,7 +92,8 @@ io.on('connection', function(socket) {
         database: database,
     });
     socket.on('userLogin', function (username) {
-
+        console.log(username + " has logged in");
+        console.log(sql);
         sql = "UPDATE User SET isOnline='Y' WHERE username='" + username + "';";
         write.query(sql, function (err) {
             if (err) throw err;
