@@ -1,29 +1,3 @@
-/*var express = require('express');
-
-var fs = require("fs");
-
-var privateKey  = fs.readFileSync('encryption/.private.key');
-var certificate = fs.readFileSync('encryption/.mydomain.csr');
-
-var credentials = {key: privateKey, cert: certificate};
-
-
-var app = express();
-var http = require('http').Server(app);
-var https = require('https');
-var path = require('path');
-var http = require('http').Server(app);
-var mysql = require('mysql');
-var bcrypt = require('bcrypt-nodejs');
-var scrypt = require('js-scrypt');
-var sha256 = require('sha256');
-var request = require("request");
-
-const tls = require('tls');
-//var io = require('socket.io')(http);
-var secure_socket = tls.
-
-app.use(express.static(path.join(__dirname, 'public')));*/
 
 ////////////////////////////////////////////////////////////////////
 var express = require('express');
@@ -103,22 +77,21 @@ var io = require('socket.io')(server);
 server.listen(3000, function() {
     console.log('server up and running at %s port', 3000);
 });
-/*
-var socketHTTPS = require('socket.io').listen(server);
 
-server.listen(443, function() {
-    console.log('server up and running at %s port', 443);
-});
-*/
-//listener function is listener for 'secureConnection' event
 io.on('connection', function(socket) {
+    read = mysql.createConnection({
+        host: host,
+        user: readUN,
+        password: readPW,
+        database: database
+    });
+    write = mysql.createConnection({
+        host: host,
+        user: writeUN,
+        password: writePW,
+        database: database,
+    });
     socket.on('userLogin', function (username) {
-        write = mysql.createConnection({
-            host: host,
-            user: writeUN,
-            password: writePW,
-            database: database,
-        });
 
         sql = "UPDATE User SET isOnline='Y' WHERE username='" + username + "';";
         write.query(sql, function (err) {
@@ -132,12 +105,6 @@ io.on('connection', function(socket) {
         var message = msg.slice(indexOfSeparator+1);
         console.log('message: ' + message);
         console.log('Was set to: ' + userSentTo);
-        write = mysql.createConnection({
-            host: host,
-            user: writeUN,
-            password: writePW,
-            database: database,
-        });
 
         var name = "Unknown";
         for(var i = 0; i < sockets.length;i++)
@@ -164,12 +131,6 @@ io.on('connection', function(socket) {
         console.log("----------------------------");
     });
     socket.on('disconnect', function(){
-        write = mysql.createConnection({
-            host: host,
-            user: writeUN,
-            password: writePW,
-            database: database,
-        });
 
         sql = "UPDATE User SET isOnline='N' WHERE username='" + this.id + "';";
         write.query(sql, function(err) {
@@ -183,12 +144,6 @@ io.on('connection', function(socket) {
         console.log(name);
         console.log(from);
         sql = "SELECT * FROM Message WHERE (SentFrom, SentTo) = ('" + name + "', '" + from + "') OR (SentTo, SentFrom) = ('" + from + "', '" + name + "') ORDER BY timestamp DESC;";
-        read = mysql.createConnection({
-            host: host,
-            user: readUN,
-            password: readPW,
-            database: database,
-        });
 
         read.query(sql, function(err, result){
             if(err)
@@ -210,12 +165,6 @@ io.on('connection', function(socket) {
         names.push(userName);
         socket.id = userName;
         console.log("New User Connected: " + socket.id);
-        read = mysql.createConnection({
-            host: host,
-            user: readUN,
-            password: readPW,
-            database: database
-        });
         var sql = "SELECT * FROM Friends where Host = '" + userName + "';";
         read.query(sql, function (err, result) {
             if (err) throw err;
@@ -265,12 +214,6 @@ io.on('connection', function(socket) {
             var hash = sha256(email);
             console.log(hash);
 
-            write = mysql.createConnection({
-                host: host,
-                user: writeUN,
-                password: writePW,
-                database: database,
-            });
             var sql = "SELECT username FROM User where emailHash = '" + hash + "';";
             //if user doesn't exist add them
             write.query(sql, function (err, result) {
@@ -310,12 +253,6 @@ io.on('connection', function(socket) {
     socket.on('addFriend', function (currentUser, friendToAdd) {
         console.log("Adding " + friendToAdd + " for " + currentUser + " as a friend");
         var isOnline;
-        read = mysql.createConnection({
-            host: host,
-            user: readUN,
-            password: readPW,
-            database: database
-        });
 
         //check to see if the friend relationship already exists
         var sql = "SELECT * FROM Friends WHERE Host = \"" + currentUser + "\" AND Receiver = \"" + friendToAdd + "\";"
@@ -330,12 +267,6 @@ io.on('connection', function(socket) {
                     if (err) throw err;
                     if (result.length > 0)	// make sure that the friend you're adding actually exists
                     {
-                        write = mysql.createConnection({
-                            host: host,
-                            user: writeUN,
-                            password: writePW,
-                            database: database,
-                        });
                         sql = "INSERT INTO Friends (Host, Receiver) VALUES ('" + currentUser + "', '" + friendToAdd + "');"
                         write.query(sql, function(err, result) {
                             if (err) throw err;
@@ -360,13 +291,7 @@ io.on('connection', function(socket) {
     //Add Friend button is pushed; called by currentUser adding friendToAdd
 	socket.on('addFriend', function (currentUser, friendToAdd) {
 		console.log("Adding " + friendToAdd + " for " + currentUser + " as a friend");
-		read = mysql.createConnection({
-			host: host,
-			user: readUN,
-			password: readPW,
-			database: database
-		});
-		
+
 		//check to see if the friend relationship already exists
 		var sql = "SELECT * FROM Friends WHERE Host = \"" + currentUser + "\" AND Receiver = \"" + friendToAdd + "\";"
 		read.query(sql, function(err, result) {
@@ -380,12 +305,6 @@ io.on('connection', function(socket) {
 					if (err) throw err;
 					if (result.length > 0)	// make sure that the friend you're adding actually exists
 					{
-						write = mysql.createConnection({
-							host: host,
-							user: writeUN,
-							password: writePW,
-							database: database,
-						});
 						sql = "INSERT INTO Friends (Host, Receiver) VALUES ('" + currentUser + "', '" + friendToAdd + "');";
 						write.query(sql, function(err, result) {
 							if (err) throw err;
