@@ -90,7 +90,7 @@ fs.readFile('.info.txt', 'utf8', function(err, contents){
 	index = contents.indexOf('|', old);
 	writePW = contents.slice(old);
 });
-var sslPath = "certs/"
+var sslPath = "certs/";
 
 var options = {
     key: fs.readFileSync(sslPath + 'privkey.pem'),
