@@ -173,9 +173,8 @@
         <script>
 
 
-            var URL_SERVER = 'https://localhost:3000';
-            var socket = io.connect(URL_SERVER);
-            socket.setEncoding('utf8');
+                        var URL_SERVER = 'https://whisperio.club:3000';
+                        var socket = io.connect(URL_SERVER);
 
                         var whisperIOUser = sessionStorage.getItem("whisperIOUser") || 'defaultValue';
                         console.log(whisperIOUser);
