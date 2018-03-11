@@ -24,6 +24,34 @@
                     <h3 class="horizcenter"> Friends </h3>
                     <ul class="list-group" id="users"></ul>
                 </div>
+                <div class="cell medium-12 large-1 small-8">
+                    <button>
+                        <!-- What does the a tag do?-->
+                        <a href="#" onclick="signOut()">Sign out</a>
+                        <script>
+                            function signOut() {
+                                gapi.load('client:auth2', function() {
+                                    gapi.auth2.init()
+                                        .then(function() {
+                                            gapi.auth2.getAuthInstance()
+                                                .signOut()
+                                        })
+                                        .then(function() {
+                                            alert("Thank you for using Whisper.io");
+                                            console.log('Logging out user');
+                                            console.log('User signed out.');
+                                            // Kill login token
+                                            sessionStorage.clear();
+                                            window.location.href = "/";
+                                        })
+                                        .catch(function(err){
+                                            console.log("Wokriiiinnnnnggg err: ", err);
+                                        });
+                                });
+                            }
+                        </script>
+                    </button>
+                </div>
                 <ul id = "friendMenu" class="vertical menu">
                     <script>
                         //Gets all friends from the Database as requested from Server
