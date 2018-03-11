@@ -7,6 +7,8 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <title>Whisper.io</title>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="521002119514-k8kp3p42fpoq7ia5868k9s9e62bj87n3.apps.googleusercontent.com">
 
 </head>
 <script>
@@ -19,39 +21,12 @@
 <body style="background:#073642">
         <div class="grid-x" style="background:#073642">
             <!--side bar -->
-            <div id="sidebar" class="cell medium-12 large-1">
+            <div id="sidebar" class="cell medium-3 large-1 small-6">
                 <div>
                     <h3 class="horizcenter"> Friends </h3>
                     <ul class="list-group" id="users"></ul>
                 </div>
-                <div class="cell medium-12 large-1 small-8">
-                    <button>
-                        <!-- What does the a tag do?-->
-                        <a href="#" onclick="signOut()">Sign out</a>
-                        <script>
-                            function signOut() {
-                                gapi.load('client:auth2', function() {
-                                    gapi.auth2.init()
-                                        .then(function() {
-                                            gapi.auth2.getAuthInstance()
-                                                .signOut()
-                                        })
-                                        .then(function() {
-                                            alert("Thank you for using Whisper.io");
-                                            console.log('Logging out user');
-                                            console.log('User signed out.');
-                                            // Kill login token
-                                            sessionStorage.clear();
-                                            window.location.href = "/";
-                                        })
-                                        .catch(function(err){
-                                            console.log("Wokriiiinnnnnggg err: ", err);
-                                        });
-                                });
-                            }
-                        </script>
-                    </button>
-                </div>
+
                 <ul id = "friendMenu" class="vertical menu">
                     <script>
                         //Gets all friends from the Database as requested from Server
@@ -119,6 +94,33 @@
 					</div>
 					<button onclick = "addFriend()" style = "background:#adff2f;height:70px">Add Friend</button>
 				</div>
+                <div class="button expanded alert">
+                    <button>
+                        <button href="#" onclick="signOut()">Sign out</button>
+                        <script>
+                            function signOut() {
+                                gapi.load('client:auth2', function() {
+                                    gapi.auth2.init()
+                                        .then(function() {
+                                            gapi.auth2.getAuthInstance()
+                                                .signOut()
+                                        })
+                                        .then(function() {
+                                            alert("Thank you for using Whisper.io");
+                                            console.log('Logging out user');
+                                            console.log('User signed out.');
+                                            // Kill login token
+                                            sessionStorage.clear();
+                                            window.location.href = "/";
+                                        })
+                                        .catch(function(err){
+                                            console.log("Wokriiiinnnnnggg err: ", err);
+                                        });
+                                });
+                            }
+                        </script>
+                    </button>
+                </div>
             </div>
             <!--main chat interface-->
             <script>
@@ -200,40 +202,39 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
         <script>
 
+            var URL_SERVER = 'https://whisperio.club:3000';
+            //var URL_SERVER = 'https://localhost:3000';
+            var socket = io.connect(URL_SERVER);
 
-                        var URL_SERVER = 'https://whisperio.club:3000';
-                        var socket = io.connect(URL_SERVER);
+            var whisperIOUser = sessionStorage.getItem("whisperIOUser") || 'defaultValue';
+            console.log(whisperIOUser);
+            userName = whisperIOUser;
+            socket.emit('userNameSend', whisperIOUser);
+            console.log(whisperIOUser);
 
-                        var whisperIOUser = sessionStorage.getItem("whisperIOUser") || 'defaultValue';
-                        console.log(whisperIOUser);
-                        userName = whisperIOUser;
-                        socket.emit('userNameSend', whisperIOUser);
-                        console.log(whisperIOUser);
+            socket.on('chat message', function(msg){
+                var indexOfSeparator = msg.indexOf('-');
+                var userSentFrom = msg.slice(0,indexOfSeparator);
+                var message = msg.slice(indexOfSeparator+1);
+                var chatbox = document.getElementById("chatbox" + userSentFrom);
 
+                //friends list element selector for notifiying users of new message
+                var z = document.getElementById(userSentFrom);
+                $(z).addClass("flash");
 
-                        socket.on('chat message', function(msg){
-                            var indexOfSeparator = msg.indexOf('-');
-                            var userSentFrom = msg.slice(0,indexOfSeparator);
-                            var message = msg.slice(indexOfSeparator+1);
-                            var chatbox = document.getElementById("chatbox" + userSentFrom);
+                var div = document.createElement('div');
+                if(userSentFrom !== ActiveFriend)
+                {
+                    $(document.getElementById(userSentFrom)).addClass('flash');
+                }
+                console.log(document.getElementById(userSentFrom));
 
-                            //friends list element selector for notifiying users of new message
-                            var z = document.getElementById(userSentFrom);
-                            $(z).addClass("flash");
+                div.className = 'theirMessage';
+                div.textContent = message;
+                console.log("Message Received!");
 
-                            var div = document.createElement('div');
-                            if(userSentFrom !== ActiveFriend)
-                            {
-                                $(document.getElementById(userSentFrom)).addClass('flash');
-                            }
-                            console.log(document.getElementById(userSentFrom));
-
-                            div.className = 'theirMessage';
-                            div.textContent = message;
-                            console.log("Message Received!");
-
-                            chatbox.appendChild(div);
-                        });
+                chatbox.appendChild(div);
+            });
         </script>
 		
 		<script>
