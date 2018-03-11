@@ -45,18 +45,11 @@
                                         //Switches context to view the chatbox of that friend
                                         //& defines that friend as the active friend
 
-                                        //Matt's logic for loading messages
-                                        //emit a socket call from the client to the server saying that we want the inforation in the chat history
-
 
                                         ActiveFriend = this.id;
                                         socket.emit('chathistory', userName, ActiveFriend);
-                                           
-
                                         socket.on('messageHistory', (history) => {
-                                            var numItems = $('.chatbox + ActiveFriend').length;
-                                            console.log(numItems);
-
+                                            numItems = document.getElementById("chatbox" + ActiveFriend).children.length;
                                             if(numItems < history.length)
                                             {
                                                 for(x in history) {
