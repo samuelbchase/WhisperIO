@@ -6,6 +6,13 @@
     color:#A082BD;
 }
 
+.log-in-form {
+    border: 1px solid aqua;
+    padding: 1rem;
+    border-radius: 0;
+}
+
+
 .form-group{
     background-color:#D33682;
 }
@@ -16,7 +23,24 @@ body{
     background:#073642;
     height:100vh;
 }
+.black{
+    background-color: black;
+    text:aqua;
+    color:aqua;
 
+}
+.black-input{
+    border: 1px solid aqua!important;
+}
+input[type=email]:focus {
+    background-color:black;
+}
+input[type=password]:focus {
+    background-color:black;
+}
+.g-signin2{
+    width: 100vw;
+}
 .chatbox{
      background:#002B36;
      height:calc(100vh - 55px);
@@ -26,7 +50,9 @@ body{
     border: gold 1px solid;
     box-shadow: 2px 4px;
 }
-
+#loginBox {
+    margin-top:10vh;
+}
 #loginButton{
     background:cornflowerblue;
     width:100px;
@@ -153,21 +179,21 @@ div ul li {
     -moz-animation-iteration-count: infinite;
 }
 
-@keyframes flash {  
+@keyframes flash {
     0% { opacity: 1.0; }
     50% { opacity: 0.5; }
     100% { opacity: 1.0; }
 }
 
 //Firefox 1+
-@-webkit-keyframes flash {  
+@-webkit-keyframes flash {
     0% { opacity: 1.0; }
     50% { opacity: 0.5; }
     100% { opacity: 1.0; }
 }
 
 //Safari 3-4
-@-moz-keyframes flash {  
+@-moz-keyframes flash {
     0% { opacity: 1.0; }
     50% { opacity: 0.5; }
     100% { opacity: 1.0; }

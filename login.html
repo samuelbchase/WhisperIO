@@ -2,19 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="css/app.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	<script src="https://apis.google.com/js/platform.js" async defer></script>
 	<meta name="google-signin-client_id" content="521002119514-k8kp3p42fpoq7ia5868k9s9e62bj87n3.apps.googleusercontent.com">
+    <link rel="stylesheet" href="css/foundation.css">
+    <link rel="stylesheet" href="css/app.css">
 	<title>WhisperIO Login</title>
 </head>
-<body style="background: palevioletred">
+<body style="background-color: black">
+<row>
+        <div id = "loginBox" class="grid-x align-middle">
+            <div class="cell small-1 medium-2 large-4"></div>
+            <div class="cell small-10 medium-8 large-4">
+                <form class="log-in-form">
+                    <h4 class="text-center"><img src="/images/aque_black.png" alt="Whisper.io"></h4>
+                    <input class = "black black-input" type="email" placeholder="somebody@example.com">
+                    <input class = "black black-input" type="password" placeholder="Password">
+                <p><input type="submit" class="button expanded" value="Log in"></input></p>
+                <div class="g-signin2" data-width="100vw" data-onsuccess="onSignIn"></div>
+                    <p class="text-center" ><a href="#"><span style="color:aqua">Forgot your password?</span></a></p>
+                </form>
+            </div>
+            <div class="cell small-1 medium-2 large-4"></div>
+        </div>
+</row>
+
 <!--- Need to actually encrypt userID, onSignIn event is emitted once the user logs in with google--->
-<div class="g-signin2" data-onsuccess="onSignIn"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+<script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
 <script>
+    function renderButton() {
+        gapi.signin2.render('my-signin2', {
+            'width': 800,
+            'height': 50,
+            'longtitle': true,
+            'theme': 'dark'
+        });
+    }
     //event handler triggered once google login takes place
     function onSignIn(googleUser) {
         console.log("Begin Sign In Process");
