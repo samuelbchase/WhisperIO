@@ -178,22 +178,29 @@ io.on('connection', function(socket) {
     });
 
 
-    socket.on('chathistory', function (name, from, fn) {
+    socket.on('chathistory', function (name, from) {
         //to make this better 
-        sql = "SELECT * FROM Message WHERE ('sentFrom', 'sentTo') = ('" + name + "', '" + from + "');";
-        console.log(sql);
+        console.log(name);
+        console.log(from);
+        sql = "SELECT * FROM Message WHERE (SentFrom, SentTo) = ('" + name + "', '" + from + "') OR (SentTo, SentFrom) = ('" + from + "', '" + name + "') ORDER BY timestamp DESC;";
         read = mysql.createConnection({
             host: host,
             user: readUN,
             password: readPW,
             database: database,
         });
+
         read.query(sql, function(err, result){
             if(err)
                 throw err; 
-            console.log(result.length + "\n"); 
+
+            /* for var x in result {
+                console.log(result[x].name/message/etc)
+            }
+            */
+            socket.emit('messageHistory', result); 
         });
-        fn(result);
+
     });
 
 

@@ -14,6 +14,7 @@
     var ActiveFriend;
     //the global socket
     var socket;
+    var userName; 
 </script>
 <body style="background:#073642">
         <div class="grid-x" style="background:#073642">
@@ -44,13 +45,28 @@
                                         //Switches context to view the chatbox of that friend
                                         //& defines that friend as the active friend
 
-                                        //Matt's logic for loading messages
-                                        //emit a socket call from the client to the server saying that we want the inforation in the chat history
-                                        socket.emit('chathistory', 'recieved', function(userSentFrom, userNameSend , fn) {
-                                            
-                                        }
-                                        
+
                                         ActiveFriend = this.id;
+                                        socket.emit('chathistory', userName, ActiveFriend);
+                                        socket.on('messageHistory', (history) => {
+                                            numItems = document.getElementById("chatbox" + ActiveFriend).children.length;
+                                            if(numItems < history.length)
+                                            {
+                                                for(x in history) {
+                                                    var div = document.createElement('div');
+                                                    if(ActiveFriend == history[x].SentFrom) {
+                                                        div.className = 'theirMessage';
+                                                    }
+                                                    else {
+                                                        div.className = 'yourMessage';
+                                                    }
+                                                    div.textContent = history[x].Message;
+                                                    document.getElementById("chatbox" + ActiveFriend).appendChild(div);
+                                                }
+                                            }
+                                            
+                                        });
+
                                         var ret = document.getElementsByClassName("chatbox");
                                         for (var i = 0; i < ret.length; i++) {
                                             document.getElementById(ret[i].id).style.display = "none"; //second console output
@@ -163,6 +179,7 @@
 
                         var whisperIOUser = sessionStorage.getItem("whisperIOUser") || 'defaultValue';
                         console.log(whisperIOUser);
+                        userName = whisperIOUser;
                         socket.emit('userNameSend', whisperIOUser);
                         console.log(whisperIOUser);
 
