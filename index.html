@@ -51,7 +51,7 @@
 
                                         ActiveFriend = this.id;
                                         socket.emit('chathistory', userName, ActiveFriend);
-                                        socket.on('messageHistory', (history) => {
+                                        socket.on('messageHistory', (history) =>  {
                                             numItems = document.getElementById("chatbox" + ActiveFriend).children.length;
                                             if(numItems < history.length)
                                             {
@@ -202,8 +202,8 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
         <script>
 
-            var URL_SERVER = 'https://whisperio.club:3000';
-            //var URL_SERVER = 'https://localhost:3000';
+            //var URL_SERVER = 'https://whisperio.club:3000';
+            var URL_SERVER = 'https://localhost:3000';
             var socket = io.connect(URL_SERVER);
 
             var whisperIOUser = sessionStorage.getItem("whisperIOUser") || 'defaultValue';
@@ -238,22 +238,25 @@
         </script>
 		
 		<script>
-			function addFriend() {
-				console.log("adding friend");
-				var addedFriend = $('#newFriend').val();
-				var isAdded;
-				socket.emit('addFriend', whisperIOUser, addedFriend);
+			socket.on('addFriendResult', friendResult);
 
-				socket.on('addFriendResult', function(result){
-                    if (result == 1)
-                        alert(addedFriend + " has been added as a friend!");
-                    else if (result == 0)
-                        alert(addedFriend + " was not added as a friend: User does not exist");
-                    else
-                        alert(addedFriend + " was not added as a friend: User is already a friend");
-                    window.location.href = "./main";
-                });
-			}
+			function friendResult(result, addedFriend)
+            {
+                if (result == 1)
+                    alert(addedFriend + " has been added as a friend!");
+                else if (result == 0)
+                    alert(addedFriend + " was not added as a friend: User does not exist");
+                else
+                    alert(addedFriend + " was not added as a friend: User is already a friend");
+                window.location.href = "./main";
+            }
+
+            function addFriend() {
+                console.log("adding friend");
+                var addedFriend = $('#newFriend').val();
+                var isAdded;
+                socket.emit('addFriend', whisperIOUser, addedFriend);
+            }
 		</script>
 
         <script>
