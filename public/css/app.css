@@ -101,15 +101,7 @@ div ul li {
     padding-left:10px;
 }
 
-@media (max-width: 1081px) {
-        div ul li {
-            height:200px;
-            font-size: 4em;
-            text-align:center;
-        }
-    }
-
-    div ul li:hover {
+div ul li:hover {
     border: 1px gold solid;
     margin-left:-1px;
     margin-top:-1px;
