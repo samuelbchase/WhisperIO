@@ -146,8 +146,7 @@ io.on('connection', function(socket) {
         //to make this better 
         console.log(name);
         console.log(from);
-        sql = "SELECT * FROM Message WHERE (SentFrom, SentTo) = ('" + name + "', '" + from + "') OR (SentTo, SentFrom) = ('" + from + "', '" + name + "') ORDER BY timestamp ASC;";
-
+        sql = "SELECT * FROM Message WHERE (SentFrom, SentTo) = ('" + name + "', '" + from + "') OR (SentTo, SentFrom) = ('" + name + "', '" + from + "') ORDER BY timestamp ASC;";
         read.query(sql, function(err, result){
             if(err)
                 throw err; 
