@@ -53,8 +53,8 @@
         //id token sent to back end for authentication
         var id_token = googleUser.getAuthResponse().id_token;
 
-        //var URL_SERVER = 'https://whisperio.club:3000';
-        var URL_SERVER = 'https://localhost:3000';
+        var URL_SERVER = 'https://whisperio.club:3000';
+        //var URL_SERVER = 'https://localhost:3000';
         var socket = io.connect(URL_SERVER);
         console.log("Sending token: " + id_token);
 
