@@ -94,9 +94,9 @@
 					</div>
 					<button onclick = "addFriend()" style = "background:#adff2f;height:70px">Add Friend</button>
 				</div>
-                <div class="button expanded alert">
+                <div class="button expanded alert" onclick="signOut()">
                     <button>
-                        <button href="#" onclick="signOut()">Sign out</button>
+                        <button href="#" >Sign out</button>
                         <script>
                             function signOut() {
                                 gapi.load('client:auth2', function() {
