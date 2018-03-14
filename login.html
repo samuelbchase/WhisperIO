@@ -53,8 +53,8 @@
         //id token sent to back end for authentication
         var id_token = googleUser.getAuthResponse().id_token;
 
-        var URL_SERVER = 'https://whisperio.club:3000';
-        //var URL_SERVER = 'https://localhost:3000';
+        //var URL_SERVER = 'https://whisperio.club:3000';
+        var URL_SERVER = 'https://localhost:3000';
         var socket = io.connect(URL_SERVER);
         console.log("Sending token: " + id_token);
 
@@ -73,7 +73,6 @@
         socket.on('authSuccess', function(msg) {
             alert("Auth Success! Hello: " + msg);
             sessionStorage.setItem("whisperIOUser", msg);
-			socket.emit('userLogin', msg);
             window.location.href = "/main";
         });
         //handle authSuccess for a new user that was not already in the
@@ -81,7 +80,6 @@
         socket.on('authSuccessNewUser', function(msg) {
             alert("Auth Success! Thank you for joining Whisper.io, " + msg);
             sessionStorage.setItem("whisperIOUser", msg);
-			socket.emit('userLogin', msg);
             window.location.href = "/main";
         });
 
