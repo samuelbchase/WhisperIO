@@ -95,10 +95,9 @@ io.on('connection', function(socket) {
         database: database,
     });
 
-    socket.on('userLogin', function (username) {
-        console.log(username + " has logged in");
-        username.should.equal("Sam");
-        sql = "UPDATE User SET isOnline='Y' WHERE username='" + username + "';";
+    socket.on('userLogin', function (userName) {
+       console.log(userName + " is logging in");
+        sql = "UPDATE User SET isOnline='Y' WHERE username='" + userName + "';"
         write.query(sql, function (err) {
             if (err) throw err;
         });
@@ -137,9 +136,9 @@ io.on('connection', function(socket) {
     });
 
     socket.on('disconnect', function(){
-
-        sql = "UPDATE User SET isOnline='N' WHERE username='" + this.id + "';";
-        write.query(sql, function(err) {
+        console.log(this.id + " is logging out");
+        sql = "UPDATE User SET isOnline='N' WHERE username='" + this.id + "';"
+        write.query(sql, function (err) {
             if (err) throw err;
         });
     });

@@ -94,9 +94,9 @@
 					</div>
 					<button onclick = "addFriend()" style = "background:#adff2f;height:70px">Add Friend</button>
 				</div>
-                <div class="button expanded alert">
+                <div class="button expanded alert" onclick="signOut()">
                     <button>
-                        <button href="#" onclick="signOut()">Sign out</button>
+                        <button href="#" >Sign out</button>
                         <script>
                             function signOut() {
                                 gapi.load('client:auth2', function() {
@@ -202,14 +202,15 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
         <script>
 
-            var URL_SERVER = 'https://whisperio.club:3000';
-            //var URL_SERVER = 'https://localhost:3000';
+            //var URL_SERVER = 'https://whisperio.club:3000';
+            var URL_SERVER = 'https://localhost:3000';
             var socket = io.connect(URL_SERVER);
 
             var whisperIOUser = sessionStorage.getItem("whisperIOUser") || 'defaultValue';
             console.log(whisperIOUser);
             userName = whisperIOUser;
             socket.emit('userNameSend', whisperIOUser);
+            socket.emit('userLogin', whisperIOUser);
             console.log(whisperIOUser);
 
             socket.on('chat message', function(msg){
