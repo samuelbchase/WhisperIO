@@ -14,7 +14,9 @@ const tls = require('tls');
 
 app.use(express.static(path.join(__dirname, 'public')));
 /////////////////////////////////////////////////////////////////////
-
+exports.testAdd = function(x,y){
+    return x + y;
+};
 app.get('/main', function(req, res){
     res.sendFile(__dirname + '/index.html');
 });
@@ -95,6 +97,7 @@ io.on('connection', function(socket) {
 
     socket.on('userLogin', function (username) {
         console.log(username + " has logged in");
+        username.should.equal("Sam");
         sql = "UPDATE User SET isOnline='Y' WHERE username='" + username + "';";
         write.query(sql, function (err) {
             if (err) throw err;
@@ -140,7 +143,6 @@ io.on('connection', function(socket) {
             if (err) throw err;
         });
     });
-
 
     socket.on('chathistory', function (name, from) {
         //to make this better 
