@@ -47,8 +47,6 @@
                                         //Defines action for clicking on a friend in the list
                                         //Switches context to view the chatbox of that friend
                                         //& defines that friend as the active friend
-
-
                                         ActiveFriend = this.id;
                                         socket.emit('chathistory', userName, ActiveFriend);
                                         socket.on('messageHistory', (history) =>  {
@@ -67,7 +65,7 @@
                                                     document.getElementById("chatbox" + ActiveFriend).appendChild(div);
                                                 }
                                             }
-                                            
+
                                         });
 
                                         var ret = document.getElementsByClassName("chatbox");
@@ -98,33 +96,12 @@
                     <button>
                         <button href="#" >Sign out</button>
                         <script>
-                            function signOut() {
-                                gapi.load('client:auth2', function() {
-                                    gapi.auth2.init()
-                                        .then(function() {
-                                            gapi.auth2.getAuthInstance()
-                                                .signOut()
-                                        })
-                                        .then(function() {
-                                            alert("Thank you for using Whisper.io");
-                                            console.log('Logging out user');
-                                            console.log('User signed out.');
-                                            // Kill login token
-                                            sessionStorage.clear();
-                                            window.location.href = "/";
-                                        })
-                                        .catch(function(err){
-                                            console.log("Wokriiiinnnnnggg err: ", err);
-                                        });
-                                });
-                            }
                         </script>
                     </button>
                 </div>
             </div>
             <!--main chat interface-->
             <script>
-
                 //When the document is ready make the chatboxes & open a socket to receive the friendslist
                 $( document ).ready(function () {
                     socket.on('FriendsList', function(msg){
@@ -151,46 +128,20 @@
             </script>
 
             <div id="main"class="cell small-12 medium-11" style="height:50px;background:#002B36" >
-            <form id="messenger">
-                <div class="grid-container">
-                    <div class="grid-x grid-padding-x">
-                        <div class="medium-6 cell">
-                            <label>
-                                <input id="messageSender" type="text" placeholder="Send a Message">
-                            </label>
+                <form id="messenger">
+                    <div class="grid-container">
+                        <div class="grid-x grid-padding-x">
+                            <div class="medium-6 cell">
+                                <label>
+                                    <input id="messageSender" type="text" placeholder="Send a Message">
+                                </label>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
-        </div>
 
-        <script>
-
-            //TODO Add Send Button
-            $('#messenger').keypress(function (e) {
-                //When enter is pressed submit the current message
-                if (e.which === 13) {
-                    addMessage();
-                    document.getElementById("messageSender").value = "";
-                    return false;
-                }
-            });
-
-            function addMessage()
-            {
-                //Get the message, and send that message on the socket to the server listener
-                var message = $('#messageSender').val();
-                socket.emit('chat message',ActiveFriend + "-" + message);
-                var div = document.createElement('div');
-                    div.className = 'yourMessage';
-                    div.textContent = message;
-                    document.getElementById("chatbox" + ActiveFriend).appendChild(div);
-                    return 0;
-            }
-
-
-        </script>
           <!-- JQuery Script-->
         <script src="vendor/jquery.js"></script>
         <script src="vendor/foundation.js"></script>
@@ -205,15 +156,46 @@
             var URL_SERVER = 'https://whisperio.club:3000';
             //var URL_SERVER = 'https://localhost:3000';
             var socket = io.connect(URL_SERVER);
-
             var whisperIOUser = sessionStorage.getItem("whisperIOUser") || 'defaultValue';
+
             console.log(whisperIOUser);
             userName = whisperIOUser;
             socket.emit('userNameSend', whisperIOUser);
             socket.emit('userLogin', whisperIOUser);
             console.log(whisperIOUser);
 
-            socket.on('chat message', function(msg){
+            //All receiving socket stuff
+            socket.on('chat message', receiveMessage);
+            socket.on('addFriendResult', friendResult);
+            socket.on('isOnlineResult', appendOnlineStatus);
+
+            //Sends messages when user presses enter
+            //TODO Add Send Button
+            $('#messenger').keypress(function (e) {
+                //When enter is pressed submit the current message
+                if (e.which === 13) {
+                    addMessage();
+                    document.getElementById("messageSender").value = "";
+                    return false;
+                }
+            });
+
+            //Alerts something, unsure as to what
+            function addMessage()
+            {
+                //Get the message, and send that message on the socket to the server listener
+                var message = $('#messageSender').val();
+                socket.emit('chat message',ActiveFriend + "-" + message);
+                var div = document.createElement('div');
+                div.className = 'yourMessage';
+                div.textContent = message;
+                document.getElementById("chatbox" + ActiveFriend).appendChild(div);
+                return 0;
+            }
+
+            //Appends message to a chat when a user receives a message
+            function receiveMessage(msg)
+            {
                 var indexOfSeparator = msg.indexOf('-');
                 var userSentFrom = msg.slice(0,indexOfSeparator);
                 var message = msg.slice(indexOfSeparator+1);
@@ -235,14 +217,18 @@
                 console.log("Message Received!");
 
                 chatbox.appendChild(div);
-            });
-        </script>
-		
-		<script>
-			socket.on('addFriendResult', friendResult);
+            }
 
-			function friendResult(result, addedFriend)
-            {
+            //Adds a new friend for user, called when "Add Friend" button is pressed
+            function addFriend() {
+                console.log("adding friend");
+                var addedFriend = $('#newFriend').val();
+                var isAdded;
+                socket.emit('addFriend', whisperIOUser, addedFriend);
+            }
+
+            //A response once the results of attempting to add a friend finishes
+			function friendResult(result, addedFriend) {
                 if (result == 1)
                     alert(addedFriend + " has been added as a friend!");
                 else if (result == 0)
@@ -252,25 +238,36 @@
                 window.location.href = "./main";
             }
 
-            function addFriend() {
-                console.log("adding friend");
-                var addedFriend = $('#newFriend').val();
-                var isAdded;
-                socket.emit('addFriend', whisperIOUser, addedFriend);
-            }
-		</script>
-
-        <script>
-            socket.on('isOnlineResult', doStuff);
-
-            function doStuff(status, friendName) {
+            //Appends the "Online" or "Offline" status to friends in list
+            function appendOnlineStatus(status, friendName) {
                 var onlineStatus;
                 var x = document.getElementById(friendName);
                 if (status == true)
                     x.className += " online ";
-
                 else
                     x.className += " offline ";
+            }
+
+            //Signs the current user out
+            function signOut() {
+                gapi.load('client:auth2', function() {
+                    gapi.auth2.init()
+                        .then(function() {
+                            gapi.auth2.getAuthInstance()
+                                .signOut()
+                        })
+                        .then(function() {
+                            alert("Thank you for using Whisper.io");
+                            console.log('Logging out user');
+                            console.log('User signed out.');
+                            // Kill login token
+                            sessionStorage.clear();
+                            window.location.href = "/";
+                        })
+                        .catch(function(err){
+                            console.log("Wokriiiinnnnnggg err: ", err);
+                        });
+                });
             }
         </script>
 
