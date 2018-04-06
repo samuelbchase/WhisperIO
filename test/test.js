@@ -61,7 +61,7 @@ describe('User connections', function () {
        client1.emit('addFriend', "Griffin", "Geraldo");
        client1.on('addFriendResult', function(result, name){
           assert(result === -1, "Added friend either does not exist or is not already friends");
-          done();
        });
+       done();
     });
 });
