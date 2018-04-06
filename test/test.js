@@ -49,4 +49,23 @@ describe('Sockets', function () {
           done();
        });
     });
+
+    it('Can you add friends?', function (done) {
+        var client1 = ioClient.connect('http://localhost:80', options);
+        client1.emit('addFriend', "Griffin", "DoesNotExist");
+        client1.on('addFriendResult', function(result, name){
+            assert(result === 0, "Added friend is broken");
+            done();
+        });
+    });
+
+    it('Does the program show your online friends?', function (done) {
+       var client1 = ioClient.connect('http://localhost:80', options);
+       client1.emit('isOnline', "Griffin");
+       client1.on('isOnlineResult', function(result) {
+          assert(result === true || result === false, "Does not return online status");
+          done();
+       });
+    });
+
 });
