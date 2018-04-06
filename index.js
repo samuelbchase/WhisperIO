@@ -35,10 +35,6 @@ var readPW;
 var writeUN;
 var writePW;
 
-function log(){
-    console.log("stuff");
-};
-
 //use this for opening a file for the read and write passwords for the DB	
 //PLEASE DON'T MESS WITH THIS FUNCTION OR .info.txt! IT WILL SCREW UP THE DATABASE QUERYS
 fs.readFile('.info.txt', 'utf8', function(err, contents){
@@ -75,10 +71,9 @@ var options = {
 //var server = https.createServer(options, app);
 var server = https.createServer(options, app);
 var io = require('socket.io')(server);
-
-server.listen(3000, function() {
-    console.log('server up and running at %s port', 3000);
-});
+exports.listen = function() {
+    app.listen(80);
+};
 
 io.on('connection', function(socket) {
 
@@ -299,45 +294,6 @@ io.on('connection', function(socket) {
 	});
 });
 
-var ioClient     = require('socket.io-client');
-var sinon  = require("sinon");
-var assert = require('chai').assert;
-var stdout = require('test-console').stdout;
-
-var socketUrl = 'https://localhost:3000/main';
-
-var options = {
-    transports: ['websocket'],
-    'force new connection': true
-};
-
-describe('Sockets', function () {
-    var client1, client2, client3;
-    beforeEach(function() {
-        sinon.stub(console, "log").returns(void 0);
-        sinon.stub(console, "error").returns(void 0);
-    });
-    afterEach(function() {
-        console.log.restore();
-        console.error.restore();
-    });
-
-    it('should send and receive a message', function (done) {
-        // Set up client1 connection
-        client1 = ioClient.connect(socketUrl);
-        client2 = ioClient.connect(socketUrl);
-        // Set up event listener.  This is the actual test we're running\
-        var inspect = stdout.inspect();
-        log();
-        client1.emit('userNameSend', "Griffin");
-        client2.emit('userNameSend', "Sam");
-        client2.emit('userLogin', "Griffin");
-        client2.emit('userLogin', "Sam");
-        inspect.restore();
-        assert.ok(inspect.output.length > 0);
-        done();
-    });
-});
 
 
 //var httpsServer = https.createServer(credentials, app);
