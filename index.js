@@ -79,10 +79,6 @@ var io = require('socket.io')(server);
 server.listen(3000, function() {
     console.log('server up and running at %s port', 3000);
 });
-exports.listen = function()
-{
-    app.listen(80);
-};
 
 io.on('connection', function(socket) {
 
