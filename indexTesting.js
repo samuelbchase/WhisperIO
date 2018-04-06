@@ -290,8 +290,3 @@ io.on('connection', function(socket) {
         });
     });
 });
-
-
-
-//var httpsServer = https.createServer(credentials, app);
-//httpsServer.listen(8443);
