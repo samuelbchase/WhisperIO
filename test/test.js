@@ -25,8 +25,8 @@ describe('User connections', function () {
     it('Is the server running?', function (done) {
         http.get('http://localhost:80', function (res) {
             assert.equal(200, res.statusCode);
-            done();
         });
+        done();
     });
     it('Can a client connect?', function (done) {
         // Set up client1 connection
@@ -61,17 +61,9 @@ describe('User connections', function () {
        client1.emit('addFriend', "Griffin", "Geraldo");
        client1.on('addFriendResult', function(result, name){
           assert(result === -1, "Added friend either does not exist or is not already friends");
+           assert(result === 0, "Added friend is broken");
        });
        done();
-    });
-
-    it('Can you add friends?', function (done) {
-        var client1 = ioClient.connect('http://localhost:80', options);
-        client1.emit('addFriend', "Griffin", "DoesNotExist");
-        client1.on('addFriendResult', function(result, name){
-            assert(result === 0, "Added friend is broken");
-        });
-        done();
     });
 
     it('Does the program show your online friends?', function (done) {
