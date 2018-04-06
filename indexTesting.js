@@ -83,6 +83,10 @@ io.on('connection', function(socket) {
         database: database,
     });
 
+    socket.on('testMsg', function(msg) {
+       console.log(msg);
+    });
+
     socket.on('userLogin', function (userName) {
         console.log(userName + " is logging in");
         sql = "UPDATE User SET isOnline='Y' WHERE username='" + userName + "';"
