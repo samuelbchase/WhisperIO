@@ -35,7 +35,9 @@ var readPW;
 var writeUN;
 var writePW;
 
-
+exports.log = function(){
+    console.log("stuff");
+};
 
 //use this for opening a file for the read and write passwords for the DB	
 //PLEASE DON'T MESS WITH THIS FUNCTION OR .info.txt! IT WILL SCREW UP THE DATABASE QUERYS
