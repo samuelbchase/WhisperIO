@@ -327,8 +327,8 @@ describe('Sockets', function () {
         client1 = ioClient.connect(socketUrl);
         client2 = ioClient.connect(socketUrl);
         // Set up event listener.  This is the actual test we're running\
-        log();
         var inspect = stdout.inspect();
+        log();
         client1.emit('userNameSend', "Griffin");
         client2.emit('userNameSend', "Sam");
         client2.emit('userLogin', "Griffin");
