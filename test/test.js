@@ -70,8 +70,8 @@ describe('User connections', function () {
         client1.emit('addFriend', "Griffin", "DoesNotExist");
         client1.on('addFriendResult', function(result, name){
             assert(result === 0, "Added friend is broken");
-            done();
         });
+        done();
     });
 
     it('Does the program show your online friends?', function (done) {
@@ -79,8 +79,8 @@ describe('User connections', function () {
        client1.emit('isOnline', "Griffin");
        client1.on('isOnlineResult', function(result) {
           assert(result === true || result === false, "Does not return online status");
-          done();
        });
+       done();
     });
 
 });
