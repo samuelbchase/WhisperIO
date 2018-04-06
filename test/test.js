@@ -21,15 +21,20 @@ describe('Sockets', function () {
         console.error.restore();
     });
     server.listen();
+    var options ={
+        transports: ['websocket'],
+        'force new connection': true
+    };
+    var serverURL = 'http://localhost:80'
     it('Is the server running?', function (done) {
-        http.get('http://localhost:80', function (res) {
+        http.get(serverURL, function (res) {
             assert.equal(200, res.statusCode);
             done();
         });
     });
     it('Can a client connect?', function (done) {
         // Set up client1 connection
-        var client1 = ioClient.connect('http://localhost:80', options);
+        var client1 = ioClient.connect(serverURL, options);
         // Set up event listener.  This is the actual test we're running\
         assert(client1.connected !== false,'client1 is not connected')
         client1.emit('userNameSend', "Griffin");

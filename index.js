@@ -35,6 +35,10 @@ var readPW;
 var writeUN;
 var writePW;
 
+function log(){
+    console.log("stuff");
+};
+
 //use this for opening a file for the read and write passwords for the DB	
 //PLEASE DON'T MESS WITH THIS FUNCTION OR .info.txt! IT WILL SCREW UP THE DATABASE QUERYS
 fs.readFile('.info.txt', 'utf8', function(err, contents){
@@ -71,7 +75,12 @@ var options = {
 //var server = https.createServer(options, app);
 var server = https.createServer(options, app);
 var io = require('socket.io')(server);
-exports.listen = function() {
+
+server.listen(3000, function() {
+    console.log('server up and running at %s port', 3000);
+});
+exports.listen = function()
+{
     app.listen(80);
 };
 
