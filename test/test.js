@@ -36,4 +36,13 @@ describe('Sockets', function () {
         client1.emit('userNameSend', "Griffin");
         done();
     });
+
+    it('Can you add friends?', function (done) {
+       var client1 = ioClient.connect('http://localhost:80', options);
+       client1.emit('addFriend', "Griffin", "Geraldo");
+       client1.on('addFriendResult', function(result, name){
+          assert(result === -1, "Added friend either does not exist or is not already friends");
+          done();
+       });
+    });
 });
