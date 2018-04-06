@@ -59,16 +59,19 @@ fs.readFile('.info.txt', 'utf8', function(err, contents){
     old = index + 3;
     index = contents.indexOf('|', old);
     writePW = contents.slice(old);
+    console.log("test");
+
 });
 
 exports.runServer = function() {
-    http.listen(80, function(){
+    http.listen(80, function() {
         console.log('listening on *:80');
     });
 };
 module.exports.runServer();
 
 io.on('connection', function(socket) {
+
 
     read = mysql.createConnection({
         host: host,
@@ -80,7 +83,7 @@ io.on('connection', function(socket) {
         host: host,
         user: writeUN,
         password: writePW,
-        database: database,
+        database: database
     });
 
     socket.on('testMsg', function(msg) {
@@ -258,7 +261,7 @@ io.on('connection', function(socket) {
         console.log("Adding " + friendToAdd + " for " + currentUser + " as a friend");
 
         //check to see if the friend relationship already exists
-        var sql = "SELECT * FROM Friends WHERE Host = \"" + currentUser + "\" AND Receiver = \"" + friendToAdd + "\";"
+        var sql = "SELECT * FROM Friends WHERE Host = \"" + currentUser + "\" AND Receiver = \"" + friendToAdd + "\";";
         read.query(sql, function(err, result) {
             if (err) throw err;
             if (result.length == 0) // if the friend relationship doesn't exist

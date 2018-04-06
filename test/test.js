@@ -57,11 +57,18 @@ describe('User connections', function () {
         done();
     });
 
-    it('Can you add friends?', function (done) {
+    it('Can you add a friend you are already friends with?', function (done) {
        client1.emit('addFriend', "Griffin", "Geraldo");
-       client1.on('addFriendResult', function(result, name){
+       client1.on('addFriendResult', function(result, name) {
           assert(result === -1, "Added friend either does not exist or is not already friends");
-           assert(result === 0, "Added friend is broken");
+       });
+       done();
+    });
+
+    it('Can you add nonexistant friends?', function(done) {
+       client1.emit('addFriend', "Griffin", "DoesNotExist");
+       client1.on('addFriendResult', function(result, userName) {
+          assert(result === 0, "Added friend added a nonexistant user");
        });
        done();
     });
@@ -70,9 +77,18 @@ describe('User connections', function () {
        var client1 = ioClient.connect('http://localhost:80', options);
        client1.emit('isOnline', "Griffin");
        client1.on('isOnlineResult', function(result) {
-          assert(result === true || result === false, "Does not return online status");
+          assert(result === true, "Online friends are not online");
        });
        done();
+    });
+
+    it('Does the program show your offline friends?', function (done) {
+        var client1 = ioClient.connect('http://localhost:80', options);
+        client1.emit('isOnline', "Sam");
+        client1.on('isOnlineResult', function(result) {
+            assert(result === false, "Offline friends are not offline");
+        });
+        done();
     });
 
 });
