@@ -21,17 +21,17 @@ describe('Sockets', function () {
         console.error.restore();
     });
     server.listen();
-    it('should return 200', function (done) {
+    it('Is the server running?', function (done) {
         http.get('http://localhost:80', function (res) {
             assert.equal(200, res.statusCode);
             done();
         });
     });
-    it('should send and receive a message', function (done) {
+    it('Can a client connect?', function (done) {
         // Set up client1 connection
         var client1 = ioClient.connect('http://localhost:80', options);
-
         // Set up event listener.  This is the actual test we're running\
+        assert(client1.connected !== false,'client1 is not connected')
         client1.emit('userNameSend', "Griffin");
         done();
     });
