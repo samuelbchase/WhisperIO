@@ -20,7 +20,6 @@ describe('Sockets', function () {
         console.log.restore();
         console.error.restore();
     });
-    server.runServer();
     it('Is the server running?', function (done) {
         http.get('http://localhost:80', function (res) {
             assert.equal(200, res.statusCode);
