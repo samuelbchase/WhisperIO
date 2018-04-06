@@ -35,7 +35,7 @@ var readPW;
 var writeUN;
 var writePW;
 
-exports.log = function(){
+function log(){
     console.log("stuff");
 };
 
@@ -298,6 +298,47 @@ io.on('connection', function(socket) {
 		});
 	});
 });
+
+var ioClient     = require('socket.io-client');
+var sinon  = require("sinon");
+var assert = require('chai').assert;
+var stdout = require('test-console').stdout;
+
+var socketUrl = 'https://localhost:3000/main';
+
+var options = {
+    transports: ['websocket'],
+    'force new connection': true
+};
+
+describe('Sockets', function () {
+    var client1, client2, client3;
+    beforeEach(function() {
+        sinon.stub(console, "log").returns(void 0);
+        sinon.stub(console, "error").returns(void 0);
+    });
+    afterEach(function() {
+        console.log.restore();
+        console.error.restore();
+    });
+
+    it('should send and receive a message', function (done) {
+        // Set up client1 connection
+        client1 = ioClient.connect(socketUrl);
+        client2 = ioClient.connect(socketUrl);
+        // Set up event listener.  This is the actual test we're running\
+        log();
+        var inspect = stdout.inspect();
+        client1.emit('userNameSend', "Griffin");
+        client2.emit('userNameSend', "Sam");
+        client2.emit('userLogin', "Griffin");
+        client2.emit('userLogin', "Sam");
+        inspect.restore();
+        assert.ok(inspect.output.length > 0);
+        done();
+    });
+});
+
 
 //var httpsServer = https.createServer(credentials, app);
 //httpsServer.listen(8443);
