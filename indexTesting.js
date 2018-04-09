@@ -68,7 +68,10 @@ exports.runServer = function() {
         console.log('listening on *:80');
     });
 };
-module.exports.runServer();
+
+exports.closeServer = function() {
+    http.close();
+};
 
 io.on('connection', function(socket) {
 
@@ -287,7 +290,7 @@ io.on('connection', function(socket) {
                 });
             }
             else {
-                console.log("Friend already exists")
+                console.log("Friend already exists");
                 socket.emit('addFriendResult', -1, friendToAdd);
             }
         });

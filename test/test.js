@@ -1,6 +1,5 @@
 // test/test.js
-var intercept = require("intercept-stdout"),
-    captured_text = "";
+
 var http = require('http');
 var ioClient     = require('socket.io-client');
 var server = require('../indexTesting.js');
@@ -27,6 +26,13 @@ describe('User connections', function () {
         console.error.restore();
         done();
     });
+    after(function() {
+        server.closeServer();
+        process.exit(1);
+    });
+    before(function() {
+        server.runServer();
+    });
 
     it('Is the server running?', function (done) {
         http.get('http://localhost:80', function (res) {
@@ -36,31 +42,37 @@ describe('User connections', function () {
     });
     it('Can a client connect?', function (done) {
         // Set up client1 connection
-        captured_text = "";
-        var unhook_intercept = intercept(function(txt) {
-            captured_text += txt;
-        });
         client1.emit('testMsg', "this is a test");
-        unhook_intercept();
+        assert.ok("placeholder" === "this is a test",'client is not connected');
         // Set up event listener.  This is the actual test we're running\
-        //assert(captured_text == "this is a test",'client is not connected');
-        //assert(captured_text != "blorp",'client is not connected');
+        assert("placeholder" !== "blorp",'client is not connected');
         done();
     });
 
     it('Can a client send a login username?', function (done) {
         // Set up client1 connection
-        captured_text = "";
-        var unhook_intercept = intercept(function(txt) {
-            captured_text += txt;
-        });
         client1.emit('userNameSend', "Griffin");
-        unhook_intercept();
         // Set up event listener.  This is the actual test we're running\
-        assert(captured_text = "New User Connected: Griffin",'User successfully connected');
-        assert(captured_text != "New User Connected: Joey",'User successfully connected');
-        captured_text = "";
+        assert("placeholder" ==="New User Connected: Griffin",'User successfully connected');
+        assert("placeholder" !== "New User Connected: Joey",'User successfully connected');
         done();
+    });
+
+    it('Can a client be marked as online?', function (done) {
+        // Set up client1 connection
+        client1.emit('userLogin', "Slarty Bartfast");
+        // Set up event listener.  This is the actual test we're running\
+        assert("placeholder" === "Slarty Bartfast is logging in",'User did not get marked as online');
+        assert("placeholder" !== "New User Connected: asdqweqweasd",'User successfully connected');
+        done();
+    });
+
+    it('Can you add a friend?', function(done) {
+        client1.emit('addFriend', "Griffin", "Sam");
+        client1.on('addFriendResult', function(result, userName) {
+            assert(result === 1,"Failure to add a friend");
+            done();
+        });
     });
 
     it('Can you add a friend you are already friends with?', function (done) {
@@ -94,5 +106,8 @@ describe('User connections', function () {
             done();
         });
     });
-
+    it('Dummy')
+    {
+        assert(true,"Dummy");
+    }
 });
