@@ -290,7 +290,7 @@ io.on('connection', function(socket) {
                 });
             }
             else {
-                console.log("Friend already exists")
+                console.log("Friend already exists");
                 socket.emit('addFriendResult', -1, friendToAdd);
             }
         });
