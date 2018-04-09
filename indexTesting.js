@@ -64,8 +64,8 @@ fs.readFile('.info.txt', 'utf8', function(err, contents){
 });
 
 exports.runServer = function() {
-    http.listen(80, function() {
-        console.log('listening on *:80');
+    http.listen(3001, function() {
+        console.log('listening on *:3001');
     });
 };
 
