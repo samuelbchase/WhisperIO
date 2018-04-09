@@ -67,6 +67,13 @@ describe('User connections', function () {
         done();
     });
 
+    it('Can you add a friend?', function(done) {
+        client1.emit('addFriend', "Griffin", "Sam");
+        client1.on('addFriendResult', function(result, userName) {
+            assert(result === 1,"Failure to add a friend");
+            done();
+        });
+    });
 
     it('Can you add a friend you are already friends with?', function (done) {
        client1.emit('addFriend', "Griffin", "Geraldo");
