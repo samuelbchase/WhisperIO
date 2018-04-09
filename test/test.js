@@ -7,7 +7,6 @@ var ioClient     = require('socket.io-client');
 var server = require('../indexTesting.js');
 var sinon  = require("sinon");
 var assert = require('chai').assert;
-var stdout = require('test-console').stdout;
 var options = {
     transports: ['websocket'],
     'force new connection': true
