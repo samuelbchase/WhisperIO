@@ -26,6 +26,13 @@ describe('User connections', function () {
         console.error.restore();
         done();
     });
+    after(function() {
+        server.closeServer();
+        process.exit(1);
+    });
+    before(function() {
+        server.runServer();
+    });
 
     it('Is the server running?', function (done) {
         http.get('http://localhost:80', function (res) {
@@ -36,9 +43,9 @@ describe('User connections', function () {
     it('Can a client connect?', function (done) {
         // Set up client1 connection
         client1.emit('testMsg', "this is a test");
-        assert.ok(NULL === "this is a test",'client is not connected');
+        assert.ok("placeholder" === "this is a test",'client is not connected');
         // Set up event listener.  This is the actual test we're running\
-        assert(NULL !== "blorp",'client is not connected');
+        assert("placeholder" !== "blorp",'client is not connected');
         done();
     });
 
@@ -46,8 +53,8 @@ describe('User connections', function () {
         // Set up client1 connection
         client1.emit('userNameSend', "Griffin");
         // Set up event listener.  This is the actual test we're running\
-        assert(NULL ==="New User Connected: Griffin",'User successfully connected');
-        assert(NULL !== "New User Connected: Joey",'User successfully connected');
+        assert("placeholder" ==="New User Connected: Griffin",'User successfully connected');
+        assert("placeholder" !== "New User Connected: Joey",'User successfully connected');
         done();
     });
 
@@ -55,11 +62,18 @@ describe('User connections', function () {
         // Set up client1 connection
         client1.emit('userLogin', "Slarty Bartfast");
         // Set up event listener.  This is the actual test we're running\
-        assert(NULL === "Slarty Bartfast is logging in",'User did not get marked as online');
-        assert(NULL !== "New User Connected: asdqweqweasd",'User successfully connected');
+        assert("placeholder" === "Slarty Bartfast is logging in",'User did not get marked as online');
+        assert("placeholder" !== "New User Connected: asdqweqweasd",'User successfully connected');
         done();
     });
 
+    it('Can you add a friend?', function(done) {
+        client1.emit('addFriend', "Griffin", "Sam");
+        client1.on('addFriendResult', function(result, userName) {
+            assert(result === 1,"Failure to add a friend");
+            done();
+        });
+    });
 
     it('Can you add a friend you are already friends with?', function (done) {
        client1.emit('addFriend', "Griffin", "Geraldo");
@@ -92,5 +106,8 @@ describe('User connections', function () {
             done();
         });
     });
-
+    it('Dummy')
+    {
+        assert(true,"Dummy");
+    }
 });
