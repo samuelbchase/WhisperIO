@@ -35,13 +35,10 @@ describe('User connections', function () {
     });
     it('Can a client connect?', function (done) {
         // Set up client1 connection
-        var inspect = stdout.inspect();
         client1.emit('testMsg', "this is a test");
-        inspect.restore();
-        var printedVal = server.logGet();
-        assert.ok(printedVal === "this is a test",'client is not connected');
+        assert.ok(NULL === "this is a test",'client is not connected');
         // Set up event listener.  This is the actual test we're running\
-        assert(stdout !== "blorp",'client is not connected');
+        assert(NULL !== "blorp",'client is not connected');
         done();
     });
 
