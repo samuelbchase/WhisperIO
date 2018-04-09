@@ -2,6 +2,7 @@
 var intercept = require("intercept-stdout"),
     captured_text = "";
 var http = require('http');
+var capcon = require('capture-console');
 var ioClient     = require('socket.io-client');
 var server = require('../indexTesting.js');
 var sinon  = require("sinon");
@@ -30,15 +31,13 @@ describe('User connections', function () {
     });
     it('Can a client connect?', function (done) {
         // Set up client1 connection
-        captured_text = "";
-        var unhook_intercept = intercept(function(txt) {
-            captured_text += txt;
-        });
+        var inspect = stdout.inspect();
         client1.emit('testMsg', "this is a test");
-        unhook_intercept();
+        inspect.restore();
+        var printedVal = server.logGet();
+        assert.ok(printedVal === "this is a test",'client is not connected');
         // Set up event listener.  This is the actual test we're running\
-        assert(captured_text = "this is a test",'client is not connected');
-        assert(captured_text != "blorp",'client is not connected');
+        assert(stdout !== "blorp",'client is not connected');
         done();
     });
 
@@ -51,11 +50,28 @@ describe('User connections', function () {
         client1.emit('userNameSend', "Griffin");
         unhook_intercept();
         // Set up event listener.  This is the actual test we're running\
-        assert(captured_text = "New User Connected: Griffin",'User successfully connected');
-        assert(captured_text != "New User Connected: Joey",'User successfully connected');
+        assert(captured_text ==="New User Connected: Griffin",'User successfully connected');
+        assert(captured_text !== "New User Connected: Joey",'User successfully connected');
         captured_text = "";
         done();
     });
+
+    it('Can a client be marked as online?', function (done) {
+        // Set up client1 connection
+        captured_text = "";
+        var unhook_intercept = intercept(function(txt) {
+            captured_text += txt;
+        });
+        client1.emit('userLogin', "Slarty Bartfast");
+        // Set up event listener.  This is the actual test we're running\
+        assert(captured_text === "Slarty Bartfast is logging in",'User did not get marked as online');
+        assert(captured_text !== "New User Connected: asdqweqweasd",'User successfully connected');
+        captured_text = "";
+        unhook_intercept();
+
+        done();
+    });
+
 
     it('Can you add a friend you are already friends with?', function (done) {
        client1.emit('addFriend', "Griffin", "Geraldo");
