@@ -28,6 +28,7 @@ describe('User connections', function () {
     });
     after(function() {
         server.closeServer();
+        process.exit(1);
     });
     before(function() {
         server.runServer();
@@ -98,4 +99,8 @@ describe('User connections', function () {
             done();
         });
     });
+    it('Dummy')
+    {
+        assert(true,"Dummy");
+    }
 });
