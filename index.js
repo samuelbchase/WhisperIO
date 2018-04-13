@@ -72,9 +72,40 @@ var options = {
     key: fs.readFileSync(sslPath + 'privkey.pem'),
     cert: fs.readFileSync(sslPath + 'fullchain.pem')
 };
-//var server = https.createServer(options, app);
-var server = https.createServer(options, app);
+
+
+// ***********************************
+//              myServer
+//  use myServer.getInstance() to get
+//  a singleton instance of a server
+// ***********************************
+var myServer = (function () {
+
+    var instance;
+
+    function init () {
+        console.log("---Server initializing---");
+        return https.createServer(options, app);
+    }
+
+    return {
+
+        // Get the Singleton instance if one exists
+        // or create one if it doesn't
+        getInstance: function () {
+
+            if ( !instance ) {
+                instance = init();
+            }
+            return instance;
+        }
+    }
+}) ();
+
+
+var server = myServer.getInstance();
 var io = require('socket.io')(server);
+
 
 server.listen(3000, function() {
     console.log('server up and running at %s port', 3000);
