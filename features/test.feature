@@ -7,3 +7,8 @@ Feature: Basic Testing
      Given a chat message
      When I send the message
      Then a friend should receive the message
+
+   Scenario: Dummy
+     Given a dummy test
+     When I do nothing
+     Then nothing should happen
