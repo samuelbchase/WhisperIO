@@ -7,5 +7,3 @@ Feature: Basic Testing
      Given a chat message
      When I send the message
      Then a friend should receive the message
-
-     Given a dummy test

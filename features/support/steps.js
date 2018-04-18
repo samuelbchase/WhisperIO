@@ -14,19 +14,13 @@ Given('a chat message', function() {
 });
 
 When('I send the message', function() {
-    client1.emit('testMsg', this.variable);
+    client1.emit('testMsg', "blah");
 });
 
 Then('a friend should receive the message', function() {
     client1.on('testMsgResponse', function(message) {
-        this.variable = message;
-        return expect(this.variable).to.equal('It worked');
+        return expect(true).to.equal(false);
     });
-});
-
-Given('a dummy test', function() {
-    expect(true).to.be.equal(true);
-    return;
 });
 
 AfterAll(function() {
