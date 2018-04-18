@@ -15,7 +15,7 @@ describe('User connections', function () {
     beforeEach(function(done) {
         sinon.stub(console, "log").returns(void 0);
         sinon.stub(console, "error").returns(void 0);
-        client1 = ioClient.connect('http://localhost:3001', options);
+        client1 = ioClient.connect('http://localhost:3000', options);
         client1.on('connect', function() {
             done();
         });
@@ -35,7 +35,7 @@ describe('User connections', function () {
     });
 
     it('Is the server running?', function (done) {
-        http.get('http://localhost:3001', function (res) {
+        http.get('http://localhost:3000', function (res) {
             assert.equal(200, res.statusCode);
         });
         done();
