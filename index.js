@@ -39,6 +39,14 @@ function log(){
     console.log("stuff");
 };
 
+var key;
+var contents = fs.readFileSync('.privkey','utf8');
+console.log(contents);
+key = new NodeRSA(contents);
+console.log("Key Generated");
+console.log(key.encrypt("Encryption Test", 'base64'));
+
+
 //use this for opening a file for the read and write passwords for the DB	
 //PLEASE DON'T MESS WITH THIS FUNCTION OR .info.txt! IT WILL SCREW UP THE DATABASE QUERYS
 fs.readFile('.info.txt', 'utf8', function(err, contents){
@@ -158,7 +166,7 @@ io.on('connection', function(socket) {
             }
         }
         console.log('By: ' + name);
-        sql = "INSERT INTO Message (SentFrom, SentTo, Message, timestamp) VALUES ('" + name + "', '" + userSentTo + "', '" + message + "', FROM_UNIXTIME('" + Date.now()/1000 + "'));";
+        sql = "INSERT INTO Message (SentFrom, SentTo, Message, timestamp) VALUES ('" + name + "', '" + userSentTo + "', '" + key.encrypt(message, 'base64') + "', FROM_UNIXTIME('" + Date.now()/1000 + "'));";
         console.log(sql);
         write.query(sql, function(err, result) {
             if (err) throw err;
