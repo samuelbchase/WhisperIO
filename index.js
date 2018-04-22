@@ -10,6 +10,8 @@ var mysql = require('mysql');
 var sha256 = require('sha256');
 var request = require("request");
 var socket_io = require("socket.io");
+var NodeRSA = require('node-rsa');
+
 const tls = require('tls');
 
 app.use(express.static(path.join(__dirname, 'public')));
