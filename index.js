@@ -198,6 +198,11 @@ io.on('connection', function(socket) {
                 console.log(result[x].name/message/etc)
             }
             */
+	    for(var x in result)
+		{
+			console.log(key.decrypt(result[x].Message,'utf8'));
+			result[x].Message = key.decrypt(result[x].Message,'utf8');
+		}
             socket.emit('messageHistory', result); 
         });
 
