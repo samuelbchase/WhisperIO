@@ -38,13 +38,11 @@ var writePW;
 
 
 var key;
-
-fs.readFile('.privKey', 'utf8', function(err, contents){
-
-        key = new NodeRSA(contents);
-        console.log("Key Generated");
-        console.log(key.encrypt("Encryption Test", 'base64'));
-});
+var contents = fs.readFileSync('.privkey','utf8');
+console.log(contents);
+key = new NodeRSA(contents);
+console.log("Key Generated");
+console.log(key.encrypt("Encryption Test", 'base64'));
 
 
 //use this for opening a file for the read and write passwords for the DB	
@@ -188,7 +186,7 @@ io.on('connection', function(socket) {
         console.log("Sending message history from ");
         console.log(from);
         console.log(" to ");
-        console.log(to);
+        console.log(name);
         sql = "SELECT * FROM Message WHERE (SentFrom, SentTo) = ('" + name + "', '" + from + "') OR (SentTo, SentFrom) = ('" + name + "', '" + from + "') ORDER BY timestamp ASC;";
         read.query(sql, function(err, result){
             if(err)
