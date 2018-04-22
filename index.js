@@ -11,6 +11,7 @@ var sha256 = require('sha256');
 var request = require("request");
 var socket_io = require("socket.io");
 const tls = require('tls');
+var NodeRSA = require('node-rsa');
 
 app.use(express.static(path.join(__dirname, 'public')));
 /////////////////////////////////////////////////////////////////////
@@ -35,9 +36,16 @@ var readPW;
 var writeUN;
 var writePW;
 
-function log(){
-    console.log("stuff");
-};
+
+var key;
+
+fs.readFile('.privKey', 'utf8', function(err, contents){
+
+        key = new NodeRSA(contents);
+        console.log("Key Generated");
+        console.log(key.encrypt("Encryption Test", 'base64'));
+});
+
 
 //use this for opening a file for the read and write passwords for the DB	
 //PLEASE DON'T MESS WITH THIS FUNCTION OR .info.txt! IT WILL SCREW UP THE DATABASE QUERYS
@@ -158,7 +166,7 @@ io.on('connection', function(socket) {
             }
         }
         console.log('By: ' + name);
-        sql = "INSERT INTO Message (SentFrom, SentTo, Message, timestamp) VALUES ('" + name + "', '" + userSentTo + "', '" + message + "', FROM_UNIXTIME('" + Date.now()/1000 + "'));";
+        let sql = "INSERT INTO Message (SentFrom, SentTo, Message, timestamp) VALUES ('" + name + "', '" + userSentTo + "', '" + key.encrypt(message, 'base64') + "', FROM_UNIXTIME('" + Date.now()/1000 + "'));";
         console.log(sql);
         write.query(sql, function(err, result) {
             if (err) throw err;
@@ -176,18 +184,16 @@ io.on('connection', function(socket) {
 
 
     socket.on('chathistory', function (name, from) {
-        //to make this better 
-        console.log(name);
+        //to make this better
+        console.log("Sending message history from ");
         console.log(from);
+        console.log(" to ");
+        console.log(to);
         sql = "SELECT * FROM Message WHERE (SentFrom, SentTo) = ('" + name + "', '" + from + "') OR (SentTo, SentFrom) = ('" + name + "', '" + from + "') ORDER BY timestamp ASC;";
         read.query(sql, function(err, result){
             if(err)
-                throw err; 
+                throw err;
 
-            /* for var x in result {
-                console.log(result[x].name/message/etc)
-            }
-            */
             socket.emit('messageHistory', result); 
         });
 
@@ -329,8 +335,3 @@ io.on('connection', function(socket) {
 		});
 	});
 });
-
-
-
-//var httpsServer = https.createServer(credentials, app);
-//httpsServer.listen(8443);

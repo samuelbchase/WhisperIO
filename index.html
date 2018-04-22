@@ -55,7 +55,7 @@
                                             {
                                                 for(x in history) {
                                                     var div = document.createElement('div');
-                                                    if(ActiveFriend == history[x].SentFrom) {
+                                                    if(ActiveFriend === history[x].SentFrom) {
                                                         div.className = 'theirMessage';
                                                     }
                                                     else {
