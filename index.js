@@ -10,6 +10,8 @@ var mysql = require('mysql');
 var sha256 = require('sha256');
 var request = require("request");
 var socket_io = require("socket.io");
+var NodeRSA = require('node-rsa');
+
 const tls = require('tls');
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -38,6 +40,14 @@ var writePW;
 function log(){
     console.log("stuff");
 };
+
+var key;
+var contents = fs.readFileSync('.privkey','utf8');
+console.log(contents);
+key = new NodeRSA(contents);
+console.log("Key Generated");
+console.log(key.encrypt("Encryption Test", 'base64'));
+
 
 //use this for opening a file for the read and write passwords for the DB	
 //PLEASE DON'T MESS WITH THIS FUNCTION OR .info.txt! IT WILL SCREW UP THE DATABASE QUERYS
@@ -158,7 +168,7 @@ io.on('connection', function(socket) {
             }
         }
         console.log('By: ' + name);
-        sql = "INSERT INTO Message (SentFrom, SentTo, Message, timestamp) VALUES ('" + name + "', '" + userSentTo + "', '" + message + "', FROM_UNIXTIME('" + Date.now()/1000 + "'));";
+        sql = "INSERT INTO Message (SentFrom, SentTo, Message, timestamp) VALUES ('" + name + "', '" + userSentTo + "', '" + key.encrypt(message, 'base64') + "', FROM_UNIXTIME('" + Date.now()/1000 + "'));";
         console.log(sql);
         write.query(sql, function(err, result) {
             if (err) throw err;
@@ -188,6 +198,11 @@ io.on('connection', function(socket) {
                 console.log(result[x].name/message/etc)
             }
             */
+	    for(var x in result)
+		{
+			console.log(key.decrypt(result[x].Message,'utf8'));
+			result[x].Message = key.decrypt(result[x].Message,'utf8');
+		}
             socket.emit('messageHistory', result); 
         });
 

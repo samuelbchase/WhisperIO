@@ -91,6 +91,7 @@ io.on('connection', function(socket) {
 
     socket.on('testMsg', function(msg) {
        console.log(msg);
+       socket.emit("testMsgResponse","blah");
     });
 
     socket.on('userLogin', function (userName) {

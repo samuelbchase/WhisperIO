@@ -1,18 +1,8 @@
 // features/support/world.js
 const { setWorldConstructor } = require('cucumber')
+const file = require('./steps.js');
 
 class CustomWorld {
-    constructor() {
-        this.variable = 0
-    }
-
-    setTo(number) {
-        this.variable = number
-    }
-
-    incrementBy(number) {
-        this.variable += number
-    }
 }
 
 setWorldConstructor(CustomWorld)
