@@ -59,8 +59,6 @@ fs.readFile('.info.txt', 'utf8', function(err, contents){
     old = index + 3;
     index = contents.indexOf('|', old);
     writePW = contents.slice(old);
-    console.log("test");
-
 });
 
 exports.runServer = function() {
@@ -71,6 +69,7 @@ exports.runServer = function() {
 
 exports.closeServer = function() {
     http.close();
+    console.log("server is closing");
 };
 
 io.on('connection', function(socket) {
@@ -91,7 +90,7 @@ io.on('connection', function(socket) {
 
     socket.on('testMsg', function(msg) {
        console.log(msg);
-       socket.emit("testMsgResponse","blah");
+       socket.emit("testMsgResponse","pass");
     });
 
     socket.on('userLogin', function (userName) {
@@ -293,6 +292,42 @@ io.on('connection', function(socket) {
             else {
                 console.log("Friend already exists");
                 socket.emit('addFriendResult', -1, friendToAdd);
+            }
+        });
+    });
+
+    socket.on('removeFriend', function (user, friend) {
+        console.log("Removing " + friend + " for " + user + " as a friend");
+
+        //check to see if the friend relationship already exists
+        var sql = "SELECT * FROM Friends WHERE Host = \"" + user + "\" AND Receiver = \"" + friend + "\";"
+        read.query(sql, function(err, result) {
+            if (err) throw err;
+            if (result.length == 1) // if the friend relationship doesn't exist
+            {
+                console.log("Friend exists!");
+
+                sql = "SELECT * FROM User WHERE username = \"" + friend + "\";";
+                read.query(sql, function(err, result) {
+                    if (err) throw err;
+                    if (result.length > 0)	// make sure that the friend you're adding actually exists
+                    {
+                        sql = "REMOVE FROM Friends (Host, Receiver) VALUES ('" + user + "', '" + friend + "');";
+                        write.query(sql, function(err, result) {
+                            if (err) throw err;
+                        });
+                        console.log(friendToAdd + " was removed");
+                        socket.emit('removeFriendResult', 1, friend);
+                    }
+                    else {
+                        console.log("User does not exist!");
+                        socket.emit('removeFriendResult', -1, friend);
+                    }
+                });
+            }
+            else {
+                console.log("Friend relationship doesn't exist");
+                socket.emit('removeFriendResult', 0, friend);
             }
         });
     });
