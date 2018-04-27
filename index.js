@@ -276,11 +276,11 @@ io.on('connection', function(socket) {
                     //handle new user info emitted from the front end
                     socket.on('identifyMyself', function (whoIAm) {
                         //add the new user to the database
-                        var insertSQL = "INSERT INTO User (userName,emailHash) VALUES('" + whoIAm + "','" + hash + "');";
+                        var insertSQL = "INSERT INTO User (userName,emailHash) VALUES('" + whoIAm.toLowerCase() + "','" + hash + "');";
                         write.query(insertSQL, function(err, result) {
                             if (err) throw err;
                         });
-                        socket.emit("authSuccessNewUser", whoIAm);
+                        socket.emit("authSuccessNewUser", whoIAm.toLowerCase());
                     });
                 }
                 //if user exists, authenticate them
@@ -324,16 +324,16 @@ io.on('connection', function(socket) {
 					if (err) throw err;
 					if (result.length > 0)	// make sure that the friend you're adding actually exists
 					{
-						sql = "INSERT INTO Friends (Host, Receiver) VALUES ('" + currentUser + "', '" + friendToAdd + "');";
+						sql = "INSERT INTO Friends (Host, Receiver) VALUES ('" + currentUser.toLowerCase() + "', '" + friendToAdd.toLowerCase() + "');";
 						write.query(sql, function(err, result) {
 							if (err) throw err;
 						});
-						console.log(friendToAdd + " was added");
-                        socket.emit('addFriendResult', 1, friendToAdd);
+						console.log(friendToAdd.toLowerCase() + " was added");
+                        socket.emit('addFriendResult', 1, friendToAdd.toLowerCase());
 					}
 					else {
                         console.log("User does not exist!");
-                        socket.emit('addFriendResult', -1, friendToAdd);
+                        socket.emit('addFriendResult', -1, friendToAdd.toLowerCase());
 					}
 				});
 			}
