@@ -280,7 +280,7 @@ io.on('connection', function(socket) {
                         write.query(insertSQL, function(err, result) {
                             if (err) throw err;
                         });
-                        socket.emit("authSuccessNewUser",whoIAm);
+                        socket.emit("authSuccessNewUser", whoIAm);
                     });
                 }
                 //if user exists, authenticate them
@@ -300,7 +300,7 @@ io.on('connection', function(socket) {
         var sql = "SELECT isOnline FROM User WHERE username='" + user + "';";
         read.query(sql, function(err, result) {
            if (err) throw err;
-           if (result[0].isOnline == 'Y')
+           if (result[0].isOnline === 'Y')
                socket.emit('isOnlineResult', true, user);
            else
                socket.emit('isOnlineResult', false, user);
@@ -315,7 +315,7 @@ io.on('connection', function(socket) {
 		var sql = "SELECT * FROM Friends WHERE Host = \"" + currentUser + "\" AND Receiver = \"" + friendToAdd + "\";"
 		read.query(sql, function(err, result) {
 			if (err) throw err;
-			if (result.length == 0) // if the friend relationship doesn't exist
+			if (result.length === 0) // if the friend relationship doesn't exist
 			{
 				console.log("New friend!");
 				
@@ -333,16 +333,80 @@ io.on('connection', function(socket) {
 					}
 					else {
                         console.log("User does not exist!");
-                        socket.emit('addFriendResult', 0, friendToAdd);
+                        socket.emit('addFriendResult', -1, friendToAdd);
 					}
 				});
 			}
 			else {
                 console.log("Friend already exists")
-                socket.emit('addFriendResult', -1, friendToAdd);
+                socket.emit('addFriendResult', 0, friendToAdd);
             }
 		});
 	});
+
+    socket.on('removeFriend', function (user, friend) {
+        console.log("Removing " + friend + " for " + user + " as a friend");
+
+        //check to see if the friend relationship already exists
+        var sql = "SELECT * FROM User WHERE username = \"" + friend + "\";";
+        read.query(sql, function(err, result) {
+            if (err) throw err;
+            if (result.length === 1) // if the user exists
+            {
+                console.log("User exists!");
+
+                sql = "SELECT * FROM Friends WHERE Host = \"" + user + "\" AND Receiver = \"" + friend + "\";";
+                read.query(sql, function(err, result) {
+                    if (err) throw err;
+                    if (result.length > 0)	// make sure that the friend you're removing has a friend relationship
+                    {
+                        sql = "DELETE FROM Friends WHERE (Host, Receiver) = ('" + user + "', '" + friend + "');";
+                        write.query(sql, function(err, result) {
+                            if (err) throw err;
+                        });
+                        console.log(friend + " was removed");
+                        socket.emit('removeFriendResult', 1, friend);
+                    }
+                    else {
+                        console.log("Friend relationship does not exist");
+                        socket.emit('removeFriendResult', 0, friend);
+                    }
+                });
+            }
+            else {
+                console.log("User does not exist");
+                socket.emit('removeFriendResult', -1, friend);
+            }
+        });
+    });
+
+    socket.on('deleteAccount', function(userName) {
+        var sql = "SELECT * FROM User WHERE username = \"" + userName + "\";";
+        read.query(sql, function(err, result) {
+            if (err) throw err;
+            if (result.length !== 0) {
+                console.log("user found - deleting " + result[0].username);
+                sql = "DELETE FROM Message WHERE SentFrom = \"" + result[0].username + "\" OR SentTo = \"" + result[0].username + "\";";
+                write.query(sql, function(err) {
+                    if (err) throw err;
+                });
+                sql = "DELETE FROM Friends WHERE Host = \"" + result[0].username + "\" OR Receiver = \"" + result[0].username + "\";";
+                write.query(sql, function(err) {
+                    if (err) throw err;
+                });
+                sql = "DELETE FROM User WHERE username = \"" + result[0].username + "\";";
+                write.query(sql, function(err) {
+                    if (err) throw err;
+                });
+            }
+            else
+            {
+                console.log("this really shouldn't happen...");
+            }
+        });
+    });
+
+
 });
 
 

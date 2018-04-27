@@ -86,19 +86,17 @@
                         });
                     </script>
                 </ul>
-				<div id = "addFriendButton" class = "button" style = "background:#228B22">
-					<div>
-						<input type = "text" id = "newFriend"></input>
-					</div>
-					<button onclick = "addFriend()" style = "background:#adff2f;height:70px">Add Friend</button>
+                <div style = "height:25px"></div>
+                    <div id = "addFriendButton" onclick = "addFriend()" class = "button expanded" style = "background:#adff2f">
+                        <button>Add Friend</button>
 				</div>
-                <div class="button expanded alert" onclick="signOut()">
-                    <button>
-                        <button href="#" >Sign out</button>
-                        <script>
-                        </script>
-                    </button>
+                <div id = "removeFriendButton" onClick = "removeFriend()" class = "button expanded" style = "...">
+                    <button style = "...">Remove Friend</button>
                 </div>
+                <div id = "signOutButton" class="button expanded alert" onclick="signOut()">
+                    <button href="#" >Sign out</button>
+                </div>
+                <div id = "testButtonDeleteAccount" class = "button extended" onClick = "deleteAccount()">Test - Delete</div>
             </div>
             <!--main chat interface-->
             <script>
@@ -168,6 +166,7 @@
             socket.on('chat message', receiveMessage);
             socket.on('addFriendResult', friendResult);
             socket.on('isOnlineResult', appendOnlineStatus);
+            socket.on('removeFriendResult', removeFriendAction)
 
             //Sends messages when user presses enter
             //TODO Add Send Button
@@ -221,17 +220,39 @@
 
             //Adds a new friend for user, called when "Add Friend" button is pressed
             function addFriend() {
-                console.log("adding friend");
-                var addedFriend = $('#newFriend').val();
-                var isAdded;
-                socket.emit('addFriend', whisperIOUser, addedFriend);
+                var addFriend = prompt("Enter the name of the friend you wish to add: ", "User Name");
+                if (addFriend != null && addFriend !== "")
+                {
+                        socket.emit('addFriend', whisperIOUser, addFriend);
+                }
+            }
+
+            function removeFriend() {
+                var removeFriend = prompt("Enter the name of the friend you wish to remove: ", "User Name");
+                var wantsToRemove = 0;
+                if (removeFriend != null && removeFriend !== "")
+                {
+                    wantsToRemove = confirm("Are you sure you wish to remove " + removeFriend + " as a friend?");
+                    if (wantsToRemove === true)
+                        socket.emit('removeFriend', whisperIOUser, removeFriend);
+                }
+            }
+
+            function removeFriendAction(result, removedFriend) {
+                if (result === 1)
+                    alert(removedFriend + " has been removed from your friends list.");
+                else if (result === 0)
+                    alert(removedFriend + " was not removed as a friend: User is not in your friends list.");
+                else
+                    alert(removedFriend + " was not removed as a friend: User does not exist.");
+                window.location.href= "./main"
             }
 
             //A response once the results of attempting to add a friend finishes
 			function friendResult(result, addedFriend) {
-                if (result == 1)
+                if (result === 1)
                     alert(addedFriend + " has been added as a friend!");
-                else if (result == 0)
+                else if (result === -1)
                     alert(addedFriend + " was not added as a friend: User does not exist");
                 else
                     alert(addedFriend + " was not added as a friend: User is already a friend");
@@ -268,6 +289,15 @@
                             console.log("Wokriiiinnnnnggg err: ", err);
                         });
                 });
+            }
+
+            function deleteAccount()
+            {
+                var deleteAcc = confirm("Are you SURE you want to delete your account? This will get rid of any friend associations you have as well as any messages you've sent or been sent.");
+                if (deleteAcc)
+                {
+                    socket.emit('deleteAccount', whisperIOUser);
+                }
             }
         </script>
 
