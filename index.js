@@ -137,6 +137,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('userLogin', function (userName) {
+        userName = userName.toLowerCase();
        console.log(userName + " is logging in");
         sql = "UPDATE User SET isOnline='Y' WHERE username='" + userName + "';"
         write.query(sql, function (err) {
@@ -147,6 +148,7 @@ io.on('connection', function(socket) {
     socket.on('chat message', function(msg){
         var indexOfSeparator = msg.indexOf('-');
         var userSentTo = msg.slice(0,indexOfSeparator);
+        userSentTo = userSentTo.toLowerCase();
         var message = msg.slice(indexOfSeparator+1);
         console.log('message: ' + message);
         console.log('Was set to: ' + userSentTo);
@@ -275,6 +277,7 @@ io.on('connection', function(socket) {
                     socket.emit("unknownPerson","whoU");
                     //handle new user info emitted from the front end
                     socket.on('identifyMyself', function (whoIAm) {
+                        whoIAm = whoIam.toLowerCase();
                         //add the new user to the database
                         var insertSQL = "INSERT INTO User (userName,emailHash) VALUES('" + whoIAm.toLowerCase() + "','" + hash + "');";
                         write.query(insertSQL, function(err, result) {
@@ -324,7 +327,10 @@ io.on('connection', function(socket) {
 					if (err) throw err;
 					if (result.length > 0)	// make sure that the friend you're adding actually exists
 					{
-						sql = "INSERT INTO Friends (Host, Receiver) VALUES ('" + currentUser.toLowerCase() + "', '" + friendToAdd.toLowerCase() + "');";
+					    currentUser = currentUser.toLowerCase();
+                        friendToAdd = friendToAdd.toLowerCase();
+
+                        sql = "INSERT INTO Friends (Host, Receiver) VALUES ('" + currentUser.toLowerCase() + "', '" + friendToAdd.toLowerCase() + "');";
 						write.query(sql, function(err, result) {
 							if (err) throw err;
 						});
