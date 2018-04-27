@@ -277,7 +277,6 @@ io.on('connection', function(socket) {
                     socket.emit("unknownPerson","whoU");
                     //handle new user info emitted from the front end
                     socket.on('identifyMyself', function (whoIAm) {
-                        whoIAm = whoIam.toLowerCase();
                         //add the new user to the database
                         var insertSQL = "INSERT INTO User (userName,emailHash) VALUES('" + whoIAm.toLowerCase() + "','" + hash + "');";
                         write.query(insertSQL, function(err, result) {
