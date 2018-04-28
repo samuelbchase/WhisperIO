@@ -11,6 +11,7 @@ var sha256 = require('sha256');
 var request = require("request");
 var socket_io = require("socket.io");
 var NodeRSA = require('node-rsa');
+var randomstring = require("randomstring");
 
 const tls = require('tls');
 
@@ -48,6 +49,22 @@ key = new NodeRSA(contents);
 console.log("Key Generated");
 console.log(key.encrypt("Encryption Test", 'base64'));
 
+function getToken(userName) {
+    var sql =  "SELECT token FROM User where username = '" + userName + "';";
+    console.log("Getting token with: " + sql);
+    read.query(sql, function(err, result) {
+        if(err)
+        {
+            throw err;
+        }
+        else
+        {
+            const re = "" + result[0].token;
+            console.log(re);
+            return re;
+        }
+    });
+}
 
 //use this for opening a file for the read and write passwords for the DB	
 //PLEASE DON'T MESS WITH THIS FUNCTION OR .info.txt! IT WILL SCREW UP THE DATABASE QUERYS
@@ -137,46 +154,61 @@ io.on('connection', function(socket) {
     });
 
     socket.on('userLogin', function (userName) {
-        userName = userName.toLowerCase();
-       console.log(userName + " is logging in");
-        sql = "UPDATE User SET isOnline='Y' WHERE username='" + userName + "';"
-        write.query(sql, function (err) {
-            if (err) throw err;
+        socket.emit("tokenVerifyRequest","");
+        socket.on('tokenVerifyAnswer', function(token) {
+            if(token === getToken(userName)) {
+                userName = userName.toLowerCase();
+                console.log(userName + " is logging in");
+                sql = "UPDATE User SET isOnline='Y' WHERE username='" + userName + "';";
+                write.query(sql, function (err) {
+                    if (err) throw err;
+                });            }
         });
     });
 
     socket.on('chat message', function(msg){
+        console.log("Chat message request received");
         var indexOfSeparator = msg.indexOf('-');
         var userSentTo = msg.slice(0,indexOfSeparator);
         userSentTo = userSentTo.toLowerCase();
         var message = msg.slice(indexOfSeparator+1);
-        console.log('message: ' + message);
-        console.log('Was set to: ' + userSentTo);
+        socket.emit("tokenVerifyRequest","");
+        socket.on('tokenVerifyAnswer', function(token) {
+            console.log("Processing chat message token");
+            if(token === getToken(userName)) {
+                console.log('message: ' + message);
+                console.log('Was set to: ' + userSentTo);
 
-        var name = "Unknown";
-        for(var i = 0; i < sockets.length;i++)
-        {
-            if(sockets[i] === socket)
-            {
-                name = names[i];
+                var name = "Unknown";
+                for(var i = 0; i < sockets.length;i++)
+                {
+                    if(sockets[i] === socket)
+                    {
+                        name = names[i];
+                    }
+                }
+                for(i = 0; i < sockets.length;i++)
+                {
+                    if(names[i] === userSentTo)
+                    {
+                        //Sends message to the specified user
+                        sockets[i].emit("tokenVerifyRequest","");
+                        sockets[i].on('tokenVerifyAnswer', function(token) {
+                            if(token === getToken(names[i])) {
+                                sockets[i].emit('chat message',name + "-" + message);
+                            }
+                        });
+                    }
+                }
+                console.log('By: ' + name);
+                sql = "INSERT INTO Message (SentFrom, SentTo, Message, timestamp) VALUES ('" + name + "', '" + userSentTo + "', '" + key.encrypt(message, 'base64') + "', FROM_UNIXTIME('" + Date.now()/1000 + "'));";
+                console.log(sql);
+                write.query(sql, function(err, result) {
+                    if (err) throw err;
+                });
             }
-        }
-        for(i = 0; i < sockets.length;i++)
-        {
-            if(names[i] === userSentTo)
-            {
-                //Sends message to the specified user
-                sockets[i].emit('chat message',name + "-" + message);
-            }
-        }
-        console.log('By: ' + name);
-        sql = "INSERT INTO Message (SentFrom, SentTo, Message, timestamp) VALUES ('" + name + "', '" + userSentTo + "', '" + key.encrypt(message, 'base64') + "', FROM_UNIXTIME('" + Date.now()/1000 + "'));";
-        console.log(sql);
-        write.query(sql, function(err, result) {
-            if (err) throw err;
         });
-        console.log("----------------------------");
-    });
+        });
 
     socket.on('disconnect', function(){
         console.log(this.id + " is logging out");
@@ -194,18 +226,19 @@ io.on('connection', function(socket) {
         sql = "SELECT * FROM Message WHERE (SentFrom, SentTo) = ('" + name + "', '" + from + "') OR (SentTo, SentFrom) = ('" + name + "', '" + from + "') ORDER BY timestamp ASC;";
         read.query(sql, function(err, result){
             if(err)
-                throw err; 
-
-            /* for var x in result {
-                console.log(result[x].name/message/etc)
-            }
-            */
+                throw err;
 	    for(var x in result)
 		{
 			console.log(key.decrypt(result[x].Message,'utf8'));
 			result[x].Message = key.decrypt(result[x].Message,'utf8');
 		}
-            socket.emit('messageHistory', result); 
+		socket.emit("tokenVerifyRequest","");
+            socket.on('tokenVerifyAnswer', function(token) {
+                if(token === getToken(userName)) {
+                    socket.emit('messageHistory', result);
+                }
+
+            });
         });
 
     });
@@ -217,14 +250,26 @@ io.on('connection', function(socket) {
         names.push(userName);
         socket.id = userName;
         console.log("New User Connected: " + socket.id);
-        var sql = "SELECT * FROM Friends where Host = '" + userName + "';";
-        read.query(sql, function (err, result) {
-            if (err) throw err;
-            //console.log("Broadcasting friends to " + userName);
-            console.log("----------------------------");
-            socket.emit('FriendsList',result);
-            //console.log("Friends list sent: " + result);
+        socket.emit("tokenVerifyRequest","");
+        socket.once('tokenVerifyAnswer', function(token) {
+            console.log("Answer Received");
+            console.log("Token is: " + getToken(userName));
+            if(token === getToken(userName)) {
+                var sql = "SELECT * FROM Friends where Host = '" + userName + "';";
+                read.query(sql, function (err, result) {
+                    console.log("Emitting friends list to " + userName);
+                    if (err) throw err;
+                    //console.log("Broadcasting friends to " + userName);
+                    console.log("----------------------------");
+                    socket.emit('FriendsList',result);
+                    //console.log("Friends list sent: " + result);
+                });
+            }
+            else {
+                console.log("Token failure in userNameSend")
+            }
         });
+
     });
 
     //catch verifyToken event emitted on google login
@@ -278,11 +323,14 @@ io.on('connection', function(socket) {
                     //handle new user info emitted from the front end
                     socket.on('identifyMyself', function (whoIAm) {
                         //add the new user to the database
-                        var insertSQL = "INSERT INTO User (userName,emailHash) VALUES('" + whoIAm.toLowerCase() + "','" + hash + "');";
+                        const tok = randomstring.generate(255);
+                        var insertSQL = "INSERT INTO User (userName,emailHash,token) VALUES('" + whoIAm.toLowerCase() + "','" + hash + "', '" + tok + "');";
                         write.query(insertSQL, function(err, result) {
                             if (err) throw err;
                         });
-                        socket.emit("authSuccessNewUser", whoIAm.toLowerCase());
+                        console.log(tok);
+                        var user = {name: whoIAm.toLowerCase(), token: tok};
+                        socket.emit("authSuccessNewUser", user);
                     });
                 }
                 //if user exists, authenticate them
@@ -291,7 +339,10 @@ io.on('connection', function(socket) {
                     var userName = result[0].username;
                     userName = userName.substr(0,userName.length);
                     console.log(result[0].username);
-                    socket.emit("authSuccess",userName);
+                    const tok = getToken(userName);
+                    console.log("Sending token: " + tok);
+                    var user = {name: userName, token: tok};
+                    socket.emit("authSuccess",user);
                 }
             });
         });
@@ -386,34 +437,41 @@ io.on('connection', function(socket) {
     });
 
     socket.on('deleteAccount', function(userName) {
-        var sql = "SELECT * FROM User WHERE username = \"" + userName + "\";";
-        read.query(sql, function(err, result) {
-            if (err) throw err;
-            if (result.length !== 0) {
-                console.log("user found - deleting " + result[0].username);
-                sql = "DELETE FROM Message WHERE SentFrom = \"" + result[0].username + "\" OR SentTo = \"" + result[0].username + "\";";
-                write.query(sql, function(err) {
+        socket.emit("tokenVerifyRequest","");
+        socket.once('tokenVerifyAnswer', function(token) {
+            console.log("Answer Received");
+            if(token === getToken(userName)) {
+                var sql = "SELECT * FROM User WHERE username = \"" + userName + "\";";
+                read.query(sql, function(err, result) {
                     if (err) throw err;
-                });
-                sql = "DELETE FROM Friends WHERE Host = \"" + result[0].username + "\" OR Receiver = \"" + result[0].username + "\";";
-                write.query(sql, function(err) {
-                    if (err) throw err;
-                });
-                sql = "DELETE FROM User WHERE username = \"" + result[0].username + "\";";
-                write.query(sql, function(err) {
-                    if (err) throw err;
+                    if (result.length !== 0) {
+                        console.log("user found - deleting " + result[0].username);
+                        sql = "DELETE FROM Message WHERE SentFrom = \"" + result[0].username + "\" OR SentTo = \"" + result[0].username + "\";";
+                        write.query(sql, function(err) {
+                            if (err) throw err;
+                        });
+                        sql = "DELETE FROM Friends WHERE Host = \"" + result[0].username + "\" OR Receiver = \"" + result[0].username + "\";";
+                        write.query(sql, function(err) {
+                            if (err) throw err;
+                        });
+                        sql = "DELETE FROM User WHERE username = \"" + result[0].username + "\";";
+                        write.query(sql, function(err) {
+                            if (err) throw err;
+                        });
+                    }
+                    else
+                    {
+                        console.log("this really shouldn't happen...");
+                    }
                 });
             }
-            else
-            {
-                console.log("this really shouldn't happen...");
+            else {
+                console.log("Token failure in deleteAccount")
             }
         });
+
     });
-
-
 });
-
 
 
 //var httpsServer = https.createServer(credentials, app);

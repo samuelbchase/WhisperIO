@@ -70,16 +70,20 @@
         });
         //handle authSuccess event emitted from backend when user authentication
         //is successful for an already existing use
-        socket.on('authSuccess', function(msg) {
-            alert("Auth Success! Hello: " + msg);
-            sessionStorage.setItem("whisperIOUser", msg);
+        socket.on('authSuccess', function(user) {
+            alert("Auth Success! Hello: " + user.name);
+            sessionStorage.setItem("whisperIOUser", user.name);
+            sessionStorage.setItem("whisperIOToken", user.token);
+            console.log(user.token);
             window.location.href = "/main";
         });
         //handle authSuccess for a new user that was not already in the
         //database
-        socket.on('authSuccessNewUser', function(msg) {
-            alert("Auth Success! Thank you for joining Whisper.io, " + msg);
-            sessionStorage.setItem("whisperIOUser", msg);
+        socket.on('authSuccessNewUser', function(user) {
+            alert("Auth Success! Thank you for joining Whisper.io, " + user.name);
+            sessionStorage.setItem("whisperIOUser", user.name);
+            sessionStorage.setItem("whisperIOToken", user.token);
+            console.log(user.token);
             window.location.href = "/main";
         });
 

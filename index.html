@@ -166,7 +166,7 @@
             socket.on('chat message', receiveMessage);
             socket.on('addFriendResult', friendResult);
             socket.on('isOnlineResult', appendOnlineStatus);
-            socket.on('removeFriendResult', removeFriendAction)
+            socket.on('removeFriendResult', removeFriendAction);
 
             //Sends messages when user presses enter
             //TODO Add Send Button
@@ -268,6 +268,10 @@
                 else
                     x.className += " offline ";
             }
+            socket.on('tokenVerifyRequest', function(msg) {
+                //Commenting this out won't get you magical access, it is server-side verified
+                socket.emit("tokenVerifyAnswer",sessionStorage.getItem("whisperIOToken") || 'defaultValue');
+            });
 
             //Signs the current user out
             function signOut() {
