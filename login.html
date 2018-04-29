@@ -17,8 +17,8 @@
             <div class="cell small-10 medium-8 large-4">
                 <form class="log-in-form">
                     <h4 class="text-center"><img src="/images/aque_black.png" alt="Whisper.io"></h4>
-                    <input class = "black black-input" type="email" placeholder="somebody@example.com">
-                    <input class = "black black-input" type="password" placeholder="Password">
+                    <input class = "black black-input" id="emailBox" type="email" placeholder="somebody@example.com">
+                    <input class = "black black-input" id="passwordBox" type="password" placeholder="Password">
                 <p><input type="submit" class="button expanded" value="Log in"></input></p>
                 <div class="g-signin2" data-width="100vw" data-onsuccess="onSignIn"></div>
                     <p class="text-center" ><a href="#"><span style="color:aqua">Forgot your password?</span></a></p>
@@ -33,6 +33,45 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
 <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
 <script>
+
+    //var URL_SERVER = 'https://whisperio.club:3000';
+    var URL_SERVER = 'https://localhost:3000';
+    var socket = io.connect(URL_SERVER);
+
+    //handle login form submission
+    var logInForm = $('.log-in-form');
+    logInForm.submit(function submit() {
+        console.log("***********************");
+        var email = document.getElementById('emailBox');
+        email = $(email).val();
+        var password = document.getElementById('passwordBox');
+        password = $(password).val();
+
+        var creds = {"email" : email, "password" : password};
+
+        socket.emit("verifyEmailLogin", creds);
+
+        socket.on('newNoGmailUser', function() {
+            console.log("newNoGmailUser");
+            var person = prompt("We are now making you an account. Please" +
+                " enter your name. If you name includes a '-' this program will " +
+                "crash irreperably", "Skyler");
+            //emit identifyMyself event to the backend with new user info
+            socket.emit('identifyMyselfNoGmail',person);
+        });
+
+        socket.on('authSuccessNoGmail', function(user) {
+            console.log("IN authSuccessNoGmail");
+            alert("Auth Success!" + user.name);
+            sessionStorage.setItem("whisperIOUser", user.name);
+            sessionStorage.setItem("whisperIOToken", user.token);
+            console.log(user.token);
+            window.location.href = "/main";
+        });
+    });
+
+
+
     function renderButton() {
         gapi.signin2.render('my-signin2', {
             'width': 800,
@@ -53,9 +92,6 @@
         //id token sent to back end for authentication
         var id_token = googleUser.getAuthResponse().id_token;
 
-        //var URL_SERVER = 'https://whisperio.club:3000';
-        var URL_SERVER = 'https://localhost:3000';
-        var socket = io.connect(URL_SERVER);
         console.log("Sending token: " + id_token);
 
         //emit token to back end
@@ -64,7 +100,9 @@
         socket.emit('secureConnection');
         //handler for first time user account creation
         socket.on('unknownPerson', function(unknownPerson) {
-            var person = prompt("We are now making you an account. Please enter your name. If you name includes a '-' this program will crash irreperably", "Geraldo");
+            var person = prompt("We are now making you an account. Please" +
+             " enter your name. If you name includes a '-' this program will " +
+             "crash irreperably", "Geraldo");
             //emit identifyMyself event to the backend with new user info
             socket.emit('identifyMyself',person);
         });
@@ -91,8 +129,6 @@
             alert("Bad Dog! No hacking!");
         });
     }
-
-
 </script>
 </body>
 </html>
