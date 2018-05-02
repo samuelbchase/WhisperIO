@@ -35,10 +35,11 @@ describe('User connections', function () {
     });
 
     it('Is the server running?', function (done) {
-        http.get('http://localhost:3001', function (res) {
+        this.timeout(5000);
+        http.get('http://localhost:3000', function (res) {
             assert.equal(200, res.statusCode);
+            done();
         });
-        done();
     });
 
     /*
