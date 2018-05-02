@@ -19,10 +19,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 /////////////////////////////////////////////////////////////////////
 
 // Not sure if this is proper
-gulp.task('travis', ['build', testServerJS'], function () {
-    process.exit(0);
-
-};
+//gulp.task('travis', ['build', testServerJS'], function () {
+//   process.exit(0);
+//};
 
 
 app.get('/main', function(req, res){
