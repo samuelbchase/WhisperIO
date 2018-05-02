@@ -30,7 +30,7 @@ describe('User connections', function () {
     });
     before(function(done) {
         server.runServer();
-        client1 = ioClient.connect('http://localhost:3000', options);
+        client1 = ioClient.connect('http://localhost:3001', options);
         done();
     });
 
