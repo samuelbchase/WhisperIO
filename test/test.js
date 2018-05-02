@@ -36,7 +36,7 @@ describe('User connections', function () {
 
     it('Is the server running?', function (done) {
         this.timeout(5000);
-        http.get('http://localhost:3000', function (res) {
+        http.get('http://localhost:3001', function (res) {
             assert.equal(200, res.statusCode);
             done();
         });
