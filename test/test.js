@@ -35,7 +35,7 @@ describe('User connections', function () {
     });
 
     it('Is the server running?', function (done) {
-        http.get('http://localhost:3000', function (res) {
+        http.get('http://localhost:3001', function (res) {
             assert.equal(200, res.statusCode);
         });
         done();
@@ -67,7 +67,7 @@ describe('User connections', function () {
         assert("placeholder" === "Slarty Bartfast is logging in",'User did not get marked as online');
         assert("placeholder" !== "New User Connected: asdqweqweasd",'User successfully connected');
         done();
-    });
+    )};
 
     it('Can you add a friend?', function(done) {
         client1.emit('addFriend', "griffin", "sam");
@@ -76,7 +76,6 @@ describe('User connections', function () {
             done();
         });
     });
-
 
     it('Can you add a friend you are already friends with?', function (done) {
        client1.emit('addFriend', "griffin", "geraldo");
