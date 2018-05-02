@@ -138,7 +138,6 @@ io.on('connection', function(socket) {
         socket.emit("tokenVerifyRequest","");
         socket.once('tokenVerifyAnswer', function(token) {
             console.log("Processing chat message token");
-            //TODO fix hardcode "sam"
             var name = "Unknown";
             for(var i = 0; i < sockets.length;i++)
             {
