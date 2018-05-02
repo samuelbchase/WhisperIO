@@ -9,7 +9,7 @@ var sha256 = require('sha256');
 var request = require("request");
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-
+var nodeRSA = require('node-rsa');
 app.use(express.static(path.join(__dirname, 'public')));
 /////////////////////////////////////////////////////////////////////
 
