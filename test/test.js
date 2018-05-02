@@ -30,14 +30,14 @@ describe('User connections', function () {
     });
     after(function() {
         server.closeServer();
-        process.exit(1);
+        process.exit(0);
     });
     before(function() {
         server.runServer();
     });
 
     it('Is the server running?', function (done) {
-        http.get('http://localhost:3000', function (res) {
+        http.get('http://localhost:3001', function (res) {
             assert.equal(200, res.statusCode);
         });
         done();
@@ -70,7 +70,7 @@ describe('User connections', function () {
         assert("placeholder" !== "New User Connected: asdqweqweasd",'User successfully connected');
         done();
     });*/
-
+    /*
     it('Can you add a friend?', function(done) {
         client1.emit('addFriend', "griffin", "sam");
         client1.on('addFriendResult', function(result, userName) {
@@ -78,7 +78,7 @@ describe('User connections', function () {
             done();
         });
     });
-
+    */
     /*it('Can you add a friend you are already friends with?', function (done) {
        client1.emit('addFriend', "griffin", "geraldo");
        client1.on('addFriendResult', function(result, name) {
@@ -146,11 +146,5 @@ describe('User connections', function () {
 
     });
     */
-
-    it('Dummy')
-    {
-        assert(true,"Dummy");
-    }
-
 });
 
