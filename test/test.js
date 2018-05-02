@@ -41,28 +41,28 @@ describe('User connections', function () {
             done();
         });
     });
-
+    /*
     it('Can you add a friend?', function(done) {
+        this.timeout(5000);
         client1.emit('addFriend', "griffin", "testuser1");
-        client1.on('addFriendResult', function(result, userName) {
-            //client1.emit('removeFriend', "griffin", "testuser1");
+        client1.on('addFriendResult', function(result) {
             assert(result === 1,"Failure to add a friend");
             done();
         });
     });
-    /*
+    */
     it('Can you add a friend you are already friends with?', function (done) {
-       client1.emit('addFriend', "griffin", "geraldo");
+       client1.emit('addFriend', "griffin", "sam");
        client1.on('addFriendResult', function(result, name) {
-          assert(result === -1, "Added friend either does not exist or is not already friends - result is " + result);
+          assert(result === 0, "Added friend either does not exist or is not already friends - result is " + result);
           done();
        });
     });
-
+    /*
     it('Can you add nonexistant friends?', function(done) {
        client1.emit('addFriend', "griffin", "DoesNotExist");
        client1.on('addFriendResult', function(result, userName) {
-          assert(result === 0,"Added friend added a nonexistant user");
+          assert(result === -1,"Added friend added a nonexistant user");
           done();
        });
     });

@@ -259,7 +259,7 @@ io.on('connection', function(socket) {
             var aud = body.substring(audLocation, body.length);
             aud = aud.substring(aud.indexOf('"'), aud.length);
             aud = aud.substring(aud.indexOf('"')+1, aud.length);
-            aud = aud.substring(aud.indexOf('"')+1, aud.length);
+            aud = aud.substring (aud.indexOf('"')+1, aud.length);
             aud = aud.substring(0, aud.indexOf('"'));
 
             //parse body for user email
