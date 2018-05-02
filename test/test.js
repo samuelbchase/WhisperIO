@@ -36,48 +36,21 @@ describe('User connections', function () {
 
     it('Is the server running?', function (done) {
         this.timeout(5000);
-        http.get('http://localhost:3000', function (res) {
+        http.get('http://localhost:3001', function (res) {
             assert.equal(200, res.statusCode);
             done();
         });
     });
 
-    /*
-    it('Can a client connect?', function (done) {
-        // Set up client1 connection
-        client1.emit('testMsg', "this is a test");
-        assert.ok("placeholder" === "this is a test",'client is not connected');
-        // Set up event listener.  This is the actual test we're running\
-        assert("placeholder" !== "blorp",'client is not connected');
-        done();
-    });
-
-    it('Can a client send a login username?', function (done) {
-        // Set up client1 connection
-        client1.emit('userNameSend', "griffin");
-        // Set up event listener.  This is the actual test we're running\
-        assert("placeholder" ==="New User Connected: griffin",'User successfully connected');
-        assert("placeholder" !== "New User Connected: joey",'User successfully connected');
-        done();
-    });
-
-    it('Can a client be marked as online?', function (done) {
-        // Set up client1 connection
-        client1.emit('userLogin', "slarty bartfast");
-        // Set up event listener.  This is the actual test we're running\
-        assert("placeholder" === "Slarty Bartfast is logging in",'User did not get marked as online');
-        assert("placeholder" !== "New User Connected: asdqweqweasd",'User successfully connected');
-        done();
-    )};
-
     it('Can you add a friend?', function(done) {
-        client1.emit('addFriend', "griffin", "sam");
+        client1.emit('addFriend', "griffin", "testuser1");
         client1.on('addFriendResult', function(result, userName) {
+            //client1.emit('removeFriend', "griffin", "testuser1");
             assert(result === 1,"Failure to add a friend");
             done();
         });
     });
-
+    /*
     it('Can you add a friend you are already friends with?', function (done) {
        client1.emit('addFriend', "griffin", "geraldo");
        client1.on('addFriendResult', function(result, name) {
