@@ -10,6 +10,8 @@ var request = require("request");
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var NodeRSA = require('node-rsa');
+var randomstring = require("randomstring");
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 /////////////////////////////////////////////////////////////////////
 
@@ -102,7 +104,6 @@ exports.closeServer = function() {
 
 io.on('connection', function(socket) {
 
-
     read = mysql.createConnection({
         host: host,
         user: readUN,
@@ -188,7 +189,6 @@ io.on('connection', function(socket) {
             if (err) throw err;
         });
     });
-
 
     socket.on('chathistory', function (name, from) {
         //to make this better
