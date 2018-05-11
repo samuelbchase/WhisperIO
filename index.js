@@ -1,4 +1,3 @@
-
 ////////////////////////////////////////////////////////////////////
 var express = require('express');
 var app = require('express')();
@@ -134,10 +133,8 @@ var myServer = (function () {
     }
 }) ();
 
-
 var server = myServer.getInstance();
 var io = require('socket.io')(server);
-
 
 server.listen(3000, function() {
     console.log('server up and running at %s port', 3000);
