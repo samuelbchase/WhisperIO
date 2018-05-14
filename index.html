@@ -183,21 +183,33 @@
             function addMessage()
             {
                 //Get the message, and send that message on the socket to the server listener
-                var message = $('#messageSender').val();
-                socket.emit('chat message',ActiveFriend + "-" + message);
+                var message = messageFactory(ActiveFriend,$('#messageSender').val());
+                socket.emit('chat message',message);
                 var div = document.createElement('div');
                 div.className = 'yourMessage';
-                div.textContent = message;
+                div.textContent = message.text;
                 document.getElementById("chatbox" + ActiveFriend).appendChild(div);
                 return 0;
+            }
+
+            function messageFactory(sendTo,text) {
+                if(sendTo === null || text === null) {
+                    return -1
+                }
+                if(sendTo === "" || text === "") {
+                    return -1
+                }
+                var message = new Object();
+                message.sentTo = sendTo;
+                message.text = text;
+                return message;
             }
 
             //Appends message to a chat when a user receives a message
             function receiveMessage(msg)
             {
-                var indexOfSeparator = msg.indexOf('-');
-                var userSentFrom = msg.slice(0,indexOfSeparator);
-                var message = msg.slice(indexOfSeparator+1);
+                var userSentFrom = msg.sentBy;
+                var message = msg.text;
                 var chatbox = document.getElementById("chatbox" + userSentFrom);
 
                 //friends list element selector for notifiying users of new message
