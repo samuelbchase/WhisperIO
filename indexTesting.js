@@ -9,7 +9,9 @@ var sha256 = require('sha256');
 var request = require("request");
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-
+var NodeRSA = require('node-rsa');
+var randomstring = require("randomstring");
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 /////////////////////////////////////////////////////////////////////
 
@@ -90,8 +92,8 @@ fs.readFile('.info.txt', 'utf8', function(err, contents){
 });
 
 exports.runServer = function() {
-    http.listen(3000, function() {
-        console.log('listening on *:3000');
+    http.listen(3001, function() {
+        console.log('listening on *:3001');
     });
 };
 
@@ -101,7 +103,6 @@ exports.closeServer = function() {
 };
 
 io.on('connection', function(socket) {
-
 
     read = mysql.createConnection({
         host: host,
@@ -189,7 +190,6 @@ io.on('connection', function(socket) {
         });
     });
 
-
     socket.on('chathistory', function (name, from) {
         //to make this better
         sql = "SELECT * FROM Message WHERE (SentFrom, SentTo) = ('" + name + "', '" + from + "') OR (SentTo, SentFrom) = ('" + name + "', '" + from + "') ORDER BY timestamp ASC;";
@@ -259,7 +259,7 @@ io.on('connection', function(socket) {
             var aud = body.substring(audLocation, body.length);
             aud = aud.substring(aud.indexOf('"'), aud.length);
             aud = aud.substring(aud.indexOf('"')+1, aud.length);
-            aud = aud.substring(aud.indexOf('"')+1, aud.length);
+            aud = aud.substring (aud.indexOf('"')+1, aud.length);
             aud = aud.substring(0, aud.indexOf('"'));
 
             //parse body for user email
