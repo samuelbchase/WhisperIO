@@ -15,80 +15,82 @@ var fake_token = 'alteredTokenUzI1NiIsImtpZCI6ImFmZmM2MjkwN2E0NDYxODJhZGMxZmE0ZT
 
 describe('User connections', function () {
     beforeEach(function() {
-        sinon.stub(console, "log").returns(void 0);
-        sinon.stub(console, "error").returns(void 0);
-    });
-    afterEach(function(done) {
-        console.log.restore();
-        console.error.restore();
-        done();
-    });
-    after(function(done) {
-        client1.disconnect();
-        server.closeServer();
-        done();
-    });
-    before(function(done) {
         server.runServer();
         client1 = ioClient.connect('http://localhost:3001', options);
+        //sinon.stub(console, "log").returns(void 0);
+        //sinon.stub(console, "error").returns(void 0);
+    });
+    afterEach(function(done) {
+        client1.disconnect();
+        server.closeServer();
+        //console.log.restore();
+        //console.error.restore();
         done();
+    });
+    after(function() {
+        //process.exit(0);
+    });
+    before(function() {
+
     });
 
     it('Is the server running?', function (done) {
         this.timeout(5000);
-        http.get('http://localhost:3001', function (res) {
+        return http.get('http://localhost:3001', function (res) {
             assert.equal(200, res.statusCode);
             done();
         });
     });
-    /*
+
     it('Can you add a friend?', function(done) {
         this.timeout(5000);
-        client1.emit('addFriend', "griffin", "testuser1");
-        client1.on('addFriendResult', function(result) {
-            assert(result === 1,"Failure to add a friend");
+        var string = "NOTE : THIS TEST WILL GENERALLY FAIL UNLESS THE DB IS UPDATED PRIOR TO RUNNING THE TEST\nAssertionError"
+        client1.emit('addFriend', "griffin", "testuser1", function(result) {
+            assert.equal(result, 1, "Failure to add a friend\n" + string);
             done();
         });
     });
-    */
+
     it('Can you add a friend you are already friends with?', function (done) {
-       client1.emit('addFriend', "griffin", "sam");
-       client1.on('addFriendResult', function(result, name) {
-          assert(result === 0, "Added friend either does not exist or is not already friends - result is " + result);
-          done();
-       });
+        this.timeout(5000);
+        client1.emit('addFriend', "griffin", "sam", function(result) {
+            assert.equal(result, 0, "Added friend either does not exist or is not already friends");
+            done();
+        });
     });
-    /*
-    it('Can you add nonexistant friends?', function(done) {
-       client1.emit('addFriend', "griffin", "DoesNotExist");
-       client1.on('addFriendResult', function(result, userName) {
-          assert(result === -1,"Added friend added a nonexistant user");
-          done();
-       });
+
+    it('Can you add nonexistant users as friends?', function(done) {
+        this.timeout(5000);
+        client1.emit('addFriend', "griffin", "DoesNotExist", function(result) {
+            assert.equal(result, -1, "Added friend added a nonexistant user");
+            done();
+        });
     });
 
 
     it('Does the program show your online friends?', function (done) {
-       client1.emit('isOnline', "geraldo");
+       client1.emit('isOnline', "testuser1");
        client1.on('isOnlineResult', function(result) {
-           assert(result === true, "Online friends are not online");
+           assert.equal(result, true, "Online friends are not online");
            done();
        });
     });
 
 
+
     it('Does the program show your offline friends?', function (done) {
-        client1.emit('isOnline', "Sam");
+        client1.emit('isOnline', "testuser2");
         client1.on('isOnlineResult', function(result) {
-            assert(result === false, "Offline friends are not offline");
+            assert.equal(result, false, "Offline friends are not offline - result is " + result);
             done();
         });
     });
-    */
+    /*
 
     /* ***********************************************************
             Additional code coverage tests
     *********************************************************** */
+
     /*
     it('Can a real token be verified?', function (done) {
         client1.emit('verifyToken', test_token);
