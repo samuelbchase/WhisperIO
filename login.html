@@ -49,28 +49,34 @@
 
         var creds = {"email" : email, "password" : password};
 
-        socket.emit("verifyEmailLogin", creds);
-
-        socket.on('newNoGmailUser', function() {
-            console.log("newNoGmailUser");
-            var person = prompt("We are now making you an account. Please" +
-                " enter your name. If you name includes a '-' this program will " +
-                "crash irreperably", "Skyler");
-            //emit identifyMyself event to the backend with new user info
-            socket.emit('identifyMyselfNoGmail',person);
-        });
-
-        socket.on('authSuccessNoGmail', function(user) {
-            console.log("IN authSuccessNoGmail");
-            alert("Auth Success!" + user.name);
-            sessionStorage.setItem("whisperIOUser", user.name);
-            sessionStorage.setItem("whisperIOToken", user.token);
-            console.log(user.token);
-            window.location.href = "/main";
-        });
+        socket.emit('verifyEmailLogin', creds);
     });
 
+    /*SKYLERS NEW CODE*/
+    socket.on('newNoGmailUser', function(creds) {
+        console.log("newNoGmailUser");
+        var person = prompt("We are now making you an account. Please" +
+            " enter your name. If you name includes a '-' this program will " +
+            "crash irreperably", "Skyler");
+        //emit identifyMyself event to the backend with new user info
+        var newUser = {"emailHash": creds.emailHash, "passwordHash" : creds.passwordHash,
+         "person" : person};
+        creds.person = person;
+        console.log("emitting identifyMyselfNoGmail: " + newUser);
+        socket.emit('identifyMyselfNoGmail', newUser);
+    });
 
+    socket.on('authSuccessNoGmail', function(user) {
+        window.location.href = "/main";
+        alert("Auth Success! Hello: " + user.name);
+        console.log("in authSuccessNoGmail");
+        sessionStorage.setItem("whisperIOUser", user.name);
+        sessionStorage.setItem("whisperIOToken", user.token);
+        console.log("user token: ");
+        console.log(user.token);
+        //window.location.href = "/main";
+    });
+    /*SKYLERS NEW CODE*/
 
     function renderButton() {
         gapi.signin2.render('my-signin2', {
@@ -80,6 +86,7 @@
             'theme': 'dark'
         });
     }
+
     //event handler triggered once google login takes place
     function onSignIn(googleUser) {
         console.log("Begin Sign In Process");
@@ -118,6 +125,7 @@
         //handle authSuccess for a new user that was not already in the
         //database
         socket.on('authSuccessNewUser', function(user) {
+            console.log("in authSuccessNewUser");
             alert("Auth Success! Thank you for joining Whisper.io, " + user.name);
             sessionStorage.setItem("whisperIOUser", user.name);
             sessionStorage.setItem("whisperIOToken", user.token);
