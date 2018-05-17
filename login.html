@@ -47,6 +47,7 @@
         var password = document.getElementById('passwordBox');
         password = $(password).val();
 
+        console.log("user credentials: " + email + " " + password);
         var creds = {"email" : email, "password" : password};
 
         socket.emit('verifyEmailLogin', creds);
@@ -59,8 +60,8 @@
             " enter your name. If you name includes a '-' this program will " +
             "crash irreperably", "Skyler");
         //emit identifyMyself event to the backend with new user info
-        var newUser = {"emailHash": creds.emailHash, "passwordHash" : creds.passwordHash,
-         "person" : person};
+        var newUser = {"emailHash": creds.emailHash,
+         "passwordHash" : creds.passwordHash, "person" : person};
         creds.person = person;
         console.log("emitting identifyMyselfNoGmail: " + newUser);
         socket.emit('identifyMyselfNoGmail', newUser);
@@ -75,6 +76,11 @@
         console.log("user token: ");
         console.log(user.token);
         //window.location.href = "/main";
+    });
+
+    socket.on('wrongPassword', (user) => {
+        console.log("incorrect password");
+        alert("Password incorrect for: " + user.name);
     });
     /*SKYLERS NEW CODE*/
 
@@ -91,10 +97,12 @@
     function onSignIn(googleUser) {
         console.log("Begin Sign In Process");
         var profile = googleUser.getBasicProfile();
-        console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+        // Do not send to your backend! Use an ID token instead.
+        console.log('ID: ' + profile.getId());
         console.log('Name: ' + profile.getName());
         console.log('Image URL: ' + profile.getImageUrl());
-        console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+        // This is null if the 'email' scope is not present.
+        console.log('Email: ' + profile.getEmail());
 
         //id token sent to back end for authentication
         var id_token = googleUser.getAuthResponse().id_token;
@@ -126,7 +134,8 @@
         //database
         socket.on('authSuccessNewUser', function(user) {
             console.log("in authSuccessNewUser");
-            alert("Auth Success! Thank you for joining Whisper.io, " + user.name);
+            alert("Auth Success! Thank you for joining Whisper.io, " +
+             user.name);
             sessionStorage.setItem("whisperIOUser", user.name);
             sessionStorage.setItem("whisperIOToken", user.token);
             console.log(user.token);

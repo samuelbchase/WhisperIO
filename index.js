@@ -306,16 +306,31 @@ io.on('connection', function(socket) {
         var hashedCreds = {"emailHash" : emailHash,
          "passwordHash" : passwordHash};
 
+        console.log("result passwordHash: \"" + result[0].passwordHash + "\"");
+        console.log("passwordHash: \"" + passwordHash + "\"");
+
+        var iwanttodie = result[0].passwordHash;
+
+        console.log(typeof(iwanttodie));
+
         if (result.length === 0) {
             console.log("User Does Not Exist");
             socket.emit('newNoGmailUser', hashedCreds);
         }
-        else {
+        else  {
+            console.log("emitting successful auth");
             var user = {"name": result[0].username, "token": result[0].token};
             //console.log("User Exists: ", user.name, user.token);
             this.id = user.name;
             socket.emit('authSuccessNoGmail', user);
         }
+        /*else {
+            console.log(typeof(result[0].passwordHash));
+            console.log(typeof(passwordHash));
+
+            var user = {"name": result[0].username, "token": result[0].token};
+            socket.emit('wrongPassword', user);
+        }*/
     });
 
     socket.on("identifyMyselfNoGmail", function(whoIAm) {
