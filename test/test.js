@@ -52,6 +52,7 @@ var syncConnWrite = new mysql2({
     });
 
 describe('User connections', function () {
+    this.timeout(5000);
     beforeEach(function() {
         server.runServer();
         console.log("Host: " + syncConnWrite.host);
