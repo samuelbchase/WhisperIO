@@ -320,6 +320,7 @@ io.on('connection', function(socket) {
 
         console.log(typeof(iwanttodie));
 
+        //TODO: this comparison for making sure the right password was entered doesn't work. 
         if (result.length === 0) {
             console.log("User Does Not Exist");
             socket.emit('newNoGmailUser', hashedCreds);
