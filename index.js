@@ -320,7 +320,7 @@ io.on('connection', function(socket) {
 
         console.log(typeof(iwanttodie));
 
-        //TODO: this comparison for making sure the right password was entered doesn't work. 
+        //TODO: this comparison for making sure the right password was entered doesn't work.
         if (result.length === 0) {
             console.log("User Does Not Exist");
             socket.emit('newNoGmailUser', hashedCreds);
@@ -341,6 +341,7 @@ io.on('connection', function(socket) {
         }*/
     });
 
+    /*TODO: Account creation no gmail*/
     socket.on("identifyMyselfNoGmail", function(whoIAm) {
         //add the new user to the database
         const tok = randomstring.generate(255);
