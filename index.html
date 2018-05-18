@@ -281,8 +281,10 @@
                     x.className += " offline ";
             }
             socket.on('tokenVerifyRequest', function(msg) {
-                //Commenting this out won't get you magical access, it is server-side verified
-                socket.emit("tokenVerifyAnswer",sessionStorage.getItem("whisperIOToken") || 'defaultValue');
+                //Commenting this out won't get you magical access,
+                // it is server-side verified
+                socket.emit("tokenVerifyAnswer",sessionStorage
+                 .getItem("whisperIOToken") || 'defaultValue');
             });
 
             //Signs the current user out
