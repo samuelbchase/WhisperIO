@@ -131,41 +131,17 @@ describe('User connections', function () {
             done();
         });
     });
-    /*
 
-    /* ***********************************************************
-            Additional code coverage tests
-    *********************************************************** */
+    // ***********************************************************
+            //Additional code coverage tests
 
-
-    it('Can a real token be verified?', function (done) {
-        client1.emit('verifyToken', test_token);
-        client1.on('authSuccess', function(result) {
-            // Is the above line correct?
-            // What arguments to use below.
-            assert(result === true, "geraldo");
-            done();
-        });
-
-    });
-    /*
     it('Can a fake token be verified?', function (done) {
-        client1.emit('verifyToken', fake_token);
-        client1.on('authFailureAppDiscrepancy', function(result) {
-            assert(result === true, "Offline friends are not offline");
-            done();
-        });
-
-    });
-    it('Can a fake null token be verified?', function (done) {
-        client1.emit('verifyToken', null);
-        client1.on('error', function(result) {
+        client1.emit('verifyToken', fake_token, function(result) {
             // Is the above line correct?
             // What arguments to use below.
-            assert(result === false, "Offline friends are not offline");
+            assert(result, false, "Fake token");
             done();
         });
-
     });
-    */
+    // ***********************************************************
 });
