@@ -271,8 +271,8 @@ io.on('connection', function(socket) {
             email = email.substring(0, email.indexOf('"'));
             if(aud !== "521002119514-k8kp3p42fpoq7ia5868k9s9e62bj87n3.apps.googleusercontent.com")
             {
-                //If you're attempting to login with a token for another app
-                socket.emit("authFailureAppDiscrepancy","Bad! No Hacking!");
+                console.log("authFailureAppDiscrepancy, Bad! No Hacking!");
+                return callback(false, 'Fake token');
             }
             var hash = sha256(email);
 
@@ -326,7 +326,9 @@ io.on('connection', function(socket) {
     });
 
     //Add Friend button is pushed; called by currentUser adding friendToAdd
-    socket.on('addFriend', function (currentUser, friendToAdd) {
+    socket.on('addFriend', function (currentUser, friendToAdd, callback) {
+        currentUser = currentUser.toLowerCase();
+        friendToAdd = friendToAdd.toLowerCase();
         console.log("Adding " + friendToAdd + " for " + currentUser + " as a friend");
         //check to see if the friend relationship already exists
         var sql = "SELECT * FROM Friends WHERE Host = \"" + currentUser + "\" AND Receiver = \"" + friendToAdd + "\";"
@@ -341,30 +343,28 @@ io.on('connection', function(socket) {
                     if (err) throw err;
                     if (result.length > 0)	// make sure that the friend you're adding actually exists
                     {
-                        currentUser = currentUser.toLowerCase();
-                        friendToAdd = friendToAdd.toLowerCase();
 
-                        sql = "INSERT INTO Friends (Host, Receiver) VALUES ('" + currentUser.toLowerCase() + "', '" + friendToAdd.toLowerCase() + "');";
+                        sql = "INSERT INTO Friends (Host, Receiver) VALUES ('" + currentUser + "', '" + friendToAdd + "');";
                         write.query(sql, function(err, result) {
                             if (err) throw err;
                         });
-                        console.log(friendToAdd.toLowerCase() + " was added");
-                        socket.emit('addFriendResult', 1, friendToAdd.toLowerCase());
+                        console.log(friendToAdd + " was added");
+                        return callback(1, friendToAdd);
                     }
                     else {
                         console.log("User does not exist!");
-                        socket.emit('addFriendResult', -1, friendToAdd.toLowerCase());
+                        return callback(-1, friendToAdd);
                     }
                 });
             }
             else {
                 console.log("Friend already exists")
-                socket.emit('addFriendResult', 0, friendToAdd);
+                return callback(0, friendToAdd);
             }
         });
     });
 
-    socket.on('removeFriend', function (user, friend) {
+    socket.on('removeFriend', function (user, friend, callback) {
         console.log("Removing " + friend + " for " + user + " as a friend");
 
         //check to see if the friend relationship already exists
@@ -385,17 +385,17 @@ io.on('connection', function(socket) {
                             if (err) throw err;
                         });
                         console.log(friend + " was removed");
-                        socket.emit('removeFriendResult', 1, friend);
+                        return callback(1, friend);
                     }
                     else {
                         console.log("Friend relationship does not exist");
-                        socket.emit('removeFriendResult', 0, friend);
+                        return callback(0, friend);
                     }
                 });
             }
             else {
                 console.log("User does not exist");
-                socket.emit('removeFriendResult', -1, friend);
+                return callback(-1, friend);
             }
         });
     });

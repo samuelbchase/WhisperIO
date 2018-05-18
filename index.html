@@ -164,7 +164,7 @@
 
             //All receiving socket stuff
             socket.on('chat message', receiveMessage);
-            socket.on('addFriendResult', friendResult);
+            //socket.on('addFriendResult', friendResult);
             socket.on('isOnlineResult', appendOnlineStatus);
             socket.on('removeFriendResult', removeFriendAction);
 
@@ -235,7 +235,7 @@
                 var addFriend = prompt("Enter the name of the friend you wish to add: ", "User Name");
                 if (addFriend != null && addFriend !== "")
                 {
-                        socket.emit('addFriend', whisperIOUser, addFriend);
+                    socket.emit('addFriend', whisperIOUser, addFriend, friendResult);
                 }
             }
 
