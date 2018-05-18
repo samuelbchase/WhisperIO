@@ -61,21 +61,20 @@
             "crash irreperably", "Skyler");
         //emit identifyMyself event to the backend with new user info
         var newUser = {"emailHash": creds.emailHash,
-         "passwordHash" : creds.passwordHash, "person" : person};
+         "password" : creds.password, "person" : person};
         creds.person = person;
         console.log("emitting identifyMyselfNoGmail: " + newUser);
         socket.emit('identifyMyselfNoGmail', newUser);
     });
 
     socket.on('authSuccessNoGmail', function(user) {
-        window.location.href = "/main";
         alert("Auth Success! Hello: " + user.name);
         console.log("in authSuccessNoGmail");
         sessionStorage.setItem("whisperIOUser", user.name);
         sessionStorage.setItem("whisperIOToken", user.token);
         console.log("user token: ");
         console.log(user.token);
-        //window.location.href = "/main";
+        window.location.href = "/main";
     });
 
     socket.on('wrongPassword', (user) => {
@@ -133,12 +132,14 @@
         //handle authSuccess for a new user that was not already in the
         //database
         socket.on('authSuccessNewUser', function(user) {
-            console.log("in authSuccessNewUser");
+            /*console.log("in authSuccessNewUser");
             alert("Auth Success! Thank you for joining Whisper.io, " +
              user.name);
+
+            console.log(user.token);
+            */
             sessionStorage.setItem("whisperIOUser", user.name);
             sessionStorage.setItem("whisperIOToken", user.token);
-            console.log(user.token);
             window.location.href = "/main";
         });
 

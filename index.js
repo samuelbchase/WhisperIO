@@ -12,8 +12,10 @@ var request = require("request");
 var socket_io = require("socket.io");
 var NodeRSA = require('node-rsa');
 var randomstring = require("randomstring");
+var bcrypt = require('bcrypt');
 
 const tls = require('tls');
+const saltRounds = 10;
 
 app.use(express.static(path.join(__dirname, 'public')));
 /////////////////////////////////////////////////////////////////////
@@ -304,60 +306,45 @@ io.on('connection', function(socket) {
     /*SKYLERS NEW CODE*/
     socket.on('verifyEmailLogin', function (creds) {
         var emailHash = sha256(creds.email);
-        var passwordHash = creds.password;
-        //var passwordHash = sha256(creds.password);
-        var sql = "SELECT * FROM User where emailHash = '" + emailHash
-            + "';";
+        var passwordHash = bcrypt.hashSync(creds.password, saltRounds);
+        var sql = "SELECT * FROM User where emailHash = '" + emailHash + "';";
         var result = syncConnWrite.query(sql);
-
-        var hashedCreds = {"emailHash" : emailHash,
-         "passwordHash" : passwordHash};
-
-        console.log("result passwordHash: \"" + result[0].passwordHash + "\"");
-        console.log("passwordHash: \"" + passwordHash + "\"");
-
-        var iwanttodie = result[0].passwordHash;
-
-        console.log(typeof(iwanttodie));
-
-        //TODO: this comparison for making sure the right password was entered doesn't work.
-        if (result.length === 0) {
-            console.log("User Does Not Exist");
-            socket.emit('newNoGmailUser', hashedCreds);
-        }
-        else  {
+        var hash = result[0].passwordHash;
+        hash = hash.toString();
+        if(bcrypt.compareSync(creds.password, hash))
+        {
+            console.log("HASH MATCH!");
+            console.log("result passwordHash: \"" + result[0].passwordHash + "\"");
+            console.log("passwordHash: \"" + passwordHash + "\"");
             console.log("emitting successful auth");
             var user = {"name": result[0].username, "token": result[0].token};
             //console.log("User Exists: ", user.name, user.token);
             this.id = user.name;
             socket.emit('authSuccessNoGmail', user);
         }
-        /*else {
-            console.log(typeof(result[0].passwordHash));
-            console.log(typeof(passwordHash));
-
-            var user = {"name": result[0].username, "token": result[0].token};
-            socket.emit('wrongPassword', user);
-        }*/
+        else {
+            console.log("User Does Not Exist");
+            var unhashedCreds = {"emailHash" : emailHash,
+                "password" : creds.password};
+            socket.emit('newNoGmailUser', unhashedCreds);
+        }
     });
 
     /*TODO: Account creation no gmail*/
     socket.on("identifyMyselfNoGmail", function(whoIAm) {
         //add the new user to the database
         const tok = randomstring.generate(255);
+        var passwordHash = bcrypt.hashSync(whoIAm.password, saltRounds);
         var insertSQL = "INSERT INTO User (userName,emailHash," +
             "token, passwordHash) VALUES('" + whoIAm.person.toLowerCase() +
             "','" + whoIAm.emailHash + "', '" + tok + "', '" +
-            whoIAm.passwordHash + "');";
-        write.query(insertSQL, function(err, result) {
-            if (err) throw err;
-        });
+            passwordHash + "');";
+        syncConnWrite.query(insertSQL);
         var user = {"name": whoIAm.person.toLowerCase(), "token": tok};
         console.log("emitting authSuccessNewUser");
         socket.emit('authSuccessNewUser', user);
     });
     /*SKYLERS NEW CODE*/
-
 
     //catch verifyToken event emitted on google login
     socket.on('verifyToken', function(token){
