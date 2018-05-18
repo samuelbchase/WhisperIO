@@ -32,7 +32,7 @@ body{
 .black-input{
     border: 1px solid aqua!important;
 }
-input[type=email]:focus {
+input[type=text]:focus {
     background-color:black;
 }
 input[type=password]:focus {

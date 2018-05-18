@@ -335,6 +335,9 @@ io.on('connection', function(socket) {
                 this.id = user.name;
                 socket.emit('authSuccessNoGmail', user);
             }
+            else {
+                socket.emit('authFailureAppDiscrepancy',"");
+            }
         }
         else {
             console.log("User Does Not Exist");
@@ -353,6 +356,7 @@ io.on('connection', function(socket) {
             "token, passwordHash) VALUES('" + whoIAm.person.toLowerCase() +
             "','" + whoIAm.emailHash + "', '" + tok + "', '" +
             passwordHash + "');";
+        console.log(insertSQL);
         syncConnWrite.query(insertSQL);
         var user = {"name": whoIAm.person.toLowerCase(), "token": tok};
         console.log("emitting authSuccessNewUser");

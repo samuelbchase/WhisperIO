@@ -132,15 +132,8 @@
         //handle authSuccess for a new user that was not already in the
         //database
         socket.on('authSuccessNewUser', function(user) {
-            /*console.log("in authSuccessNewUser");
             alert("Auth Success! Thank you for joining Whisper.io, " +
-             user.name);
-
-            console.log(user.token);
-            */
-            sessionStorage.setItem("whisperIOUser", user.name);
-            sessionStorage.setItem("whisperIOToken", user.token);
-            window.location.href = "/main";
+             user.name +"\n Please relog for security reasons");
         });
 
         socket.on('authFailureAppDiscrepancy', function(msg) {
