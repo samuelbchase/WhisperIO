@@ -25,6 +25,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 //   process.exit(0);
 //};
 
+function messageFactory(sentBy,text) {
+    if(sentBy === null || text === null) {
+        return -1
+    }
+    if(sentBy === "" || text === "") {
+        return -1
+    }
+    var message = new Object();
+    message.sentBy = sentBy;
+    message.text = text;
+    return message;
+}
 
 app.get('/main', function(req, res){
     res.sendFile(__dirname + '/index.html');
@@ -57,7 +69,7 @@ var syncConnWrite;
 
 function getToken(userName) {
     var sql = "";
-    const result = syncConnRead.query(sql);
+    var result = syncConnRead.query(sql);
     console.log("Token is" + result[0].token) ;
 }
 //use this for opening a file for the read and write passwords for the DB	
@@ -179,14 +191,11 @@ io.on('connection', function(socket) {
 
     socket.on('chat message', function (msg) {
         console.log("Chat message request received");
-        var indexOfSeparator = msg.indexOf('-');
-        var userSentTo = msg.slice(0, indexOfSeparator);
-        userSentTo = userSentTo.toLowerCase();
-        var message = msg.slice(indexOfSeparator + 1);
-        socket.emit("tokenVerifyRequest", "");
-        socket.once('tokenVerifyAnswer', function (token) {
+        var userSentTo = msg.sentTo;
+        var message = msg.text;
+        socket.emit("tokenVerifyRequest","");
+        socket.once('tokenVerifyAnswer', function(token) {
             console.log("Processing chat message token");
-            //TODO fix hardcode "sam"
             var name = "Unknown";
             for (var i = 0; i < sockets.length; i++) {
                 if (sockets[i] === socket) {
@@ -199,18 +208,21 @@ io.on('connection', function(socket) {
                 console.log('Was set to: ' + userSentTo);
 
 
-                for (var j = 0; j < sockets.length; j++) {
-                    if (names[j] === userSentTo) {
-                        const sendSocket = sockets[j];
+
+                for(var j = 0; j < sockets.length;j++)
+                {
+                    if(names[j] === userSentTo)
+                    {
+                        var sendSocket = sockets[j];
                         //Sends message to the specified user
                         sendSocket.emit("tokenVerifyRequest", "");
                         sendSocket.once('tokenVerifyAnswer', function (token) {
                             var tok = syncConnRead.query("SELECT token FROM " +
                                 "User where username = '" + userSentTo + "';");
                             tok = tok[0].token;
-                            if (token === tok) {
-                                sendSocket.emit('chat message', name + "-" +
-                                 message);
+                            var messageObj = messageFactory(name,message);
+                            if(token === tok) {
+                                sendSocket.emit('chat message',messageObj);
                             }
                             else {
                                 console.log("Token error on receiver");
@@ -398,10 +410,8 @@ io.on('connection', function(socket) {
                     //handle new user info emitted from the front end
                     socket.on('identifyMyself', function (whoIAm) {
                         //add the new user to the database
-                        const tok = randomstring.generate(255);
-                        var insertSQL = "INSERT INTO User (userName,emailHash," +
-                         "token) VALUES('" + whoIAm.toLowerCase() + "','" + hash
-                         + "', '" + tok + "');";
+                        var tok = randomstring.generate(255);
+                        var insertSQL = "INSERT INTO User (userName,emailHash,token) VALUES('" + whoIAm.toLowerCase() + "','" + hash + "', '" + tok + "');";
                         write.query(insertSQL, function(err, result) {
                             if (err) throw err;
                         });
@@ -415,9 +425,8 @@ io.on('connection', function(socket) {
                 {
                     var userName = result[0].username;
                     userName = userName.substr(0,userName.length);
-                    const newTok = randomstring.generate(255);
-                    syncConnWrite.query("UPDATE User set token = '" + newTok +
-                     "' where username = '" + userName + "';");
+                    var newTok = randomstring.generate(255);
+                    syncConnWrite.query("UPDATE User set token = '" + newTok + "' where username = '" + userName + "';");
                     console.log("Sending token: " + newTok);
                     var user = {name: userName, token: newTok};
                     socket.emit("authSuccess",user);
