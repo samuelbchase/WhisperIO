@@ -321,18 +321,20 @@ io.on('connection', function(socket) {
         var passwordHash = bcrypt.hashSync(creds.password, saltRounds);
         var sql = "SELECT * FROM User where emailHash = '" + emailHash + "';";
         var result = syncConnWrite.query(sql);
-        var hash = result[0].passwordHash;
-        hash = hash.toString();
-        if(bcrypt.compareSync(creds.password, hash))
-        {
-            console.log("HASH MATCH!");
-            console.log("result passwordHash: \"" + result[0].passwordHash + "\"");
-            console.log("passwordHash: \"" + passwordHash + "\"");
-            console.log("emitting successful auth");
-            var user = {"name": result[0].username, "token": result[0].token};
-            //console.log("User Exists: ", user.name, user.token);
-            this.id = user.name;
-            socket.emit('authSuccessNoGmail', user);
+        if(result.length !== 0) {
+            var hash = result[0].passwordHash;
+            hash = hash.toString();
+            if(bcrypt.compareSync(creds.password, hash))
+            {
+                console.log("HASH MATCH!");
+                console.log("result passwordHash: \"" + result[0].passwordHash + "\"");
+                console.log("passwordHash: \"" + passwordHash + "\"");
+                console.log("emitting successful auth");
+                var user = {"name": result[0].username, "token": result[0].token};
+                //console.log("User Exists: ", user.name, user.token);
+                this.id = user.name;
+                socket.emit('authSuccessNoGmail', user);
+            }
         }
         else {
             console.log("User Does Not Exist");
