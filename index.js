@@ -239,6 +239,8 @@ io.on('connection', function(socket) {
 
     socket.on('chathistory', function (name, from) {
         //to make this better
+        console.log("in chatHistory");
+        console.log("loading chat history for: " + name + " and " + from);
         sql = "SELECT * FROM Message WHERE (SentFrom, SentTo) = ('" + name +
          "', '" + from + "') OR (SentTo, SentFrom) = ('" + name + "', '" +
          from + "') ORDER BY timestamp ASC;";
@@ -248,6 +250,11 @@ io.on('connection', function(socket) {
             for (var x in result) {
                 result[x].Message = key.decrypt(result[x].Message, 'utf8');
             }
+
+            for(var x in result) {
+                console.log("message: " + result[x].Message);
+            }
+
             socket.emit("tokenVerifyRequest", "");
             socket.on('tokenVerifyAnswer', function (token) {
                 if (token === syncConnRead.query("SELECT token FROM User " +
