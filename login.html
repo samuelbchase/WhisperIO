@@ -122,6 +122,7 @@
     socket.on('authSuccessNewUser', function(user) {
         swal("Cool!", "Auth Success! Thank you for joining Whisper.io, " +
             user.name +"\n Please relog for security reasons", "success");
+        document.getElementById('passwordBox').value = "";
     });
     socket.on('authFailureAppDiscrepancy', function(msg) {
         console.log("Bad Message received");
