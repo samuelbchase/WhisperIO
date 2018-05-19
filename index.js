@@ -175,7 +175,7 @@ io.on('connection', function(socket) {
 
     socket.on('userLogin', function (userName) {
         socket.emit("tokenVerifyRequest", "");
-        socket.on('tokenVerifyAnswer', function (token) {
+        socket.once('tokenVerifyAnswer', function (token) {
             if (token === syncConnRead.query("SELECT token FROM User where " +
                 "username = '" + userName + "';")[0].token) {
                 userName = userName.toLowerCase();
@@ -270,7 +270,7 @@ io.on('connection', function(socket) {
             }
 
             socket.emit("tokenVerifyRequest", "");
-            socket.on('tokenVerifyAnswer', function (token) {
+            socket.once('tokenVerifyAnswer', function (token) {
                 if (token === syncConnRead.query("SELECT token FROM User " +
                     "where " + "username = '" + name + "';")[0].token)
                 {

@@ -55,14 +55,17 @@
                                             {
                                                 for(x in history) {
                                                     var div = document.createElement('div');
-                                                    if(ActiveFriend == history[x].SentFrom) {
+                                                    if(ActiveFriend === history[x].SentFrom) {
                                                         div.className = 'theirMessage';
+                                                        div.textContent = history[x].Message;
+                                                        document.getElementById("chatbox" + ActiveFriend).appendChild(div);
                                                     }
-                                                    else {
+                                                    else if(ActiveFriend === history[x].SentTo) {
                                                         div.className = 'yourMessage';
+                                                        div.textContent = history[x].Message;
+                                                        document.getElementById("chatbox" + ActiveFriend).appendChild(div);
                                                     }
-                                                    div.textContent = history[x].Message;
-                                                    document.getElementById("chatbox" + ActiveFriend).appendChild(div);
+
                                                 }
                                             }
 
