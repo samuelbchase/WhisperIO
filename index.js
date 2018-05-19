@@ -361,8 +361,8 @@ io.on('connection', function(socket) {
         console.log(insertSQL);
         syncConnWrite.query(insertSQL);
         var user = {"name": whoIAm.person.toLowerCase(), "token": tok};
-        console.log("emitting authSuccessNewUser");
-        socket.emit('authSuccessNewUser', user);
+        console.log("emitting authSuccessNewUserNOGMAIL");
+        socket.emit('authSuccessNewUserNOGMAIL', user);
     });
     /*SKYLERS NEW CODE*/
 

@@ -103,8 +103,8 @@
     }
     socket.on('unknownPerson', function(unknownPerson) {
         var person = prompt("We are now making you an account. Please" +
-            " enter your name. If you name includes a '-' this program will " +
-            "crash irreperably", "Geraldo");
+            " enter your name.", "Geraldo");
+        sessionStorage.setItem("whisperIOUser", person);
         //emit identifyMyself event to the backend with new user info
         socket.emit('identifyMyself',person);
     });
@@ -120,6 +120,11 @@
     //handle authSuccess for a new user that was not already in the
     //database
     socket.on('authSuccessNewUser', function(user) {
+        sessionStorage.setItem("whisperIOUser", user.name);
+        sessionStorage.setItem("whisperIOToken", user.token);a
+        window.location.href = "/main";
+    });
+    socket.on('authSuccessNewUserNOGMAIL', function(user) {
         swal("Cool!", "Auth Success! Thank you for joining Whisper.io, " +
             user.name +"\n Please relog for security reasons", "success");
         document.getElementById('passwordBox').value = "";
