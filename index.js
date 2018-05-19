@@ -13,6 +13,7 @@ var socket_io = require("socket.io");
 var NodeRSA = require('node-rsa');
 var randomstring = require("randomstring");
 var bcrypt = require('bcrypt');
+app.use('/scripts', express.static(__dirname + '/node_modules/sweetalert/dist/'));
 
 const tls = require('tls');
 const saltRounds = 10;
@@ -317,7 +318,7 @@ io.on('connection', function(socket) {
 
     /*SKYLERS NEW CODE*/
     socket.on('verifyEmailLogin', function (creds) {
-        var emailHash = sha256(creds.email);
+        var emailHash = creds.email;
         var passwordHash = bcrypt.hashSync(creds.password, saltRounds);
         var sql = "SELECT * FROM User where emailHash = '" + emailHash + "';";
         var result = syncConnWrite.query(sql);
@@ -336,6 +337,7 @@ io.on('connection', function(socket) {
                 socket.emit('authSuccessNoGmail', user);
             }
             else {
+                console.log("Sending bad message");
                 socket.emit('authFailureAppDiscrepancy',"");
             }
         }

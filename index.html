@@ -9,6 +9,7 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <meta name="google-signin-client_id" content="521002119514-k8kp3p42fpoq7ia5868k9s9e62bj87n3.apps.googleusercontent.com">
+    <script src="/scripts/sweetalert.min.js"></script>
 
 </head>
 <script>
@@ -254,23 +255,35 @@
             }
 
             function removeFriendAction(result, removedFriend) {
-                if (result === 1)
-                    alert(removedFriend + " has been removed from your friends list.");
-                else if (result === 0)
-                    alert(removedFriend + " was not removed as a friend: User is not in your friends list.");
-                else
-                    alert(removedFriend + " was not removed as a friend: User does not exist.");
+                if (result === 1) {
+                    console.log("alert");
+                    swal(removedFriend + " has been removed from your friends list.");
+                }
+                else if (result === 0) {
+                    console.log("alert");
+                    swal(removedFriend + " was not removed as a friend: User is not in your friends list.");
+                }
+                else {
+                    swal(removedFriend + " was not removed as a friend: User does not exist.");
+                }
                 window.location.href= "./main"
             }
 
             //A response once the results of attempting to add a friend finishes
 			function friendResult(result, addedFriend) {
-                if (result === 1)
-                    alert(addedFriend + " has been added as a friend!");
-                else if (result === -1)
-                    alert(addedFriend + " was not added as a friend: User does not exist");
-                else
-                    alert(addedFriend + " was not added as a friend: User is already a friend");
+                if (result === 1) {
+                    console.log("alert");
+                    swal(addedFriend + " has been added as a friend!");
+                }
+
+                else if (result === -1) {
+                    console.log("alert");
+                    swal(addedFriend + " was not added as a friend: User does not exist");
+                }
+                else {
+                    console.log("alert");
+                    swal(addedFriend + " was not added as a friend: User is already a friend");
+                }
                 window.location.href = "./main";
             }
 
@@ -300,7 +313,7 @@
                                 .signOut()
                         })
                         .then(function() {
-                            alert("Thank you for using Whisper.io");
+                            swal("Thank you for using Whisper.io");
                             console.log('Logging out user');
                             console.log('User signed out.');
                             // Kill login token

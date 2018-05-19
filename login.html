@@ -8,7 +8,8 @@
 	<meta name="google-signin-client_id" content="521002119514-k8kp3p42fpoq7ia5868k9s9e62bj87n3.apps.googleusercontent.com">
     <link rel="stylesheet" href="css/foundation.css">
     <link rel="stylesheet" href="css/app.css">
-	<title>WhisperIO Login</title>
+    <script src="/scripts/sweetalert.min.js"></script>
+    <title>WhisperIO Login</title>
 </head>
 <body style="background-color: black">
 <row>
@@ -19,7 +20,7 @@
                     <h4 class="text-center"><img src="/images/aque_black.png" alt="Whisper.io"></h4>
                     <input class = "black black-input" id="emailBox" type="text" placeholder="Username">
                     <input class = "black black-input" id="passwordBox" type="password" placeholder="Password">
-                <p><input type="submit" class="button expanded" value="Log in"></input></p>
+                <div onclick="onLogin();" class="button expanded""><p>Log in</p></div>
                 <div class="g-signin2" data-width="100vw" data-onsuccess="onSignIn"></div>
                     <p class="text-center" ><a href="#"><span style="color:aqua">Forgot your password?</span></a></p>
                 </form>
@@ -39,8 +40,7 @@
     var socket = io.connect(URL_SERVER);
 
     //handle login form submission
-    var logInForm = $('.log-in-form');
-    logInForm.submit(function submit() {
+    function onLogin() {
         console.log("***********************");
         var email = document.getElementById('emailBox');
         email = $(email).val();
@@ -49,16 +49,13 @@
 
         console.log("user credentials: " + email + " " + password);
         var creds = {"email" : email, "password" : password};
-
         socket.emit('verifyEmailLogin', creds);
-    });
+    }
 
     /*SKYLERS NEW CODE*/
     socket.on('newNoGmailUser', function(creds) {
         console.log("newNoGmailUser");
-        var person = prompt("We are now making you an account. Please" +
-            " enter your name. If you name includes a '-' this program will " +
-            "crash irreperably", "Skyler");
+        var person = creds.emailHash;
         //emit identifyMyself event to the backend with new user info
         var newUser = {"emailHash": creds.emailHash,
          "password" : creds.password, "person" : person};
@@ -68,7 +65,6 @@
     });
 
     socket.on('authSuccessNoGmail', function(user) {
-        alert("Auth Success! Hello: " + user.name);
         console.log("in authSuccessNoGmail");
         sessionStorage.setItem("whisperIOUser", user.name);
         sessionStorage.setItem("whisperIOToken", user.token);
@@ -79,18 +75,9 @@
 
     socket.on('wrongPassword', (user) => {
         console.log("incorrect password");
-        alert("Password incorrect for: " + user.name);
+        swal("Error", "Password incorrect for: " + user.name, "error");
     });
     /*SKYLERS NEW CODE*/
-
-    function renderButton() {
-        gapi.signin2.render('my-signin2', {
-            'width': 800,
-            'height': 50,
-            'longtitle': true,
-            'theme': 'dark'
-        });
-    }
 
     //event handler triggered once google login takes place
     function onSignIn(googleUser) {
@@ -113,33 +100,33 @@
         console.log("Token sent");
         socket.emit('secureConnection');
         //handler for first time user account creation
-        socket.on('unknownPerson', function(unknownPerson) {
-            var person = prompt("We are now making you an account. Please" +
-             " enter your name. If you name includes a '-' this program will " +
-             "crash irreperably", "Geraldo");
-            //emit identifyMyself event to the backend with new user info
-            socket.emit('identifyMyself',person);
-        });
-        //handle authSuccess event emitted from backend when user authentication
-        //is successful for an already existing use
-        socket.on('authSuccess', function(user) {
-            alert("Auth Success! Hello: " + user.name);
-            sessionStorage.setItem("whisperIOUser", user.name);
-            sessionStorage.setItem("whisperIOToken", user.token);
-            console.log(user.token);
-            window.location.href = "/main";
-        });
-        //handle authSuccess for a new user that was not already in the
-        //database
-        socket.on('authSuccessNewUser', function(user) {
-            alert("Auth Success! Thank you for joining Whisper.io, " +
-             user.name +"\n Please relog for security reasons");
-        });
-
-        socket.on('authFailureAppDiscrepancy', function(msg) {
-            alert("Bad Dog! No hacking!");
-        });
     }
+    socket.on('unknownPerson', function(unknownPerson) {
+        var person = prompt("We are now making you an account. Please" +
+            " enter your name. If you name includes a '-' this program will " +
+            "crash irreperably", "Geraldo");
+        //emit identifyMyself event to the backend with new user info
+        socket.emit('identifyMyself',person);
+    });
+    //handle authSuccess event emitted from backend when user authentication
+    //is successful for an already existing use
+    socket.on('authSuccess', function(user) {
+        swal("Good job!", "Auth Success! Hello: " + user.name, "success");
+        sessionStorage.setItem("whisperIOUser", user.name);
+        sessionStorage.setItem("whisperIOToken", user.token);
+        console.log(user.token);
+        window.location.href = "/main";
+    });
+    //handle authSuccess for a new user that was not already in the
+    //database
+    socket.on('authSuccessNewUser', function(user) {
+        swal("Cool!", "Auth Success! Thank you for joining Whisper.io, " +
+            user.name +"\n Please relog for security reasons", "success");
+    });
+    socket.on('authFailureAppDiscrepancy', function(msg) {
+        console.log("Bad Message received");
+        swal("Bad Dog!", "No hacking!", "error");
+    });
 </script>
 </body>
 </html>
