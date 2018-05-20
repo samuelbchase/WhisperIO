@@ -240,7 +240,7 @@ io.on('connection', function(socket) {
     });
 
     //catch verifyToken event emitted on google login
-    socket.on('verifyToken', function(token){
+    socket.on('verifyToken', function(token, callback){
         console.log("token: " + token);
         var options = { method: 'GET',
             url: 'https://www.googleapis.com/oauth2/v3/tokeninfo',
@@ -272,7 +272,7 @@ io.on('connection', function(socket) {
             if(aud !== "521002119514-k8kp3p42fpoq7ia5868k9s9e62bj87n3.apps.googleusercontent.com")
             {
                 console.log("authFailureAppDiscrepancy, Bad! No Hacking!");
-                return callback(false, 'Fake token');
+                return callback(false, token);
             }
             var hash = sha256(email);
 
@@ -314,7 +314,7 @@ io.on('connection', function(socket) {
 
     });
 
-    socket.on('isOnline', function(user) {
+    socket.on('isOnline', function(user, callback) {
         var sql = "SELECT isOnline FROM User WHERE username='" + user + "';";
         read.query(sql, function(err, result) {
             if (err) throw err;
