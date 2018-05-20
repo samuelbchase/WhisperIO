@@ -111,7 +111,6 @@
     //handle authSuccess event emitted from backend when user authentication
     //is successful for an already existing use
     socket.on('authSuccess', function(user) {
-        swal("Good job!", "Auth Success! Hello: " + user.name, "success");
         sessionStorage.setItem("whisperIOUser", user.name);
         sessionStorage.setItem("whisperIOToken", user.token);
         console.log(user.token);
@@ -131,7 +130,7 @@
     });
     socket.on('authFailureAppDiscrepancy', function(msg) {
         console.log("Bad Message received");
-        swal("Bad Dog!", "No hacking!", "error");
+        swal("Error", "Incorrect Password", "error");
     });
 </script>
 </body>
