@@ -212,7 +212,7 @@ io.on('connection', function(socket) {
     });
 
 
-    socket.on('userNameSend', function(userName){
+    socket.on('userNameSend', function(userName, callback){
         sockets.push(socket);
         names.push(userName);
         socket.id = userName;
@@ -229,6 +229,7 @@ io.on('connection', function(socket) {
                     //console.log("Broadcasting friends to " + userName);
                     console.log("----------------------------");
                     socket.emit('FriendsList',result);
+                    return callback(1, result)
                     //console.log("Friends list sent: " + result);
                 });
             }
@@ -400,7 +401,7 @@ io.on('connection', function(socket) {
         });
     });
 
-    socket.on('deleteAccount', function(userName) {
+    socket.on('deleteAccount', function(userName, callback) {
         socket.emit("tokenVerifyRequest","");
         socket.once('tokenVerifyAnswer', function(token) {
             console.log("Answer Received");
@@ -422,15 +423,18 @@ io.on('connection', function(socket) {
                         write.query(sql, function(err) {
                             if (err) throw err;
                         });
+                        return callback(0, `${userName} account successfully deleted`);
                     }
                     else
                     {
                         console.log("this really shouldn't happen...");
+                        return callback(-1, `${userName} something bad happened`);
                     }
                 });
             }
             else {
-                console.log("Token failure in deleteAccount")
+                console.log("Token failure in deleteAccount");
+                return callback(1, `Token failure`);
             }
         });
 
