@@ -100,7 +100,7 @@
                 <div id = "signOutButton" class="button expanded alert" onclick="signOut()">
                     <button href="#" >Sign out</button>
                 </div>
-                <div id = "testButtonDeleteAccount" class = "button extended" onClick = "deleteAccount()">Test - Delete</div>
+                <div id = "testButtonDeleteAccount" class = "button extended" onClick = "deleteAccount()">Delete Account</div>
             </div>
             <!--main chat interface-->
             <script>
@@ -333,6 +333,7 @@
                 {
                     socket.emit('deleteAccount', whisperIOUser);
                 }
+                window.href="/";
             }
         </script>
 

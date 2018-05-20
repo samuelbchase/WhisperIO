@@ -62,7 +62,7 @@ describe('User connections', function () {
         syncConnWrite.query("DELETE FROM User where username= 'testuser1';");
         syncConnWrite.query("DELETE FROM User where username= 'testuser2';");
 
-        syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash) VALUES ('testuser1','Y','1');");
+        syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash,token) VALUES ('testuser1','Y','1','123');");
         syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash) VALUES ('testuser2','N','2');");
         client1 = ioClient.connect('http://localhost:3001', options);
         //sinon.stub(console, "log").returns(void 0);
