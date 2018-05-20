@@ -117,8 +117,9 @@ describe('User connections', function () {
 
 
     it('Does the program show your online friends?', function (done) {
-       client1.emit('isOnline', "testuser1", function(result, name) {
-            assert.equal(result, true, "Online friends");
+        client1.emit('isOnline', "testuser1");
+        client1.on('isOnlineResult', function(result) {
+            assert.equal(result, true, "Offline friends are not offline - result is " + result);
             done();
         });
     });
