@@ -97,10 +97,7 @@ describe('User connections', function () {
             assert.equal(result, 1, "Failure to add a friend\n" + string);
             done();
         });
-        client1.emit('addFriend', "geraldo", "sam", function(result) {
-            assert.equal(result, 1, "Failure to add a friend\n" + string);
-            done();
-        });
+
     });
 
     it('Can you add a friend you are already friends with?', function (done) {
@@ -145,9 +142,39 @@ describe('User connections', function () {
     });
 
     it('Can an existing friend be removed?', function (done) {
-        client1.emit('removeFriend', "geraldo", "sam", function(result, friend) {
+        client1.emit('removeFriend', 'testuser1', 'testuser2', function(result, friend) {
             assert.equal(result, 1, `Friend ${friend} removed`);
             done();
         });
     });
+
+    it('Can an existing user be removed even when friend relationship does not exist?', function (done) {
+        client1.emit('removeFriend', 'testuser1', 'testuser2', function(result, friend) {
+            assert.equal(result, 0, `Friend ${friend} relationship does not exist`);
+            done();
+        });
+    });
+
+    it('Can a non existing user, be removed as friend?', function (done) {
+        client1.emit('removeFriend', "testuser1", "wot", function(result, friend) {
+            assert.equal(result, -1, `Friend ${friend} does not exist`);
+            done();
+        });
+    });
+
+    it('User Name Send?', function (done) {
+        client1.emit('userNameSend', 'testuser1', function(result, list) {
+            assert.equal(result, 0, list);
+            done();
+        });
+    });
+
+    // Use me last
+    it('Can an existing user delete their account?', function (done) {
+        client1.emit('deleteAccount', 'testuser1', function(result, message) {
+            assert.equal(result, 0, message);
+            done();
+        });
+    });
+
 });
