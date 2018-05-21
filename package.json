@@ -2,6 +2,7 @@
   "name": "WhisperIO",
   "version": "0.0.1",
   "dependencies": {
+    "bcrypt": "^2.0.1",
     "bcrypt-nodejs": "0.0.3",
     "capture-console": "^1.0.1",
     "chai": "^4.1.2",
@@ -21,7 +22,11 @@
     "sha256": "^0.2.0",
     "sinon": "^4.5.0",
     "socket.io": "^2.0.4",
+<<<<<<< HEAD
     "sqlstring": "^2.3.1",
+=======
+    "sweetalert": "^2.1.0",
+>>>>>>> fb4aa2e3765d05daea859c36b3abb1bb927747df
     "sync-mysql": "^3.0.1"
   },
   "devDependencies": {
@@ -30,6 +35,6 @@
     "nyc": "^11.6.0"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --exit"
   }
 }

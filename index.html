@@ -9,6 +9,7 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <meta name="google-signin-client_id" content="521002119514-k8kp3p42fpoq7ia5868k9s9e62bj87n3.apps.googleusercontent.com">
+    <script src="/scripts/sweetalert.min.js"></script>
 
 </head>
 <script>
@@ -55,14 +56,17 @@
                                             {
                                                 for(x in history) {
                                                     var div = document.createElement('div');
-                                                    if(ActiveFriend == history[x].SentFrom) {
+                                                    if(ActiveFriend === history[x].SentFrom) {
                                                         div.className = 'theirMessage';
+                                                        div.textContent = history[x].Message;
+                                                        document.getElementById("chatbox" + ActiveFriend).appendChild(div);
                                                     }
-                                                    else {
+                                                    else if(ActiveFriend === history[x].SentTo) {
                                                         div.className = 'yourMessage';
+                                                        div.textContent = history[x].Message;
+                                                        document.getElementById("chatbox" + ActiveFriend).appendChild(div);
                                                     }
-                                                    div.textContent = history[x].Message;
-                                                    document.getElementById("chatbox" + ActiveFriend).appendChild(div);
+
                                                 }
                                             }
 
@@ -96,7 +100,7 @@
                 <div id = "signOutButton" class="button expanded alert" onclick="signOut()">
                     <button href="#" >Sign out</button>
                 </div>
-                <div id = "testButtonDeleteAccount" class = "button extended" onClick = "deleteAccount()">Test - Delete</div>
+                <div id = "testButtonDeleteAccount" class = "button extended" onClick = "deleteAccount()">Delete Account</div>
             </div>
             <!--main chat interface-->
             <script>
@@ -183,21 +187,33 @@
             function addMessage()
             {
                 //Get the message, and send that message on the socket to the server listener
-                var message = $('#messageSender').val();
-                socket.emit('chat message',ActiveFriend + "-" + message);
+                var message = messageFactory(ActiveFriend,$('#messageSender').val());
+                socket.emit('chat message',message);
                 var div = document.createElement('div');
                 div.className = 'yourMessage';
-                div.textContent = message;
+                div.textContent = message.text;
                 document.getElementById("chatbox" + ActiveFriend).appendChild(div);
                 return 0;
+            }
+
+            function messageFactory(sendTo,text) {
+                if(sendTo === null || text === null) {
+                    return -1
+                }
+                if(sendTo === "" || text === "") {
+                    return -1
+                }
+                var message = new Object();
+                message.sentTo = sendTo;
+                message.text = text;
+                return message;
             }
 
             //Appends message to a chat when a user receives a message
             function receiveMessage(msg)
             {
-                var indexOfSeparator = msg.indexOf('-');
-                var userSentFrom = msg.slice(0,indexOfSeparator);
-                var message = msg.slice(indexOfSeparator+1);
+                var userSentFrom = msg.sentBy;
+                var message = msg.text;
                 var chatbox = document.getElementById("chatbox" + userSentFrom);
 
                 //friends list element selector for notifiying users of new message
@@ -223,40 +239,49 @@
                 var addFriend = prompt("Enter the name of the friend you wish to add: ", "User Name");
                 if (addFriend != null && addFriend !== "")
                 {
-                        socket.emit('addFriend', whisperIOUser, addFriend);
+                    socket.emit('addFriend', whisperIOUser, addFriend, friendResult);
                 }
             }
 
             function removeFriend() {
                 var removeFriend = prompt("Enter the name of the friend you wish to remove: ", "User Name");
-                var wantsToRemove = 0;
                 if (removeFriend != null && removeFriend !== "")
                 {
-                    wantsToRemove = confirm("Are you sure you wish to remove " + removeFriend + " as a friend?");
-                    if (wantsToRemove === true)
-                        socket.emit('removeFriend', whisperIOUser, removeFriend);
+                    socket.emit('removeFriend', whisperIOUser, removeFriend);
                 }
             }
 
             function removeFriendAction(result, removedFriend) {
-                if (result === 1)
-                    alert(removedFriend + " has been removed from your friends list.");
-                else if (result === 0)
-                    alert(removedFriend + " was not removed as a friend: User is not in your friends list.");
-                else
-                    alert(removedFriend + " was not removed as a friend: User does not exist.");
-                window.location.href= "./main"
+                if (result === 1) {
+                    swal("OK!",removedFriend + " Has been removed","success")
+                        .then((value) => {
+                            window.location.href = "./main";
+                        });
+                }
+                else if (result === 0) {
+                    console.log("alert");
+                    swal("Error",removedFriend + " was not removed as a friend: User is not in your friends list.","error");
+                }
+                else {
+                    swal("Error",removedFriend + " was not removed as a friend: User is not in your friends list.","error");
+                }
             }
 
             //A response once the results of attempting to add a friend finishes
 			function friendResult(result, addedFriend) {
-                if (result === 1)
-                    alert(addedFriend + " has been added as a friend!");
-                else if (result === -1)
-                    alert(addedFriend + " was not added as a friend: User does not exist");
-                else
-                    alert(addedFriend + " was not added as a friend: User is already a friend");
-                window.location.href = "./main";
+                if (result === 1) {
+                    swal("OK!",addedFriend + " has been added as a friend","success")
+                        .then((value) => {
+                            window.location.href = "./main";
+                        });
+                }
+
+                else if (result === -1) {
+                    swal("Error",addedFriend + " was not added as a friend: User does not exist","error");
+                }
+                else {
+                    swal("Error",addedFriend + " was not added as a friend: User is already a friend","error");
+                }
             }
 
             //Appends the "Online" or "Offline" status to friends in list
@@ -269,8 +294,10 @@
                     x.className += " offline ";
             }
             socket.on('tokenVerifyRequest', function(msg) {
-                //Commenting this out won't get you magical access, it is server-side verified
-                socket.emit("tokenVerifyAnswer",sessionStorage.getItem("whisperIOToken") || 'defaultValue');
+                //Commenting this out won't get you magical access,
+                // it is server-side verified
+                socket.emit("tokenVerifyAnswer",sessionStorage
+                 .getItem("whisperIOToken") || 'defaultValue');
             });
 
             //Signs the current user out
@@ -283,17 +310,29 @@
                                 .signOut()
                         })
                         .then(function() {
-                            alert("Thank you for using Whisper.io");
-                            console.log('Logging out user');
-                            console.log('User signed out.');
-                            // Kill login token
-                            sessionStorage.clear();
-                            window.location.href = "/";
+                            swal("Thank you for using Whisper.io")
+                                .then((value) => {
+
+                                    console.log('Logging out user');
+                                    console.log('User signed out.');
+                                    // Kill login token
+                                    sessionStorage.clear();
+                                    window.location.href = "/";
+                                });
+
                         })
                         .catch(function(err){
                             console.log("Wokriiiinnnnnggg err: ", err);
                         });
                 });
+            }
+            function sleep(milliseconds) {
+                var start = new Date().getTime();
+                for (var i = 0; i < 1e7; i++) {
+                    if ((new Date().getTime() - start) > milliseconds){
+                        break;
+                    }
+                }
             }
 
             function deleteAccount()
@@ -303,6 +342,7 @@
                 {
                     socket.emit('deleteAccount', whisperIOUser);
                 }
+                window.href="/";
             }
         </script>
 
