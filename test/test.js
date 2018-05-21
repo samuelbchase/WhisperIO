@@ -57,7 +57,9 @@ describe('User connections', function () {
     beforeEach(function() {
         server.runServer();
         console.log("Host: " + syncConnWrite.host);
+        syncConnWrite.query("DELETE FROM Friends where Host= 'testuser1' OR Receiver = 'testuser1';");
         syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
+        syncConnWrite.query("DELETE FROM Message where SentFrom= 'testuser1' OR SentTo = 'testuser1';");
         syncConnWrite.query("DELETE FROM Message where SentFrom= 'testuser2' OR SentTo = 'testuser2';");
         syncConnWrite.query("DELETE FROM User where username= 'testuser1';");
         syncConnWrite.query("DELETE FROM User where username= 'testuser2';");
@@ -73,8 +75,6 @@ describe('User connections', function () {
         server.closeServer();
         syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
         syncConnWrite.query("DELETE FROM Message where SentFrom= 'testuser2' OR SentTo = 'testuser2';");
-        syncConnWrite.query("DELETE FROM User where username= 'testuser1';");
-        syncConnWrite.query("DELETE FROM User where username= 'testuser2';");
         syncConnWrite.query("DELETE FROM User where username= 'testuser1';");
         syncConnWrite.query("DELETE FROM User where username= 'testuser2';");
         //console.log.restore();
@@ -93,7 +93,7 @@ describe('User connections', function () {
     it('Can you add a friend?', function(done) {
         //this.timeout(5000);
         var string = "NOTE : THIS TEST WILL GENERALLY FAIL UNLESS THE DB IS UPDATED PRIOR TO RUNNING THE TEST\nAssertionError"
-        client1.emit('addFriend', "testuser2", "testuser1", function(result) {
+        client1.emit('addFriend', "testuser1", "testuser2", function(result) {
             assert.equal(result, 1, "Failure to add a friend\n" + string);
             done();
         });
@@ -102,7 +102,7 @@ describe('User connections', function () {
 
     it('Can you add a friend you are already friends with?', function (done) {
         //this.timeout(5000);
-        client1.emit('addFriend', "testuser2", "testuser1", function(result) {
+        client1.emit('addFriend', "testuser1", "testuser2", function(result) {
             assert.equal(result, 0, "Added friend either does not exist or is not already friends");
             done();
         });
@@ -141,7 +141,11 @@ describe('User connections', function () {
         });
     });
 
+    // This test fails because the existing friendship is deleted
+    // after each unit test.
     it('Can an existing friend be removed?', function (done) {
+        // Attempting to add a friend first before removing them
+        client1.emit('removeFriend', 'testuser1', 'testuser2');
         client1.emit('removeFriend', 'testuser1', 'testuser2', function(result, friend) {
             assert.equal(result, 1, `Friend ${friend} removed`);
             done();
@@ -162,6 +166,12 @@ describe('User connections', function () {
         });
     });
 
+    /* *********************************************************
+        The following tests fail because tokenVerifyAnswer
+        hangs. Sam added the token to testuser1 above but I
+        still can't get them to pass.
+     ******************************************************** */
+
     it('User Name Send?', function (done) {
         client1.emit('userNameSend', 'testuser1', function(result, list) {
             assert.equal(result, 0, list);
@@ -169,7 +179,34 @@ describe('User connections', function () {
         });
     });
 
-    // Use me last
+    it('Can I view chat history?', function (done) {
+        client1.emit('chathistory', 'testuser1', 'testuser2',  function(result) {
+            assert.equal(result, 0, history);
+            done();
+        });
+    });
+
+    it('Can I send a message?', function (done) {
+        client1.emit('chat message', 'Test', function(result) {
+            assert.equal(result, 0, history);
+            done();
+        });
+    });
+
+    it('Can a user log in?', function (done) {
+        client1.emit('userLogin', 'testuser1', function(result) {
+            assert.equal(result, 0, history);
+            done();
+        });
+    });
+
+    it('Can I get a token?', function(done) {
+       client1.emit('getToken', 'testuser1', function(result) {
+           assert.equal(result, 0, returned_token);
+           done();
+       });
+    });
+
     it('Can an existing user delete their account?', function (done) {
         client1.emit('deleteAccount', 'testuser1', function(result, message) {
             assert.equal(result, 0, message);

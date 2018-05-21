@@ -117,7 +117,7 @@ io.on('connection', function(socket) {
         database: database,
     });
 
-    socket.on('userLogin', function (userName) {
+    socket.on('userLogin', function (userName, callback) {
         socket.emit("tokenVerifyRequest","");
         socket.on('tokenVerifyAnswer', function(token) {
             if(token === syncConnRead.query("SELECT token FROM User where username = '" + userName + "';")[0].token) {
@@ -126,11 +126,13 @@ io.on('connection', function(socket) {
                 sql = "UPDATE User SET isOnline='Y' WHERE username='" + userName + "';";
                 write.query(sql, function (err) {
                     if (err) throw err;
-                });            }
+                });
+                return callback(0, `${userName} logged in successfully`);
+            }
         });
     });
 
-    socket.on('chat message', function(msg){
+    socket.on('chat message', function(msg, callback){
         console.log("Chat message request received");
         var indexOfSeparator = msg.indexOf('-');
         var userSentTo = msg.slice(0,indexOfSeparator);
@@ -165,9 +167,11 @@ io.on('connection', function(socket) {
                             tok = tok[0].token;
                             if(token === tok) {
                                 sendSocket.emit('chat message',name + "-" + message);
+                                return callback(0, message);
                             }
                             else {
                                 console.log("Token error on receiver");
+                                return callback(1, 'Token error');
                             }
                         });
                     }
@@ -190,7 +194,7 @@ io.on('connection', function(socket) {
         });
     });
 
-    socket.on('chathistory', function (name, from) {
+    socket.on('chathistory', function (name, from, callback) {
         //to make this better
         sql = "SELECT * FROM Message WHERE (SentFrom, SentTo) = ('" + name + "', '" + from + "') OR (SentTo, SentFrom) = ('" + name + "', '" + from + "') ORDER BY timestamp ASC;";
         read.query(sql, function(err, result){
@@ -204,8 +208,8 @@ io.on('connection', function(socket) {
             socket.on('tokenVerifyAnswer', function(token) {
                 if(token === syncConnRead.query("SELECT token FROM User where username = '" + name + "';")[0].token) {
                     socket.emit('messageHistory', result);
+                    return callback(0, result);
                 }
-
             });
         });
 
@@ -425,18 +429,15 @@ io.on('connection', function(socket) {
                         });
                         return callback(0, `${userName} account successfully deleted`);
                     }
-                    else
-                    {
+                    else {
                         console.log("this really shouldn't happen...");
                         return callback(-1, `${userName} something bad happened`);
                     }
                 });
-            }
-            else {
+            } else {
                 console.log("Token failure in deleteAccount");
                 return callback(1, `Token failure`);
             }
         });
-
     });
 });
