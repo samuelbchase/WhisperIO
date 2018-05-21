@@ -168,7 +168,7 @@
 
             //All receiving socket stuff
             socket.on('chat message', receiveMessage);
-            //socket.on('addFriendResult', friendResult);
+            socket.on('addFriendResult', friendResult);
             socket.on('isOnlineResult', appendOnlineStatus);
             socket.on('removeFriendResult', removeFriendAction);
 
@@ -245,46 +245,43 @@
 
             function removeFriend() {
                 var removeFriend = prompt("Enter the name of the friend you wish to remove: ", "User Name");
-                var wantsToRemove = 0;
                 if (removeFriend != null && removeFriend !== "")
                 {
-                    wantsToRemove = confirm("Are you sure you wish to remove " + removeFriend + " as a friend?");
-                    if (wantsToRemove === true)
-                        socket.emit('removeFriend', whisperIOUser, removeFriend);
+                    socket.emit('removeFriend', whisperIOUser, removeFriend);
                 }
             }
 
             function removeFriendAction(result, removedFriend) {
                 if (result === 1) {
-                    console.log("alert");
-                    swal(removedFriend + " has been removed from your friends list.");
+                    swal("OK!",removedFriend + " Has been removed","success")
+                        .then((value) => {
+                            window.location.href = "./main";
+                        });
                 }
                 else if (result === 0) {
                     console.log("alert");
-                    swal(removedFriend + " was not removed as a friend: User is not in your friends list.");
+                    swal("Error",removedFriend + " was not removed as a friend: User is not in your friends list.","error");
                 }
                 else {
-                    swal(removedFriend + " was not removed as a friend: User does not exist.");
+                    swal("Error",removedFriend + " was not removed as a friend: User is not in your friends list.","error");
                 }
-                window.location.href= "./main"
             }
 
             //A response once the results of attempting to add a friend finishes
 			function friendResult(result, addedFriend) {
                 if (result === 1) {
-                    console.log("alert");
-                    swal(addedFriend + " has been added as a friend!");
+                    swal("OK!",addedFriend + " has been added as a friend","success")
+                        .then((value) => {
+                            window.location.href = "./main";
+                        });
                 }
 
                 else if (result === -1) {
-                    console.log("alert");
-                    swal(addedFriend + " was not added as a friend: User does not exist");
+                    swal("Error",addedFriend + " was not added as a friend: User does not exist","error");
                 }
                 else {
-                    console.log("alert");
-                    swal(addedFriend + " was not added as a friend: User is already a friend");
+                    swal("Error",addedFriend + " was not added as a friend: User is already a friend","error");
                 }
-                window.location.href = "./main";
             }
 
             //Appends the "Online" or "Offline" status to friends in list
@@ -313,17 +310,29 @@
                                 .signOut()
                         })
                         .then(function() {
-                            swal("Thank you for using Whisper.io");
-                            console.log('Logging out user');
-                            console.log('User signed out.');
-                            // Kill login token
-                            sessionStorage.clear();
-                            window.location.href = "/";
+                            swal("Thank you for using Whisper.io")
+                                .then((value) => {
+
+                                    console.log('Logging out user');
+                                    console.log('User signed out.');
+                                    // Kill login token
+                                    sessionStorage.clear();
+                                    window.location.href = "/";
+                                });
+
                         })
                         .catch(function(err){
                             console.log("Wokriiiinnnnnggg err: ", err);
                         });
                 });
+            }
+            function sleep(milliseconds) {
+                var start = new Date().getTime();
+                for (var i = 0; i < 1e7; i++) {
+                    if ((new Date().getTime() - start) > milliseconds){
+                        break;
+                    }
+                }
             }
 
             function deleteAccount()

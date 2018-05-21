@@ -125,7 +125,7 @@
     });
     socket.on('authSuccessNewUserNOGMAIL', function(user) {
         swal("Cool!", "Auth Success! Thank you for joining Whisper.io, " +
-            user.name +"\n Please relog for security reasons", "success");
+            user.name +"\n Please re-enter your password for security reasons", "success");
         document.getElementById('passwordBox').value = "";
     });
     socket.on('authFailureAppDiscrepancy', function(msg) {
