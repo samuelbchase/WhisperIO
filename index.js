@@ -7,6 +7,7 @@ var http = require('http').Server(app);
 var https = require('https');
 var path = require('path');
 var mysql = require('mysql');
+var sqlstr = require('sqlstring');
 var sha256 = require('sha256');
 var request = require("request");
 var socket_io = require("socket.io");
@@ -74,8 +75,12 @@ function getToken(userName) {
     console.log("Token is" + result[0].token) ;
 }
 //use this for opening a file for the read and write passwords for the DB	
+<<<<<<< HEAD
+//PLEASE DON'T MESS WITH THIS FUNCTION OR .info.txt! IT WILL SCREW UP THE DATABASE QUERIES
+=======
 //PLEASE DON'T MESS WITH THIS FUNCTION OR .info.txt! IT WILL SCREW UP THE
 // DATABASE QUERYS
+>>>>>>> fb4aa2e3765d05daea859c36b3abb1bb927747df
 fs.readFile('.info.txt', 'utf8', function(err, contents){
 	var index = contents.indexOf('|');
 	var old = 0;
@@ -175,6 +180,14 @@ io.on('connection', function(socket) {
     });
 
     socket.on('userLogin', function (userName) {
+<<<<<<< HEAD
+        socket.emit("tokenVerifyRequest","");
+        socket.on('tokenVerifyAnswer', function(token) {
+            if(token === syncConnRead.query(sqlstr.format("SELECT token FROM User where username = ?;",[userName]))[0].token) {
+                userName = userName.toLowerCase();
+                console.log(userName + " is logging in");
+                sql = sqlstr.format("UPDATE User SET isOnline='Y' WHERE username=?;", [userName]);
+=======
         socket.emit("tokenVerifyRequest", "");
         socket.once('tokenVerifyAnswer', function (token) {
             if (token === syncConnRead.query("SELECT token FROM User where " +
@@ -183,6 +196,7 @@ io.on('connection', function(socket) {
                 console.log(userName + " is logging in");
                 sql = "UPDATE User SET isOnline='Y' WHERE username='" +
                  userName + "';";
+>>>>>>> fb4aa2e3765d05daea859c36b3abb1bb927747df
                 write.query(sql, function (err) {
                     if (err) throw err;
                 });
@@ -203,8 +217,12 @@ io.on('connection', function(socket) {
                     name = names[i];
                 }
             }
+<<<<<<< HEAD
+            if(token === syncConnRead.query(sqlstr.format("SELECT token FROM User where username = ?;", name))[0].token) {
+=======
             if (token === syncConnRead.query("SELECT token FROM User where " +
                 "username = '" + name + "';")[0].token) {
+>>>>>>> fb4aa2e3765d05daea859c36b3abb1bb927747df
                 console.log('message: ' + message);
                 console.log('Was set to: ' + userSentTo);
 
@@ -216,10 +234,16 @@ io.on('connection', function(socket) {
                     {
                         var sendSocket = sockets[j];
                         //Sends message to the specified user
+<<<<<<< HEAD
+                        sendSocket.emit("tokenVerifyRequest","");
+                        sendSocket.once('tokenVerifyAnswer', function(token) {
+                            var tok = syncConnRead.query(sqlstr.format("SELECT token FROM User where username = ?;", [userSentTo]));
+=======
                         sendSocket.emit("tokenVerifyRequest", "");
                         sendSocket.once('tokenVerifyAnswer', function (token) {
                             var tok = syncConnRead.query("SELECT token FROM " +
                                 "User where username = '" + userSentTo + "';");
+>>>>>>> fb4aa2e3765d05daea859c36b3abb1bb927747df
                             tok = tok[0].token;
                             var messageObj = messageFactory(name,message);
                             if(token === tok) {
@@ -246,7 +270,7 @@ io.on('connection', function(socket) {
 
     socket.on('disconnect', function () {
         console.log(this.id + " is logging out");
-        sql = "UPDATE User SET isOnline='N' WHERE username='" + this.id + "';"
+        sql = sqlstr.format("UPDATE User SET isOnline='N' WHERE username= ?;", [this.id]);
         write.query(sql, function (err) {
             if (err) throw err;
         });
@@ -262,6 +286,15 @@ io.on('connection', function(socket) {
         read.query(sql, function (err, result) {
             if (err)
                 throw err;
+<<<<<<< HEAD
+	    for(var x in result)
+		{
+			result[x].Message = key.decrypt(result[x].Message,'utf8');
+		}
+		socket.emit("tokenVerifyRequest","");
+            socket.on('tokenVerifyAnswer', function(token) {
+                if(token === syncConnRead.query(sqlstr.format("SELECT token FROM User where username = ?;", [name])[0].token)) {
+=======
             for (var x in result) {
                 result[x].Message = key.decrypt(result[x].Message, 'utf8');
             }
@@ -275,6 +308,7 @@ io.on('connection', function(socket) {
                 if (token === syncConnRead.query("SELECT token FROM User " +
                     "where " + "username = '" + name + "';")[0].token)
                 {
+>>>>>>> fb4aa2e3765d05daea859c36b3abb1bb927747df
                     socket.emit('messageHistory', result);
                 }
             });
@@ -292,6 +326,11 @@ io.on('connection', function(socket) {
         socket.emit("tokenVerifyRequest", "");
         socket.once('tokenVerifyAnswer', function (token) {
             console.log("Answer Received");
+<<<<<<< HEAD
+            console.log("Token is: " + syncConnRead.query(sqlstr.format("SELECT token FROM User where username = ?;", [userName]))[0].token);
+            if(token === syncConnRead.query(sqlstr.format("SELECT token FROM User where username = ?;", [userName])[0].token) {
+                var sql = "SELECT * FROM Friends where Host = ?;", [userName]);
+=======
             console.log("Token is: " + syncConnRead.query("SELECT token FROM " +
                 "User where username = '" + userName + "';")[0].token);
             if (token === syncConnRead.query("SELECT token FROM User where " +
@@ -299,6 +338,7 @@ io.on('connection', function(socket) {
             {
                 var sql = "SELECT * FROM Friends where Host = '" +
                  userName + "';";
+>>>>>>> fb4aa2e3765d05daea859c36b3abb1bb927747df
                 read.query(sql, function (err, result) {
                     console.log("Emitting friends list to " + userName);
                     if (err) throw err;
@@ -404,8 +444,12 @@ io.on('connection', function(socket) {
             }
             var hash = sha256(email);
 
+<<<<<<< HEAD
+            var sql = sqlstr.format("SELECT username FROM User WHERE emailHash = ?;", [hash]);
+=======
             var sql = "SELECT username FROM User where emailHash = '" + hash +
                 "';";
+>>>>>>> fb4aa2e3765d05daea859c36b3abb1bb927747df
             //if user doesn't exist add them
             write.query(sql, function (err, result) {
                 if (err) throw err;
@@ -433,8 +477,13 @@ io.on('connection', function(socket) {
                 {
                     var userName = result[0].username;
                     userName = userName.substr(0,userName.length);
+<<<<<<< HEAD
+                    const newTok = randomstring.generate(255);
+                    syncConnWrite.query(sqlstr.format("UPDATE User set token = ? WHERE username = ?;", [newTok, userName]));
+=======
                     var newTok = randomstring.generate(255);
                     syncConnWrite.query("UPDATE User set token = '" + newTok + "' where username = '" + userName + "';");
+>>>>>>> fb4aa2e3765d05daea859c36b3abb1bb927747df
                     console.log("Sending token: " + newTok);
                     var user = {name: userName, token: newTok};
                     socket.emit("authSuccess",user);
@@ -445,7 +494,7 @@ io.on('connection', function(socket) {
     });
 	
 	socket.on('isOnline', function(user) {
-        var sql = "SELECT isOnline FROM User WHERE username='" + user + "';";
+        var sql = sqlstr.format("SELECT isOnline FROM User WHERE username = ?;", [user]);
         read.query(sql, function(err, result) {
            if (err) throw err;
            if (result[0].isOnline === 'Y')
@@ -508,7 +557,7 @@ io.on('connection', function(socket) {
         console.log("Removing " + friend + " for " + user + " as a friend");
 
         //check to see if the friend relationship already exists
-        var sql = "SELECT * FROM User WHERE username = \"" + friend + "\";";
+        var sql = sqlstr.format("SELECT * FROM User WHERE username = ?;", [friend]);
         read.query(sql, function(err, result) {
             if (err) throw err;
             if (result.length === 1) // if the user exists
