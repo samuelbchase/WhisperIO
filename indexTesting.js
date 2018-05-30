@@ -120,7 +120,7 @@ io.on('connection', function(socket) {
     socket.on('userLogin', function (userName, callback) {
         socket.emit("tokenVerifyRequest","");
         socket.on('tokenVerifyAnswer', function(token) {
-            if(token === syncConnRead.query("SELECT token FROM User where username = '" + userName + "';")[0].token) {
+            if(debugMode === 1 || token === syncConnRead.query("SELECT token FROM User where username = '" + name + "';")[0].token)  {
                 userName = userName.toLowerCase();
                 console.log(userName + " is logging in");
                 sql = "UPDATE User SET isOnline='Y' WHERE username='" + userName + "';";
@@ -150,7 +150,7 @@ io.on('connection', function(socket) {
                     name = names[i];
                 }
             }
-            if(token === syncConnRead.query("SELECT token FROM User where username = '" + name + "';")[0].token) {
+            if(debugMode === 1 || token === syncConnRead.query("SELECT token FROM User where username = '" + name + "';")[0].token) {
                 console.log('message: ' + message);
                 console.log('Was set to: ' + userSentTo);
 
@@ -206,9 +206,9 @@ io.on('connection', function(socket) {
             }
             socket.emit("tokenVerifyRequest","");
             socket.on('tokenVerifyAnswer', function(token) {
-                if(token === syncConnRead.query("SELECT token FROM User where username = '" + name + "';")[0].token) {
+                if(debugMode === 1 || token === syncConnRead.query("SELECT token FROM User where username = '" + name + "';")[0].token) {
                     socket.emit('messageHistory', result);
-                    return callback(0, result);
+                    return callback(0, result,"");
                 }
             });
         });
@@ -225,7 +225,7 @@ io.on('connection', function(socket) {
         socket.once('tokenVerifyAnswer', function(token) {
             console.log("Answer Received");
             console.log("Token is: " + syncConnRead.query("SELECT token FROM User where username = '" + userName + "';")[0].token);
-            if(token === syncConnRead.query("SELECT token FROM User where username = '" + userName + "';")[0].token) {
+            if(debugMode === 1 || token === syncConnRead.query("SELECT token FROM User where username = '" + name + "';")[0].token)  {
                 var sql = "SELECT * FROM Friends where Host = '" + userName + "';";
                 read.query(sql, function (err, result) {
                     console.log("Emitting friends list to " + userName);
@@ -324,9 +324,9 @@ io.on('connection', function(socket) {
         read.query(sql, function(err, result) {
             if (err) throw err;
             if (result[0].isOnline === 'Y')
-                return callback(true, user);
+                return callback(1, user);
             else
-                return callback(false, user);
+                return callback(0, user);
         });
     });
 

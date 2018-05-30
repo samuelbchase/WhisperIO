@@ -52,6 +52,8 @@ var syncConnWrite = new mysql2({
         database: database
     });
 
+debugMode = 1;
+
 describe('User connections', function () {
     this.timeout(5000);
     beforeEach(function() {
@@ -67,6 +69,9 @@ describe('User connections', function () {
         syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash,token) VALUES ('testuser1','Y','1','123');");
         syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash) VALUES ('testuser2','N','2');");
         client1 = ioClient.connect('http://localhost:3001', options);
+        client1.on('tokenVerifyRequest', function(msg) {
+            client1.emit("tokenVerifyAnswer","123");
+        });
         //sinon.stub(console, "log").returns(void 0);
         //sinon.stub(console, "error").returns(void 0);
     });
@@ -92,7 +97,6 @@ describe('User connections', function () {
 
     it('Can you add a friend?', function(done) {
         //this.timeout(5000);
-        var string = "NOTE : THIS TEST WILL GENERALLY FAIL UNLESS THE DB IS UPDATED PRIOR TO RUNNING THE TEST\nAssertionError"
         client1.emit('addFriend', "testuser1", "testuser2", function(result) {
             assert.equal(result, 1, "Failure to add a friend\n" + string);
             done();
@@ -120,7 +124,7 @@ describe('User connections', function () {
     it('Does the program show your online friends?', function (done) {
         client1.emit('isOnline', "testuser1");
         client1.on('isOnlineResult', function(result) {
-            assert.equal(result, true, "Offline friends are not offline - result is " + result);
+            assert.equal(result, 1, "Offline friends are not offline - result is " + result);
             done();
         });
     });
@@ -129,7 +133,7 @@ describe('User connections', function () {
     it('Does the program show your offline friends?', function (done) {
         client1.emit('isOnline', "testuser2");
         client1.on('isOnlineResult', function(result) {
-            assert.equal(result, false, "Offline friends are not offline - result is " + result);
+            assert.equal(result, 0, "Offline friends are not offline - result is " + result);
             done();
         });
     });
@@ -174,8 +178,9 @@ describe('User connections', function () {
 
     it('User Name Send?', function (done) {
         client1.emit('userNameSend', 'testuser1', function(result, list) {
-            assert.equal(result, 0, list);
+            assert.equal(result, 1, list);
             done();
+
         });
     });
 
@@ -199,17 +204,17 @@ describe('User connections', function () {
             done();
         });
     });
-
+    /*
     it('Can I get a token?', function(done) {
        client1.emit('getToken', 'testuser1', function(result) {
            assert.equal(result, 0, returned_token);
            done();
        });
     });
-
+    */
     it('Can an existing user delete their account?', function (done) {
         client1.emit('deleteAccount', 'testuser1', function(result, message) {
-            assert.equal(result, 0, message);
+            assert.equal(result, 1, message);
             done();
         });
     });
