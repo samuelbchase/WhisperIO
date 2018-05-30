@@ -1,6 +1,6 @@
 const { Given, When, Then, After, Before } = require('cucumber');
 var assert = require('chai').assert;
-const server = require('../../indexTesting.js');
+var server = require('../../index.js');
 var ioClient = require('socket.io-client');
 var options = {
     transports: ['websocket'],
@@ -63,15 +63,13 @@ Before(function() {
     syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash,token) VALUES ('testuser1','Y','1','123');");
     syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash) VALUES ('testuser2','N','2');");
 
-    server.runServer();
+    //server.runServer();
     client1 = ioClient.connect('http://localhost:3001', options);
     client2 = ioClient.connect('http://localhost:3001', options);
 });
 
 After(function() {
-    client1.disconnect();
-    client2.disconnect();
-    server.closeServer();
+    //server.closeServer();
 
     syncConnWrite.query("DELETE FROM Friends where Host= 'testuser1' OR Receiver = 'testuser1';");
     syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
