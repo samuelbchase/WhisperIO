@@ -213,11 +213,11 @@ io.on('connection', function(socket) {
         socket.once('tokenVerifyAnswer', function(token) {
             console.log("Processing chat message token");
             var name = "Unknown";
-            for (var i = 0; i < sockets.length; i++) {
-                if (sockets[i] === socket) {
-                    name = names[i];
+                for (var i = 0; i < sockets.length; i++) {
+                    if (sockets[i] === socket) {
+                        name = names[i];
+                    }
                 }
-            }
             if (debugMode === 1 || token === syncConnRead.query("SELECT token FROM User where " +
                 "username = '" + name + "';")[0].token) {
                 console.log('message: ' + message);
@@ -258,6 +258,7 @@ io.on('connection', function(socket) {
                 write.query(sql, function (err, result) {
                     if (err) throw err;
                 });
+                return callback(0, "Message sent successfully");
             }
         });
     });
@@ -575,13 +576,12 @@ io.on('connection', function(socket) {
         socket.emit("tokenVerifyRequest","");
         socket.once('tokenVerifyAnswer', function(token) {
             console.log("Answer Received");
-            if(token === syncConnRead.query("SELECT token FROM User where " +
+            if(debugMode === 1 || token === syncConnRead.query("SELECT token FROM User where " +
                 "username = '" + userName + "';")[0].token)
             {
-                var sql = "SELECT * FROM User WHERE username = \"" + userName +
-                 "\";";
-                read.query(sql, function(err, result) {
-                    if (err) throw err;
+                var sql = "SELECT * FROM User WHERE username = '" + userName +
+                 "';";
+                var result = syncConnWrite.query(sql);
                     if (result.length !== 0) {
                         console.log("user found - deleting " +
                          result[0].username);
@@ -615,7 +615,6 @@ io.on('connection', function(socket) {
                         console.log("this really shouldn't happen...");
                         return callback(-1, userName + "something bad happened");
                     }
-                });
             }
             else {
                 console.log("Token failure in deleteAccount")

@@ -67,24 +67,15 @@ describe('User connections', function () {
         syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash,token) VALUES ('testuser1','Y','1','123');");
         syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash) VALUES ('testuser2','N','2');");
         syncConnWrite.query("INSERT INTO Friends(Host,Receiver) VALUES ('testuser1','testuser2');");
-
         client1 = ioClient.connect('http://localhost:3001', options);
         client1.on('tokenVerifyRequest', function(msg) {
             client1.emit("tokenVerifyAnswer","123");
         });
-        //sinon.stub(console, "log").returns(void 0);
-        //sinon.stub(console, "error").returns(void 0);
+
     });
-    afterEach(function(done) {
+    afterEach(function() {
         client1.disconnect();
         server.closeServer();
-        syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
-        syncConnWrite.query("DELETE FROM Message where SentFrom= 'testuser2' OR SentTo = 'testuser2';");
-        syncConnWrite.query("DELETE FROM User where username= 'testuser1';");
-        syncConnWrite.query("DELETE FROM User where username= 'testuser2';");
-        //console.log.restore();
-        //console.error.restore();
-        done();
     });
 
     it('Is the server running?', function (done) {
@@ -190,13 +181,6 @@ describe('User connections', function () {
         });
     });
 
-    it('Can I send a message?', function (done) {
-        client1.emit('chat message', 'Test', function(result) {
-            assert.equal(result, 0);
-            done();
-        });
-    });
-
     it('Can a user log in?', function (done) {
         client1.emit('userLogin', 'testuser1', function(result) {
             assert.equal(result, 0);
@@ -212,10 +196,20 @@ describe('User connections', function () {
     });
     */
     it('Can an existing user delete their account?', function (done) {
-        client1.emit('deleteAccount', 'testuser1', function(result, message) {
-            assert.equal(result, 1, message);
+        syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
+        client1.emit('deleteAccount', 'testuser2', function(result) {
+            assert.equal(result, 1);
             done();
         });
     });
 
+    it('Can I send a message?', function (done) {
+        var message = new Object();
+        message.sentTo = "testuser1";
+        message.text = "Test";
+        client1.emit('chat message', message, function(result) {
+            assert.equal(result,0);
+            done();
+        });
+    });
 });
