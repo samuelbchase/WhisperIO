@@ -53,7 +53,7 @@ var syncConnWrite = new mysql2({
     });
 
 describe('User connections', function () {
-    this.timeout(5000);
+    this.timeout(3000);
     beforeEach(function() {
         server.runServer();
         console.log("Host: " + syncConnWrite.host);
@@ -66,6 +66,8 @@ describe('User connections', function () {
 
         syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash,token) VALUES ('testuser1','Y','1','123');");
         syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash) VALUES ('testuser2','N','2');");
+        syncConnWrite.query("INSERT INTO Friends(Host,Receiver) VALUES ('testuser1','testuser2');");
+
         client1 = ioClient.connect('http://localhost:3001', options);
         client1.on('tokenVerifyRequest', function(msg) {
             client1.emit("tokenVerifyAnswer","123");
@@ -95,15 +97,17 @@ describe('User connections', function () {
 
     it('Can you add a friend?', function(done) {
         //this.timeout(5000);
+        syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
         client1.emit('addFriend', "testuser1", "testuser2", function(result) {
-            assert.equal(result, 1, "Failure to add a friend\n" + string);
+            assert.equal(result, 1, "Friend added successfully");
+            syncConnWrite.query("DELETE FROM Friends where Host= 'testuser1' OR Receiver = 'testuser1';");
             done();
         });
 
     });
 
     it('Can you add a friend you are already friends with?', function (done) {
-        //this.timeout(5000);
+        syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
         client1.emit('addFriend', "testuser1", "testuser2", function(result) {
             assert.equal(result, 0, "Added friend either does not exist or is not already friends");
             done();
@@ -143,11 +147,8 @@ describe('User connections', function () {
         });
     });
 
-    // This test fails because the existing friendship is deleted
-    // after each unit test.
     it('Can an existing friend be removed?', function (done) {
         // Attempting to add a friend first before removing them
-        client1.emit('removeFriend', 'testuser1', 'testuser2');
         client1.emit('removeFriend', 'testuser1', 'testuser2', function(result, friend) {
             assert.equal(result, 1, `Friend ${friend} removed`);
             done();
@@ -174,7 +175,7 @@ describe('User connections', function () {
         still can't get them to pass.
      ******************************************************** */
 
-    it('User Name Send?', function (done) {
+    it('Does User Name Send function correctly?', function (done) {
         client1.emit('userNameSend', 'testuser1', function(result, list) {
             assert.equal(result, 1, list);
             done();
@@ -184,21 +185,21 @@ describe('User connections', function () {
 
     it('Can I view chat history?', function (done) {
         client1.emit('chathistory', 'testuser1', 'testuser2',  function(result) {
-            assert.equal(result, 0, history);
+            assert.equal(result, 0);
             done();
         });
     });
 
     it('Can I send a message?', function (done) {
         client1.emit('chat message', 'Test', function(result) {
-            assert.equal(result, 0, history);
+            assert.equal(result, 0);
             done();
         });
     });
 
     it('Can a user log in?', function (done) {
         client1.emit('userLogin', 'testuser1', function(result) {
-            assert.equal(result, 0, history);
+            assert.equal(result, 0);
             done();
         });
     });
