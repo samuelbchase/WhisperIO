@@ -99,7 +99,7 @@ fs.readFile('.info.txt', 'utf8', function(err, contents){
 	writeUN = contents.slice(old, index);
 
 	old = index + 3;
-	index = contents.indexOf('|', old);
+	contents.indexOf('|', old);
 	writePW = contents.slice(old);
 
     syncConnRead = new mysql2({
@@ -195,7 +195,7 @@ io.on('connection', function(socket) {
                 "username = '" + userName + "';")[0].token) {
                 userName = userName.toLowerCase();
                 console.log(userName + " is logging in");
-                sql = "UPDATE User SET isOnline='Y' WHERE username='" +
+                var sql = "UPDATE User SET isOnline='Y' WHERE username='" +
                  userName + "';";
                 write.query(sql, function (err) {
                     if (err) throw err;
@@ -285,8 +285,8 @@ io.on('connection', function(socket) {
                 result[x].Message = key.decrypt(result[x].Message, 'utf8');
             }
 
-            for(var x in result) {
-                console.log("message: " + result[x].Message);
+            for(var z in result) {
+                console.log("message: " + result[z].Message);
             }
 
             socket.emit("tokenVerifyRequest", "");
@@ -398,7 +398,7 @@ io.on('connection', function(socket) {
         request(options, function (error, response, body) {
             //parse request body
             if (error) throw new Error(error);
-            body2 = JSON.parse(JSON.stringify(body));
+            var body2 = JSON.parse(JSON.stringify(body));
 
             //parse body for API key
             var audLocation = body.indexOf('aud'); // => 18
@@ -429,7 +429,6 @@ io.on('connection', function(socket) {
             //if user doesn't exist add them
             write.query(sql, function (err, result) {
                 if (err) throw err;
-                var output = -1;
                 if(result.length === 0)
                 {
                     //emit unknownPerson request for first time user account

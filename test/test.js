@@ -53,7 +53,7 @@ var syncConnWrite = new mysql2({
     });
 
 describe('User connections', function () {
-    this.timeout(3000);
+    this.timeout(6000);
     beforeEach(function() {
         server.runServer();
         console.log("Host: " + syncConnWrite.host);
@@ -141,21 +141,21 @@ describe('User connections', function () {
     it('Can an existing friend be removed?', function (done) {
         // Attempting to add a friend first before removing them
         client1.emit('removeFriend', 'testuser1', 'testuser2', function(result, friend) {
-            assert.equal(result, 1, `Friend ${friend} removed`);
+            assert.equal(result, 1);
             done();
         });
     });
 
     it('Can an existing user be removed even when friend relationship does not exist?', function (done) {
         client1.emit('removeFriend', 'testuser1', 'testuser2', function(result, friend) {
-            assert.equal(result, 0, `Friend ${friend} relationship does not exist`);
+            assert.equal(result, 0);
             done();
         });
     });
 
     it('Can a non existing user, be removed as friend?', function (done) {
         client1.emit('removeFriend', "testuser1", "wot", function(result, friend) {
-            assert.equal(result, -1, `Friend ${friend} does not exist`);
+            assert.equal(result, -1);
             done();
         });
     });
