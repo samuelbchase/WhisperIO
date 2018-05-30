@@ -1,8 +1,8 @@
 // test/test.js
-
+debugMode = 1;
 var http = require('http');
 var ioClient     = require('socket.io-client');
-var server = require('../indexTesting.js');
+var server = require('../index.js');
 var sinon  = require("sinon");
 var assert = require('chai').assert;
 var options = {
@@ -51,8 +51,6 @@ var syncConnWrite = new mysql2({
         password: writePW,
         database: database
     });
-
-debugMode = 1;
 
 describe('User connections', function () {
     this.timeout(5000);

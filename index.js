@@ -13,6 +13,7 @@ var socket_io = require("socket.io");
 var NodeRSA = require('node-rsa');
 var randomstring = require("randomstring");
 var bcrypt = require('bcrypt');
+var io = require('socket.io')(http);
 app.use('/scripts', express.static(__dirname + '/node_modules/sweetalert/dist/'));
 
 const tls = require('tls');
@@ -120,8 +121,20 @@ var options = {
     key: fs.readFileSync(sslPath + 'privkey.pem'),
     cert: fs.readFileSync(sslPath + 'fullchain.pem')
 };
+if(typeof debugMode !== "undefined") {
+    if(debugMode === 1) {
+        exports.runServer = function() {
+            http.listen(3001, function() {
+                console.log('listening on *:3001');
+            });
+        };
 
-
+        exports.closeServer = function() {
+            http.close();
+            console.log("server is closing");
+        };
+    }
+} else {
 // ***********************************
 //              myServer
 //  use myServer.getInstance() to get
@@ -159,6 +172,7 @@ server.listen(3000, function() {
     console.log('server up and running at %s port', 3000);
 });
 
+}
 io.on('connection', function(socket) {
 
     read = mysql.createConnection({
