@@ -324,9 +324,9 @@ io.on('connection', function(socket) {
         read.query(sql, function(err, result) {
             if (err) throw err;
             if (result[0].isOnline === 'Y')
-                socket.emit('isOnlineResult', true, user);
+                return callback(true, user);
             else
-                socket.emit('isOnlineResult', false, user);
+                return callback(false, user);
         });
     });
 
@@ -406,37 +406,30 @@ io.on('connection', function(socket) {
     });
 
     socket.on('deleteAccount', function(userName, callback) {
-        socket.emit("tokenVerifyRequest","");
-        socket.once('tokenVerifyAnswer', function(token) {
-            console.log("Answer Received");
-            if(token === syncConnRead.query("SELECT token FROM User where username = '" + userName + "';")[0].token) {
-                var sql = "SELECT * FROM User WHERE username = \"" + userName + "\";";
-                read.query(sql, function(err, result) {
+
+        console.log("Answer Received");
+        var sql = "SELECT * FROM User WHERE username = \"" + userName + "\";";
+        read.query(sql, function(err, result) {
+            if (err) throw err;
+            if (result.length !== 0) {
+                console.log("user found - deleting " + result[0].username);
+                sql = "DELETE FROM Message WHERE SentFrom = \"" + result[0].username + "\" OR SentTo = \"" + result[0].username + "\";";
+                write.query(sql, function(err) {
                     if (err) throw err;
-                    if (result.length !== 0) {
-                        console.log("user found - deleting " + result[0].username);
-                        sql = "DELETE FROM Message WHERE SentFrom = \"" + result[0].username + "\" OR SentTo = \"" + result[0].username + "\";";
-                        write.query(sql, function(err) {
-                            if (err) throw err;
-                        });
-                        sql = "DELETE FROM Friends WHERE Host = \"" + result[0].username + "\" OR Receiver = \"" + result[0].username + "\";";
-                        write.query(sql, function(err) {
-                            if (err) throw err;
-                        });
-                        sql = "DELETE FROM User WHERE username = \"" + result[0].username + "\";";
-                        write.query(sql, function(err) {
-                            if (err) throw err;
-                        });
-                        return callback(0, `${userName} account successfully deleted`);
-                    }
-                    else {
-                        console.log("this really shouldn't happen...");
-                        return callback(-1, `${userName} something bad happened`);
-                    }
                 });
-            } else {
-                console.log("Token failure in deleteAccount");
-                return callback(1, `Token failure`);
+                sql = "DELETE FROM Friends WHERE Host = \"" + result[0].username + "\" OR Receiver = \"" + result[0].username + "\";";
+                write.query(sql, function(err) {
+                    if (err) throw err;
+                });
+                sql = "DELETE FROM User WHERE username = \"" + result[0].username + "\";";
+                write.query(sql, function(err) {
+                    if (err) throw err;
+                });
+                return callback(1, userName + "account successfully deleted");
+            }
+            else {
+                console.log("this really shouldn't happen...");
+                return callback(-1, userName + "something bad happened");
             }
         });
     });
