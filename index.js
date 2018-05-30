@@ -165,7 +165,7 @@ var myServer = (function () {
 
 
 var server = myServer.getInstance();
-var io = require('socket.io')(server);
+io = require('socket.io')(server);
 
 
 server.listen(3000, function() {
@@ -250,7 +250,7 @@ io.on('connection', function(socket) {
                     }
                 }
                 console.log('By: ' + name);
-                sql = "INSERT INTO Message (SentFrom, SentTo, Message, " +
+                var sql = "INSERT INTO Message (SentFrom, SentTo, Message, " +
                  "timestamp) VALUES ('" + name + "', '" + userSentTo + "', '" +
                  key.encrypt(message, 'base64') + "', FROM_UNIXTIME('" +
                  Date.now() / 1000 + "'));";
@@ -265,7 +265,7 @@ io.on('connection', function(socket) {
 
     socket.on('disconnect', function () {
         console.log(this.id + " is logging out");
-        sql = "UPDATE User SET isOnline='N' WHERE username='" + this.id + "';"
+      var sql ="UPDATE User SET isOnline='N' WHERE username='" + this.id + "';"
         write.query(sql, function (err) {
             if (err) throw err;
         });
@@ -275,7 +275,7 @@ io.on('connection', function(socket) {
         //to make this better
         console.log("in chatHistory");
         console.log("loading chat history for: " + name + " and " + from);
-        sql = "SELECT * FROM Message WHERE (SentFrom, SentTo) = ('" + name +
+      var sql ="SELECT * FROM Message WHERE (SentFrom, SentTo) = ('" + name +
          "', '" + from + "') OR (SentTo, SentFrom) = ('" + name + "', '" +
          from + "') ORDER BY timestamp ASC;";
         read.query(sql, function (err, result) {
@@ -487,7 +487,7 @@ io.on('connection', function(socket) {
 			{
 				console.log("New friend!");
 				
-				sql = "SELECT * FROM User WHERE username = \"" + friendToAdd +
+				var sql = "SELECT * FROM User WHERE username = \"" + friendToAdd +
                  "\";";
 				read.query(sql, function(err, result) {	
 					if (err) throw err;
@@ -498,7 +498,7 @@ io.on('connection', function(socket) {
 					    currentUser = currentUser.toLowerCase();
                         friendToAdd = friendToAdd.toLowerCase();
 
-                        sql = "INSERT INTO Friends (Host, Receiver) VALUES ('" +
+                        var sql = "INSERT INTO Friends (Host, Receiver) VALUES ('" +
                          currentUser.toLowerCase() + "', '" +
                          friendToAdd.toLowerCase() + "');";
 
@@ -537,7 +537,7 @@ io.on('connection', function(socket) {
             {
                 console.log("User exists!");
 
-                sql = "SELECT * FROM Friends WHERE Host = \"" + user +
+                var sql = "SELECT * FROM Friends WHERE Host = \"" + user +
                  "\" AND " + "Receiver = \"" + friend + "\";";
 
                 read.query(sql, function(err, result) {
@@ -546,7 +546,7 @@ io.on('connection', function(socket) {
                     // removing has a friend relationship
                     if (result.length > 0)
                     {
-                        sql = "DELETE FROM Friends WHERE (Host, Receiver) = " +
+                        var sql = "DELETE FROM Friends WHERE (Host, Receiver) = " +
                         "('" + user + "', '" + friend + "');";
 
                         write.query(sql, function(err, result) {
@@ -585,7 +585,7 @@ io.on('connection', function(socket) {
                         console.log("user found - deleting " +
                          result[0].username);
 
-                        sql = "DELETE FROM Message WHERE SentFrom = \"" +
+                        var sql = "DELETE FROM Message WHERE SentFrom = \"" +
                          result[0].username + "\" OR SentTo = \"" +
                          result[0].username + "\";";
 
@@ -593,7 +593,7 @@ io.on('connection', function(socket) {
                             if (err) throw err;
                         });
 
-                        sql = "DELETE FROM Friends WHERE Host = \"" +
+                        var sql = "DELETE FROM Friends WHERE Host = \"" +
                          result[0].username + "\" OR Receiver = \"" +
                          result[0].username + "\";";
 
@@ -601,7 +601,7 @@ io.on('connection', function(socket) {
                             if (err) throw err;
                         });
 
-                        sql = "DELETE FROM User WHERE username = \"" +
+                       var sql = "DELETE FROM User WHERE username = \"" +
                          result[0].username + "\";";
 
                         write.query(sql, function(err) {
