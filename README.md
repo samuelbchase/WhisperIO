@@ -4,4 +4,4 @@ Note: DO NOT USE THIS APP. This app was created by students interested in learni
 
 <a href='http://whisperio.club:8080/job/WhisperIO_Free/'><img src='http://whisperio.club:8080/buildStatus/icon?job=WhisperIO_Free'></a>
 
-<a href='http://whisperio.club:8080/job/WhisperIO_Free/'><img src='http://whisperio.club:8080/buildStatus/icon?job=WhisperIO_Free'></a>
+<a href='http://whisperio.club:8080/job/WhisperIO_Free/'><img src='http://whisperio.club:8080/buildStatus/icon?job=WhisperIO_Free&.png'></a>
