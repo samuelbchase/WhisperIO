@@ -620,7 +620,7 @@ io.on('connection', function(socket)
             {
                 console.log("New friend!");
 
-                var sql =
+                sql =
                     "SELECT * FROM User WHERE username = \"" +
                     friendToAdd +
                     "\";";
@@ -634,7 +634,7 @@ io.on('connection', function(socket)
                         currentUser = currentUser.toLowerCase();
                         friendToAdd = friendToAdd.toLowerCase();
 
-                        var sql =
+                        sql =
                             "INSERT INTO Friends (Host, Receiver) VALUES ('" +
                             currentUser.toLowerCase() + "', '" +
                             friendToAdd.toLowerCase() + "');";
@@ -684,7 +684,7 @@ io.on('connection', function(socket)
             {
                 console.log("User exists!");
 
-                var sql = "SELECT * FROM Friends WHERE Host = \"" +
+                sql = "SELECT * FROM Friends WHERE Host = \"" +
                     user +
                     "\" AND " + "Receiver = \"" + friend + "\";";
 
@@ -695,7 +695,7 @@ io.on('connection', function(socket)
                     // removing has a friend relationship
                     if (result.length > 0)
                     {
-                        var sql =
+                        sql =
                             "DELETE FROM Friends WHERE (Host, Receiver) = " +
                             "('" + user + "', '" + friend +
                             "');";
@@ -748,7 +748,7 @@ io.on('connection', function(socket)
                     console.log("user found - deleting " +
                         result[0].username);
 
-                    var sql =
+                    sql =
                         "DELETE FROM Message WHERE SentFrom = \"" +
                         result[0].username + "\" OR SentTo = \"" +
                         result[0].username + "\";";
@@ -758,7 +758,7 @@ io.on('connection', function(socket)
                         if (err) throw err;
                     });
 
-                    var sql =
+                    sql =
                         "DELETE FROM Friends WHERE Host = \"" +
                         result[0].username + "\" OR Receiver = \"" +
                         result[0].username + "\";";
@@ -768,7 +768,7 @@ io.on('connection', function(socket)
                         if (err) throw err;
                     });
 
-                    var sql =
+                    sql =
                         "DELETE FROM User WHERE username = \"" +
                         result[0].username + "\";";
 
