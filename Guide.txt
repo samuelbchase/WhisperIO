@@ -1,6 +1,0 @@
-Index.html - Main HTML page that serves as the central page of the app
-css/app.css - Our custom CSS and foundation overrides. The custom CSS for the entire app
-
------- DO NOT TOUCH ------
-/js/vendor/foundation.js - Zurb Foundation JS Library
-css/foundation.css - Zurb Foundation CSS Library - MAKE CHANGES IN APP.CSS, NOT HERE
