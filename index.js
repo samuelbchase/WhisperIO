@@ -391,17 +391,20 @@ io.on('connection', function(socket)
                     socket.emit('FriendsList', result);
                 });
             }
-            else
-            {
-                console.log("Token failure in userNameSend")
+            else {
+                console.log("Token failure in userNameSend");
+                return callback(0, userName);
             }
         });
-
     });
 
     /*SKYLERS NEW CODE*/
+<<<<<<< HEAD
     socket.on('verifyEmailLogin', function(creds, callback)
     {
+=======
+    socket.on('verifyEmailLogin', function (creds, callback) {
+>>>>>>> f9c49b6ef97dfbfbf4b5362b064e5d6657f74a0e
         var emailHash = creds.email;
         var passwordHash = bcrypt.hashSync(creds.password, saltRounds);
         var sql = "SELECT * FROM User where emailHash = '" +
@@ -424,22 +427,36 @@ io.on('connection', function(socket)
                 };
                 //console.log("User Exists: ", user.name, user.token);
                 this.id = user.name;
+<<<<<<< HEAD
                 return callback(1, user);
+=======
+                socket.emit('authSuccessNoGmail', user);
+                return callback(1, creds);
+>>>>>>> f9c49b6ef97dfbfbf4b5362b064e5d6657f74a0e
             }
             else
             {
                 console.log("Sending bad message");
+<<<<<<< HEAD
                 return callback(-1, "Bad username or password");
+=======
+                socket.emit('authFailureAppDiscrepancy',"");
+                return callback(-1, creds);
+>>>>>>> f9c49b6ef97dfbfbf4b5362b064e5d6657f74a0e
             }
         }
-        else
-        {
+        else {
             console.log("User Does Not Exist");
             var unhashedCreds = {
                 "emailHash": emailHash,
                 "password": creds.password
             };
+<<<<<<< HEAD
             return callback(0, unhashedCreds);
+=======
+            socket.emit('newNoGmailUser', unhashedCreds);
+            return callback(0, creds);
+>>>>>>> f9c49b6ef97dfbfbf4b5362b064e5d6657f74a0e
         }
     });
 
