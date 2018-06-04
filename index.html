@@ -45,7 +45,7 @@
                             x.id = msg[k].Receiver;
                             x.innerHTML = msg[k].Receiver;
                             x.className += "friend";
-                            socket.emit('isOnline', msg[k].Receiver);
+                            socket.emit('isOnline', msg[k].Receiver,  appendOnlineStatus);
                             x.onclick = function()
                             {
                                 //loadmessages
@@ -55,10 +55,9 @@
                                 //Switches context to view the chatbox of that friend
                                 //& defines that friend as the active friend
                                 ActiveFriend = this.id;
-                                socket.emit('chathistory', userName, ActiveFriend);
-                                socket.on('messageHistory', (history) =>
+                                socket.emit('chathistory', userName, ActiveFriend, function(history)
                                 {
-                                    numItems = document.getElementById("chatbox" + ActiveFriend).children.length;
+                                    var numItems = document.getElementById("chatbox" + ActiveFriend).children.length;
                                     if (numItems < history.length)
                                     {
                                         for (x in history)
@@ -177,14 +176,16 @@
     console.log(whisperIOUser);
     userName = whisperIOUser;
     socket.emit('userNameSend', whisperIOUser);
-    socket.emit('userLogin', whisperIOUser);
+    socket.emit('userLogin', whisperIOUser, function(result, msg) {
+        if (result !== 0) {
+            console.log("Hey, you failed to log in properly? This shouldn't happen...");
+            console.log(msg);
+        }
+    });
     console.log(whisperIOUser);
 
     //All receiving socket stuff
     socket.on('chat message', receiveMessage);
-    socket.on('addFriendResult', friendResult);
-    socket.on('isOnlineResult', appendOnlineStatus);
-    socket.on('removeFriendResult', removeFriendAction);
 
     //Sends messages when user presses enter
     //TODO Add Send Button
@@ -204,7 +205,11 @@
     {
         //Get the message, and send that message on the socket to the server listener
         var message = messageFactory(ActiveFriend, $('#messageSender').val());
-        socket.emit('chat message', message);
+        socket.emit('chat message', message, function(status, msg)
+        {
+            if (status !== 1)
+                console.log("Error: " + msg);
+        });
         var div = document.createElement('div');
         div.className = 'yourMessage';
         div.textContent = message.text;
@@ -268,11 +273,11 @@
         var removeFriend = prompt("Enter the name of the friend you wish to remove: ", "User Name");
         if (removeFriend != null && removeFriend !== "")
         {
-            socket.emit('removeFriend', whisperIOUser, removeFriend);
+            socket.emit('removeFriend', whisperIOUser, removeFriend, removeFriendResult);
         }
     }
 
-    function removeFriendAction(result, removedFriend)
+    function removeFriendResult(result, removedFriend)
     {
         if (result === 1)
         {
@@ -289,7 +294,7 @@
         }
         else
         {
-            swal("Error", removedFriend + " was not removed as a friend: User is not in your friends list.", "error");
+            swal("Error", removedFriend + " was not removed as a friend: User does not exist.", "error");
         }
     }
 
@@ -318,19 +323,19 @@
     //Appends the "Online" or "Offline" status to friends in list
     function appendOnlineStatus(status, friendName)
     {
-        var onlineStatus;
         var x = document.getElementById(friendName);
-        if (status == true)
+        if (status === true)
             x.className += " online ";
         else
             x.className += " offline ";
     }
-    socket.on('tokenVerifyRequest', function(msg)
+
+    socket.on('tokenVerifyRequest', function(msg, callback)
     {
+        console.log("asked for token, passing it back...");
         //Commenting this out won't get you magical access,
         // it is server-side verified
-        socket.emit("tokenVerifyAnswer", sessionStorage
-            .getItem("whisperIOToken") || 'defaultValue');
+        return callback(sessionStorage.getItem("whisperIOToken") || 'defaultValue');
     });
 
     //Signs the current user out
@@ -383,9 +388,22 @@
         var deleteAcc = confirm("Are you SURE you want to delete your account? This will get rid of any friend associations you have as well as any messages you've sent or been sent.");
         if (deleteAcc)
         {
-            socket.emit('deleteAccount', whisperIOUser);
+            socket.emit('deleteAccount', whisperIOUser, function(result, msg)
+            {
+                console.log(msg);
+                if (result === 1) {
+                    swal("Your account has been deleted. Thanks for using Whisper.IO!")
+                        .then((value) =>
+                    {
+                        window.location.href = "/";
+                    });
+                }
+                else {
+                    swal("Your account was not deleted; there was an error trying to delete your information. Please try again later.");
+                }
+            });
+
         }
-        window.href = "/";
     }
 </script>
 </body>
