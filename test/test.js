@@ -170,7 +170,12 @@ describe('User connections', function () {
         client1.emit('userNameSend', 'testuser1', function(result, list) {
             assert.equal(result, 1, list);
             done();
-
+        });
+    });
+    it('Does User Name Send function with a fake name?', function (done) {
+        client1.emit('userNameSend', 'testuserFake', function(result, list) {
+            assert.equal(result, 0, list);
+            done();
         });
     });
 
@@ -209,6 +214,30 @@ describe('User connections', function () {
         message.text = "Test";
         client1.emit('chat message', message, function(result) {
             assert.equal(result,0);
+            done();
+        });
+    });
+
+    it('Can I verify a valid account with a valid password?', function(done) {
+        var creds = {'email' : 'testuserbacon', 'password' : 'bacon'};
+        client1.emit('verifyEmailLogin', creds, function(result) {
+            assert.equal(1, result);
+            done();
+        });
+    });
+
+    it('Can I verify a valid account with and invalid password?', function(done) {
+        var creds = {'email' : 'testuserbacon', 'password' : 'cheese'};
+        client1.emit('verifyEmailLogin', creds, function(result) {
+            assert.equal(-1, result);
+            done();
+        });
+    });
+
+    it('Can I verify an invalid account?', function(done) {
+        var creds = {'email' : 'testusercheese', 'password' : 'itdoesntmatter'};
+        client1.emit('verifyEmailLogin', creds, function(result) {
+            assert.equal(0, result);
             done();
         });
     });
