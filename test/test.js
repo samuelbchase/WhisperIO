@@ -227,12 +227,4 @@ describe('User connections', function()
             done();
         });
     });
-
-    /*INTEGRATION TESTS*/
-
-    //integration test for friends list
-    it('Test friends integration', function(done) {
-
-    });
-    
 });
