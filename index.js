@@ -621,17 +621,11 @@ io.on('connection', function(socket)
                         });
                         console.log(friendToAdd.toLowerCase() +
                             " was added");
-                        socket.emit('addFriendResult', 1,
-                            friendToAdd
-                                .toLowerCase());
                         return callback(1, friendToAdd);
                     }
                     else
                     {
                         console.log("User does not exist!");
-                        socket.emit('addFriendResult', -1,
-                            friendToAdd
-                                .toLowerCase());
                         return callback(-1, friendToAdd);
                     }
                 });
@@ -639,7 +633,6 @@ io.on('connection', function(socket)
             else
             {
                 console.log("Friend already exists");
-                socket.emit('addFriendResult', 0, friendToAdd);
                 return callback(0, friendToAdd);
             }
         });
