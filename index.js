@@ -401,18 +401,16 @@ io.on('connection', function(socket)
                     return callback(1, result)
                 });
             }
-            else
-            {
-                console.log("Token failure in userNameSend")
+            else {
+                console.log("Token failure in userNameSend");
+                return callback(0, userName);
             }
         });
-
     });
 
 
     /*SKYLERS NEW CODE*/
-    socket.on('verifyEmailLogin', function(creds)
-    {
+    socket.on('verifyEmailLogin', function (creds, callback) {
         var emailHash = creds.email;
         var passwordHash = bcrypt.hashSync(creds.password, saltRounds);
         var sql = "SELECT * FROM User where emailHash = '" +
@@ -436,21 +434,23 @@ io.on('connection', function(socket)
                 //console.log("User Exists: ", user.name, user.token);
                 this.id = user.name;
                 socket.emit('authSuccessNoGmail', user);
+                return callback(1, creds);
             }
             else
             {
                 console.log("Sending bad message");
-                socket.emit('authFailureAppDiscrepancy', "");
+                socket.emit('authFailureAppDiscrepancy',"");
+                return callback(-1, creds);
             }
         }
-        else
-        {
+        else {
             console.log("User Does Not Exist");
             var unhashedCreds = {
                 "emailHash": emailHash,
                 "password": creds.password
             };
             socket.emit('newNoGmailUser', unhashedCreds);
+            return callback(0, creds);
         }
     });
 
