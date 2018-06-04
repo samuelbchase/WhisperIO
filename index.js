@@ -361,7 +361,7 @@ io.on('connection', function(socket)
         });
     });
 
-    socket.on('userNameSend', function(userName)
+    socket.on('userNameSend', function(userName, callback)
     {
         console.log("in userNameSend");
         sockets.push(socket);

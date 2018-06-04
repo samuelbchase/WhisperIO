@@ -77,15 +77,12 @@ describe('User connections', function()
         });
 
     });
-    afterEach(function()
-    {
+    afterEach(function() {
         client1.disconnect();
         server.closeServer();
     });
 
-    it('Is the server running?', function(done)
-    {
-        //this.timeout(5000);
+    it('Is the server running?', function(done) {
         return http.get('http://localhost:3001', function(res)
         {
             assert.equal(200, res.statusCode);
@@ -93,12 +90,9 @@ describe('User connections', function()
         });
     });
 
-    it('Can you add a friend?', function(done)
-    {
-        //this.timeout(5000);
+    it('Can you add a friend?', function(done) {
         syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
-        client1.emit('addFriend', "testuser1", "testuser2", function(result)
-        {
+        client1.emit('addFriend', "testuser1", "testuser2", function(result) {
             assert.equal(result, 1, "Friend added successfully");
             syncConnWrite.query("DELETE FROM Friends where Host= 'testuser1' OR Receiver = 'testuser1';");
             done();
@@ -106,96 +100,68 @@ describe('User connections', function()
 
     });
 
-    it('Can you add a friend you are already friends with?', function(done)
-    {
+    it('Can you add a friend you are already friends with?', function(done) {
         syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
-        client1.emit('addFriend', "testuser1", "testuser2", function(result)
-        {
+        client1.emit('addFriend', "testuser1", "testuser2", function(result) {
             assert.equal(result, 0, "Added friend either does not exist or is not already friends");
             done();
         });
     });
 
-    it('Can you add nonexistant users as friends?', function(done)
-    {
-        //this.timeout(5000);
-        client1.emit('addFriend', "testuser2", "bleh", function(result)
-        {
+    it('Can you add nonexistant users as friends?', function(done) {
+        client1.emit('addFriend', "testuser2", "bleh", function(result) {
             assert.equal(result, -1, "Added friend added a nonexistant user");
             done();
         });
     });
 
 
-    it('Does the program show your online friends?', function(done)
-    {
-        client1.emit('isOnline', "testuser1");
-        client1.on('isOnlineResult', function(result)
-        {
+    it('Does the program show your online friends?', function(done) {
+        client1.emit('isOnline', "testuser1", function(result) {
             assert.equal(result, 1, "Offline friends are not offline - result is " + result);
             done();
         });
     });
 
 
-    it('Does the program show your offline friends?', function(done)
-    {
-        client1.emit('isOnline', "testuser2");
-        client1.on('isOnlineResult', function(result)
-        {
+    it('Does the program show your offline friends?', function(done) {
+        client1.emit('isOnline', "testuser2", function(result) {
             assert.equal(result, 0, "Offline friends are not offline - result is " + result);
             done();
         });
     });
 
-    it('Can a fake token be verified?', function(done)
-    {
-        client1.emit('verifyToken', fake_token, function(result, token)
-        {
-            assert.equal(result, false, "Fake token");
+    it('Can a fake token be verified?', function(done) {
+        client1.emit('verifyToken', fake_token, function(result, token) {
+            assert.equal(-1, result);
             done();
         });
     });
 
-    it('Can an existing friend be removed?', function(done)
-    {
-        // Attempting to add a friend first before removing them
-        client1.emit('removeFriend', 'testuser1', 'testuser2', function(result, friend)
-        {
+    it('Can an existing friend be removed?', function(done) {
+        client1.emit('removeFriend', 'testuser1', 'testuser2', function(result, friend) {
             assert.equal(result, 1);
             done();
         });
     });
 
-    it('Can an existing user be removed even when friend relationship does not exist?', function(done)
-    {
-        client1.emit('removeFriend', 'testuser1', 'testuser2', function(result, friend)
-        {
+    it('Can an existing user be removed even when friend relationship does not exist?', function(done) {
+        client1.emit('removeFriend', 'testuser1', 'testuser2', function(result, friend) {
             assert.equal(result, 0);
             done();
         });
     });
 
-    it('Can a non existing user, be removed as friend?', function(done)
-    {
-        client1.emit('removeFriend', "testuser1", "wot", function(result, friend)
-        {
+    it('Can a non existing user, be removed as friend?', function(done) {
+        client1.emit('removeFriend', "testuser1", "wot", function(result, friend) {
             assert.equal(result, -1);
             done();
         });
     });
 
-    /* *********************************************************
-        The following tests fail because tokenVerifyAnswer
-        hangs. Sam added the token to testuser1 above but I
-        still can't get them to pass.
-     ******************************************************** */
-
-    it('Does User Name Send function correctly?', function(done)
-    {
-        client1.emit('userNameSend', 'testuser1', function(result, list)
-        {
-            assert.equal(result, 1, list);
+    it('Does User Name Send function correctly?', function(done) {
+        client1.emit('userNameSend', 'testuser1', function(result) {
+            assert.equal(0, result);
             done();
         });
     });
@@ -206,48 +172,33 @@ describe('User connections', function()
         });
     });
 
-    it('Can I view chat history?', function(done)
-    {
-        client1.emit('chathistory', 'testuser1', 'testuser2', function(result)
-        {
+    it('Can I view chat history?', function(done) {
+        client1.emit('chathistory', 'testuser1', 'testuser2', function(result) {
             assert.equal(result, 0);
             done();
         });
     });
 
-    it('Can a user log in?', function(done)
-    {
-        client1.emit('userLogin', 'testuser1', function(result)
-        {
+    it('Can a user log in?', function(done) {
+        client1.emit('userLogin', 'testuser1', function(result) {
             assert.equal(result, 0);
             done();
         });
     });
-    /*
-    it('Can I get a token?', function(done) {
-       client1.emit('getToken', 'testuser1', function(result) {
-           assert.equal(result, 0, returned_token);
-           done();
-       });
-    });
-    */
-    it('Can an existing user delete their account?', function(done)
-    {
+
+    it('Can an existing user delete their account?', function(done) {
         syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
-        client1.emit('deleteAccount', 'testuser2', function(result)
-        {
+        client1.emit('deleteAccount', 'testuser2', function(result) {
             assert.equal(result, 1);
             done();
         });
     });
 
-    it('Can I send a message?', function(done)
-    {
+    it('Can I send a message?', function(done) {
         var message = new Object();
         message.sentTo = "testuser1";
         message.text = "Test";
-        client1.emit('chat message', message, function(result)
-        {
+        client1.emit('chat message', message, function(result) {
             assert.equal(result, 0);
             done();
         });
