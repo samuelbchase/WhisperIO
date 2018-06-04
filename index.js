@@ -213,8 +213,7 @@ io.on('connection', function(socket)
 
     socket.on('userLogin', function(userName, callback)
     {
-        socket.emit("tokenVerifyRequest", "");
-        socket.once('tokenVerifyAnswer', function(token)
+        socket.emit("tokenVerifyRequest", "", function(token)
         {
             if (token === syncConnRead.query(
                 "SELECT token FROM User where " +
@@ -229,10 +228,10 @@ io.on('connection', function(socket)
                 {
                     if (err) throw err;
                 });
-                return callback(0,
-                    `${userName} logged in successfully`);
+                return callback(0, userName + " logged in successfully");
             }
         });
+        return callback(-1, "There was an error trying to log you in...");
     });
 
     socket.on('chat message', function(msg, callback)
@@ -240,8 +239,7 @@ io.on('connection', function(socket)
         console.log("Chat message request received");
         var userSentTo = msg.sentTo;
         var message = msg.text;
-        socket.emit("tokenVerifyRequest", "");
-        socket.once('tokenVerifyAnswer', function(token)
+        socket.emit("tokenVerifyRequest", "", function(token)
         {
             console.log("Processing chat message token");
             var name = "Unknown";
@@ -252,7 +250,7 @@ io.on('connection', function(socket)
                     name = names[i];
                 }
             }
-            if (debugMode === 1 || token === syncConnRead.query(
+            if ((typeof debugMode !== "undefined" && debugMode === 1) || token === syncConnRead.query(
                 "SELECT token FROM User where " +
                 "username = '" + name + "';")[0].token)
             {
@@ -267,9 +265,8 @@ io.on('connection', function(socket)
                     {
                         var sendSocket = sockets[j];
                         //Sends message to the specified user
-                        sendSocket.emit("tokenVerifyRequest", "");
-                        sendSocket.once('tokenVerifyAnswer',
-                            function(token)
+                        sendSocket.emit("tokenVerifyRequest", "",
+                        function(token)
                             {
                                 var tok = syncConnRead.query(
                                     "SELECT token FROM " +
@@ -282,15 +279,13 @@ io.on('connection', function(socket)
                                 {
                                     sendSocket.emit('chat message',
                                         messageObj);
-                                    return callback(0, message);
                                 }
                                 else
                                 {
                                     console.log(
                                         "Token error on receiver"
                                     );
-                                    return callback(1,
-                                        "Token Error");
+                                    return callback(-1, "Token Error");
 
                                 }
                             });
@@ -309,7 +304,7 @@ io.on('connection', function(socket)
                 {
                     if (err) throw err;
                 });
-                return callback(0, "Message sent successfully");
+                return callback(1, "Message sent successfully");
             }
         });
     });
@@ -352,34 +347,29 @@ io.on('connection', function(socket)
                 console.log("message: " + result[z].Message);
             }
 
-            socket.emit("tokenVerifyRequest", "");
-            socket.once('tokenVerifyAnswer', function(token)
+            socket.emit("tokenVerifyRequest", "", function(token)
             {
+                console.log("token was verified");
                 if (token === syncConnRead.query(
                     "SELECT token FROM User " +
                     "where " + "username = '" + name +
                     "';")[0].token)
                 {
-                    socket.emit('messageHistory', result);
-                    return callback(0, result, "");
+                    return callback(result, "");
                 }
             });
         });
-
     });
 
-
-    socket.on('userNameSend', function(userName, callback)
+    socket.on('userNameSend', function(userName)
     {
         console.log("in userNameSend");
         sockets.push(socket);
         names.push(userName);
         socket.id = userName;
         console.log("New User Connected: " + socket.id);
-        socket.emit("tokenVerifyRequest", "");
-        socket.once('tokenVerifyAnswer', function(token)
+        socket.emit("tokenVerifyRequest", "", function(token)
         {
-            console.log("Answer Received");
             console.log("Token is: " + syncConnRead.query(
                 "SELECT token FROM " +
                 "User where username = '" + userName + "';"
@@ -398,7 +388,6 @@ io.on('connection', function(socket)
                     console.log(
                         "----------------------------");
                     socket.emit('FriendsList', result);
-                    return callback(1, result)
                 });
             }
             else {
@@ -408,9 +397,9 @@ io.on('connection', function(socket)
         });
     });
 
-
     /*SKYLERS NEW CODE*/
-    socket.on('verifyEmailLogin', function (creds, callback) {
+    socket.on('verifyEmailLogin', function (creds, callback)
+    {
         var emailHash = creds.email;
         var passwordHash = bcrypt.hashSync(creds.password, saltRounds);
         var sql = "SELECT * FROM User where emailHash = '" +
@@ -433,14 +422,12 @@ io.on('connection', function(socket)
                 };
                 //console.log("User Exists: ", user.name, user.token);
                 this.id = user.name;
-                socket.emit('authSuccessNoGmail', user);
-                return callback(1, creds);
+                return callback(1, user);
             }
             else
             {
                 console.log("Sending bad message");
-                socket.emit('authFailureAppDiscrepancy',"");
-                return callback(-1, creds);
+                return callback(-1, "Bad username or password");
             }
         }
         else {
@@ -449,13 +436,12 @@ io.on('connection', function(socket)
                 "emailHash": emailHash,
                 "password": creds.password
             };
-            socket.emit('newNoGmailUser', unhashedCreds);
-            return callback(0, creds);
+            return callback(0, unhashedCreds);
         }
     });
 
     /*TODO: Account creation no gmail*/
-    socket.on("identifyMyselfNoGmail", function(whoIAm)
+    socket.on("identifyMyselfNoGmail", function(whoIAm, callback)
     {
         //add the new user to the database
         const tok = randomstring.generate(255);
@@ -465,14 +451,13 @@ io.on('connection', function(socket)
             "token, passwordHash) VALUES('" + whoIAm.person.toLowerCase() +
             "','" + whoIAm.emailHash + "', '" + tok + "', '" +
             passwordHash + "');";
-        console.log(insertSQL);
         syncConnWrite.query(insertSQL);
         var user = {
             "name": whoIAm.person.toLowerCase(),
             "token": tok
         };
         console.log("emitting authSuccessNewUserNOGMAIL");
-        socket.emit('authSuccessNewUserNOGMAIL', user);
+        return callback(user);
     });
     /*SKYLERS NEW CODE*/
 
@@ -520,12 +505,9 @@ io.on('connection', function(socket)
             if (aud !==
                 "521002119514-k8kp3p42fpoq7ia5868k9s9e62bj87n3.apps." +
                 "googleusercontent.com")
-                return callback(false, token);
-            {
+                return callback(-1, token);
                 //If you're attempting to login with a token for another app
-                socket.emit("authFailureAppDiscrepancy",
-                    "Bad! No Hacking!");
-            }
+
             var hash = sha256(email);
 
             var sql =
@@ -540,10 +522,8 @@ io.on('connection', function(socket)
                 {
                     //emit unknownPerson request for first time user account
                     // creation on the front end
-                    socket.emit("unknownPerson", "whoU");
                     //handle new user info emitted from the front end
-                    socket.on('identifyMyself', function(
-                        whoIAm)
+                    socket.emit("unknownPerson", function(whoIAm)
                     {
                         //add the new user to the database
                         var tok = randomstring.generate(
@@ -562,9 +542,7 @@ io.on('connection', function(socket)
                             name: whoIAm.toLowerCase(),
                             token: tok
                         };
-                        socket.emit(
-                            "authSuccessNewUser",
-                            user);
+                        return callback(1, user);
                     });
                 }
                 //if user exists, authenticate them
@@ -582,14 +560,14 @@ io.on('connection', function(socket)
                         name: userName,
                         token: newTok
                     };
-                    socket.emit("authSuccess", user);
+                    return callback(2, user);
                 }
             });
         });
 
     });
 
-    socket.on('isOnline', function(user)
+    socket.on('isOnline', function(user, callback)
     {
         var sql = "SELECT isOnline FROM User WHERE username='" + user +
             "';";
@@ -597,22 +575,20 @@ io.on('connection', function(socket)
         {
             if (err) throw err;
             if (result[0].isOnline === 'Y')
-                socket.emit('isOnlineResult', true, user);
+                return callback(true, user);
             else
-                socket.emit('isOnlineResult', false, user);
+                return callback(false, user);
         });
     });
 
-    //Add Friend button is pushed; called by currentUser adding friendToAdd
     socket.on('addFriend', function(currentUser, friendToAdd, callback)
     {
         console.log("Adding " + friendToAdd + " for " + currentUser +
-            " as a " +
-            "friend");
+            " as a friend");
         //check to see if the friend relationship already exists
         var sql = "SELECT * FROM Friends WHERE Host = \"" +
             currentUser + "\" " +
-            "AND Receiver = \"" + friendToAdd + "\";"
+            "AND Receiver = \"" + friendToAdd + "\";";
         read.query(sql, function(err, result)
         {
             if (err) throw err;
@@ -645,25 +621,18 @@ io.on('connection', function(socket)
                         });
                         console.log(friendToAdd.toLowerCase() +
                             " was added");
-                        socket.emit('addFriendResult', 1,
-                            friendToAdd
-                                .toLowerCase());
                         return callback(1, friendToAdd);
                     }
                     else
                     {
                         console.log("User does not exist!");
-                        socket.emit('addFriendResult', -1,
-                            friendToAdd
-                                .toLowerCase());
                         return callback(-1, friendToAdd);
                     }
                 });
             }
             else
             {
-                console.log("Friend already exists")
-                socket.emit('addFriendResult', 0, friendToAdd);
+                console.log("Friend already exists");
                 return callback(0, friendToAdd);
             }
         });
@@ -705,8 +674,6 @@ io.on('connection', function(socket)
                             if (err) throw err;
                         });
                         console.log(friend + " was removed");
-                        socket.emit('removeFriendResult', 1,
-                            friend);
                         return callback(1, friend);
                     }
                     else
@@ -714,8 +681,6 @@ io.on('connection', function(socket)
                         console.log(
                             "Friend relationship does not exist"
                         );
-                        socket.emit('removeFriendResult', 0,
-                            friend);
                         return callback(0, friend);
                     }
                 });
@@ -723,7 +688,6 @@ io.on('connection', function(socket)
             else
             {
                 console.log("User does not exist");
-                socket.emit('removeFriendResult', -1, friend);
                 return callback(-1, friend);
             }
         });
@@ -731,11 +695,9 @@ io.on('connection', function(socket)
 
     socket.on('deleteAccount', function(userName, callback)
     {
-        socket.emit("tokenVerifyRequest", "");
-        socket.once('tokenVerifyAnswer', function(token)
+        socket.emit("tokenVerifyRequest", "", function(token)
         {
-            console.log("Answer Received");
-            if (debugMode === 1 || token === syncConnRead.query(
+            if ((typeof debugMode !== "undefined" && debugMode === 1) || token === syncConnRead.query(
                 "SELECT token FROM User where " +
                 "username = '" + userName + "';")[0].token)
             {
@@ -776,21 +738,21 @@ io.on('connection', function(socket)
                     {
                         if (err) throw err;
                     });
+                    console.log("Account was deleted successfully");
                     return callback(1, userName +
-                        "account successfully deleted");
+                        ": account successfully deleted");
                 }
                 else
                 {
-                    console.log("this really shouldn't happen...");
+                    console.log("There was an error somewhere...");
                     return callback(-1, userName +
-                        "something bad happened");
+                        ": something bad happened; account for " + userName + " was not deleted");
                 }
             }
             else
             {
                 console.log("Token failure in deleteAccount")
-                return callback(-2, userName +
-                    "something bad happened");
+                return callback(-2, "token failure for " + userName + ": account not deleted");
             }
         });
 
