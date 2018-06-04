@@ -404,14 +404,13 @@ io.on('connection', function(socket)
             else {
                 console.log("Token failure in userNameSend");
                 return callback(0, userName);
+            }
         });
-
     });
 
 
     /*SKYLERS NEW CODE*/
     socket.on('verifyEmailLogin', function (creds, callback) {
-    {
         var emailHash = creds.email;
         var passwordHash = bcrypt.hashSync(creds.password, saltRounds);
         var sql = "SELECT * FROM User where emailHash = '" +
@@ -444,8 +443,7 @@ io.on('connection', function(socket)
                 return callback(-1, creds);
             }
         }
-        else
-        {
+        else {
             console.log("User Does Not Exist");
             var unhashedCreds = {
                 "emailHash": emailHash,
