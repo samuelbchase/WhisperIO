@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="css/foundation.css">
@@ -17,336 +18,375 @@
     var ActiveFriend;
     //the global socket
     var socket;
-    var userName; 
+    var userName;
 </script>
+
 <body style="background:#073642">
-        <div class="grid-x" style="background:#073642">
-            <!--side bar -->
-            <div id="sidebar" class="cell small-12 medium-1">
-                <div>
-                    <h3 class="horizcenter"> Friends </h3>
-                    <ul class="list-group" id="users"></ul>
-                </div>
+<div class="grid-x" style="background:#073642">
+    <!--side bar -->
+    <div id="sidebar" class="cell small-12 medium-1">
+        <div>
+            <h3 class="horizcenter"> Friends </h3>
+            <ul class="list-group" id="users"></ul>
+        </div>
 
-                <ul id = "friendMenu" class="vertical menu">
-                    <script>
-                        //Gets all friends from the Database as requested from Server
-                        //Display them as entries in the friends list
-                        $(function () {
-                            socket.on('FriendsList', function(msg){
-                                for(var k in msg) {
-                                    console.log("Creating Friend Bubble for: " + msg[k].Receiver);
-                                    var x = document.createElement("LI");
-                                    x.id = msg[k].Receiver;
-                                    x.innerHTML = msg[k].Receiver;
-                                    x.className += "friend";
-									socket.emit('isOnline', msg[k].Receiver);
-                                    x.onclick = function() {
-                                        //loadmessages
-                                        $(this).removeClass("flash");
-                                        // on click removes notification toggle
-                                        //Defines action for clicking on a friend in the list
-                                        //Switches context to view the chatbox of that friend
-                                        //& defines that friend as the active friend
-                                        ActiveFriend = this.id;
-                                        socket.emit('chathistory', userName, ActiveFriend);
-                                        socket.on('messageHistory', (history) =>  {
-                                            numItems = document.getElementById("chatbox" + ActiveFriend).children.length;
-                                            if(numItems < history.length)
+        <ul id="friendMenu" class="vertical menu">
+            <script>
+                //Gets all friends from the Database as requested from Server
+                //Display them as entries in the friends list
+                $(function()
+                {
+                    socket.on('FriendsList', function(msg)
+                    {
+                        for (var k in msg)
+                        {
+                            console.log("Creating Friend Bubble for: " + msg[k].Receiver);
+                            var x = document.createElement("LI");
+                            x.id = msg[k].Receiver;
+                            x.innerHTML = msg[k].Receiver;
+                            x.className += "friend";
+                            socket.emit('isOnline', msg[k].Receiver);
+                            x.onclick = function()
+                            {
+                                //loadmessages
+                                $(this).removeClass("flash");
+                                // on click removes notification toggle
+                                //Defines action for clicking on a friend in the list
+                                //Switches context to view the chatbox of that friend
+                                //& defines that friend as the active friend
+                                ActiveFriend = this.id;
+                                socket.emit('chathistory', userName, ActiveFriend);
+                                socket.on('messageHistory', (history) =>
+                                {
+                                    numItems = document.getElementById("chatbox" + ActiveFriend).children.length;
+                                    if (numItems < history.length)
+                                    {
+                                        for (x in history)
+                                        {
+                                            var div = document.createElement('div');
+                                            if (ActiveFriend === history[x].SentFrom)
                                             {
-                                                for(x in history) {
-                                                    var div = document.createElement('div');
-                                                    if(ActiveFriend === history[x].SentFrom) {
-                                                        div.className = 'theirMessage';
-                                                        div.textContent = history[x].Message;
-                                                        document.getElementById("chatbox" + ActiveFriend).appendChild(div);
-                                                    }
-                                                    else if(ActiveFriend === history[x].SentTo) {
-                                                        div.className = 'yourMessage';
-                                                        div.textContent = history[x].Message;
-                                                        document.getElementById("chatbox" + ActiveFriend).appendChild(div);
-                                                    }
-
-                                                }
+                                                div.className = 'theirMessage';
+                                                div.textContent = history[x].Message;
+                                                document.getElementById("chatbox" + ActiveFriend).appendChild(div);
+                                            }
+                                            else if (ActiveFriend === history[x].SentTo)
+                                            {
+                                                div.className = 'yourMessage';
+                                                div.textContent = history[x].Message;
+                                                document.getElementById("chatbox" + ActiveFriend).appendChild(div);
                                             }
 
-                                        });
+                                        }
+                                    }
 
-                                        var ret = document.getElementsByClassName("chatbox");
-                                        for (var i = 0; i < ret.length; i++) {
-                                            document.getElementById(ret[i].id).style.display = "none"; //second console output
-                                        }
-                                        var ret2 = document.getElementsByClassName("activeFriend");
-                                        for (i = 0; i < ret2.length; i++) {
-                                            document.getElementById(ret2[i].id).classList.remove("activeFriend"); //second console output
-                                        }
-                                        this.className+=" activeFriend ";
-                                        //console.log(ret);
-                                        document.getElementById("chatbox" + this.id).style.display = "block";
-                                    };
-                                    document.getElementById("friendMenu").appendChild(x);
+                                });
+
+                                var ret = document.getElementsByClassName("chatbox");
+                                for (var i = 0; i < ret.length; i++)
+                                {
+                                    document.getElementById(ret[i].id).style.display = "none"; //second console output
                                 }
-                            });
-                        });
-                    </script>
-                </ul>
-                <div style = "height:25px"></div>
-                    <div id = "addFriendButton" onclick = "addFriend()" class = "button expanded" style = "background:#adff2f">
-                        <button>Add Friend</button>
-				</div>
-                <div id = "removeFriendButton" onClick = "removeFriend()" class = "button expanded" style = "...">
-                    <button style = "...">Remove Friend</button>
-                </div>
-                <div id = "signOutButton" class="button expanded alert" onclick="signOut()">
-                    <button href="#" >Sign out</button>
-                </div>
-                <div id = "testButtonDeleteAccount" class = "button extended" onClick = "deleteAccount()">Delete Account</div>
-            </div>
-            <!--main chat interface-->
-            <script>
-                //When the document is ready make the chatboxes & open a socket to receive the friendslist
-                $( document ).ready(function () {
-                    socket.on('FriendsList', function(msg){
-                        var first = false;
-                        for(var k in msg) {
-                            //For each friend make a unique chatbox
-                            console.log("Creating Chatbox for: " + msg[k].Receiver);
-                            var x = document.createElement("div");
-                            x.style.display = "none";
-                            x.className += "chatbox cell small-12 medium-11";
-                            x.id = "chatbox" + msg[k].Receiver;
-
-                            document.getElementById("main").appendChild(x);
-
-                            if(first === false)
-                            {
-                                console.log("Clicking "+ msg[k].Receiver);
-                                document.getElementById(msg[k].Receiver).click();
-                                first = true;
-                            }
+                                var ret2 = document.getElementsByClassName("activeFriend");
+                                for (i = 0; i < ret2.length; i++)
+                                {
+                                    document.getElementById(ret2[i].id).classList.remove("activeFriend"); //second console output
+                                }
+                                this.className += " activeFriend ";
+                                //console.log(ret);
+                                document.getElementById("chatbox" + this.id).style.display = "block";
+                            };
+                            document.getElementById("friendMenu").appendChild(x);
                         }
                     });
                 });
             </script>
-
-            <div id="main"class="cell small-12 medium-11" style="height:50px;background:#002B36" >
-                <form id="messenger">
-                    <div class="grid-container">
-                        <div class="grid-x grid-padding-x">
-                            <div class="medium-6 cell">
-                                <label>
-                                    <input id="messageSender" type="text" placeholder="Send a Message">
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
+        </ul>
+        <div style="height:25px"></div>
+        <div id="addFriendButton" onclick="addFriend()" class="button expanded" style="background:#adff2f">
+            <button>Add Friend</button>
         </div>
-
-          <!-- JQuery Script-->
-        <script src="vendor/jquery.js"></script>
-        <script src="vendor/foundation.js"></script>
-
-        <script>
-            $(document).foundation();
-        </script>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
-        <script>
-
-            //var URL_SERVER = 'https://whisperio.club:3000';
-            var URL_SERVER = 'https://localhost:3000';
-            var socket = io.connect(URL_SERVER);
-            var whisperIOUser = sessionStorage.getItem("whisperIOUser") || 'defaultValue';
-
-            console.log(whisperIOUser);
-            userName = whisperIOUser;
-            socket.emit('userNameSend', whisperIOUser);
-            socket.emit('userLogin', whisperIOUser);
-            console.log(whisperIOUser);
-
-            //All receiving socket stuff
-            socket.on('chat message', receiveMessage);
-            socket.on('addFriendResult', friendResult);
-            socket.on('isOnlineResult', appendOnlineStatus);
-            socket.on('removeFriendResult', removeFriendAction);
-
-            //Sends messages when user presses enter
-            //TODO Add Send Button
-            $('#messenger').keypress(function (e) {
-                //When enter is pressed submit the current message
-                if (e.which === 13) {
-                    addMessage();
-                    document.getElementById("messageSender").value = "";
-                    return false;
-                }
-            });
-
-            //Alerts something, unsure as to what
-            function addMessage()
+        <div id="removeFriendButton" onClick="removeFriend()" class="button expanded" style="...">
+            <button style="...">Remove Friend</button>
+        </div>
+        <div id="signOutButton" class="button expanded alert" onclick="signOut()">
+            <button href="#">Sign out</button>
+        </div>
+        <div id="testButtonDeleteAccount" class="button extended" onClick="deleteAccount()">Delete Account</div>
+    </div>
+    <!--main chat interface-->
+    <script>
+        //When the document is ready make the chatboxes & open a socket to receive the friendslist
+        $(document).ready(function()
+        {
+            socket.on('FriendsList', function(msg)
             {
-                //Get the message, and send that message on the socket to the server listener
-                var message = messageFactory(ActiveFriend,$('#messageSender').val());
-                socket.emit('chat message',message);
-                var div = document.createElement('div');
-                div.className = 'yourMessage';
-                div.textContent = message.text;
-                document.getElementById("chatbox" + ActiveFriend).appendChild(div);
-                return 0;
-            }
-
-            function messageFactory(sendTo,text) {
-                if(sendTo === null || text === null) {
-                    return -1
-                }
-                if(sendTo === "" || text === "") {
-                    return -1
-                }
-                var message = new Object();
-                message.sentTo = sendTo;
-                message.text = text;
-                return message;
-            }
-
-            //Appends message to a chat when a user receives a message
-            function receiveMessage(msg)
-            {
-                var userSentFrom = msg.sentBy;
-                var message = msg.text;
-                var chatbox = document.getElementById("chatbox" + userSentFrom);
-
-                //friends list element selector for notifiying users of new message
-                var z = document.getElementById(userSentFrom);
-                $(z).addClass("flash");
-
-                var div = document.createElement('div');
-                if(userSentFrom !== ActiveFriend)
+                var first = false;
+                for (var k in msg)
                 {
-                    $(document.getElementById(userSentFrom)).addClass('flash');
-                }
-                console.log(document.getElementById(userSentFrom));
+                    //For each friend make a unique chatbox
+                    console.log("Creating Chatbox for: " + msg[k].Receiver);
+                    var x = document.createElement("div");
+                    x.style.display = "none";
+                    x.className += "chatbox cell small-12 medium-11";
+                    x.id = "chatbox" + msg[k].Receiver;
 
-                div.className = 'theirMessage';
-                div.textContent = message;
-                console.log("Message Received!");
+                    document.getElementById("main").appendChild(x);
 
-                chatbox.appendChild(div);
-            }
-
-            //Adds a new friend for user, called when "Add Friend" button is pressed
-            function addFriend() {
-                var addFriend = prompt("Enter the name of the friend you wish to add: ", "User Name");
-                if (addFriend != null && addFriend !== "")
-                {
-                    socket.emit('addFriend', whisperIOUser, addFriend, friendResult);
-                }
-            }
-
-            function removeFriend() {
-                var removeFriend = prompt("Enter the name of the friend you wish to remove: ", "User Name");
-                if (removeFriend != null && removeFriend !== "")
-                {
-                    socket.emit('removeFriend', whisperIOUser, removeFriend);
-                }
-            }
-
-            function removeFriendAction(result, removedFriend) {
-                if (result === 1) {
-                    swal("OK!",removedFriend + " Has been removed","success")
-                        .then((value) => {
-                            window.location.href = "./main";
-                        });
-                }
-                else if (result === 0) {
-                    console.log("alert");
-                    swal("Error",removedFriend + " was not removed as a friend: User is not in your friends list.","error");
-                }
-                else {
-                    swal("Error",removedFriend + " was not removed as a friend: User is not in your friends list.","error");
-                }
-            }
-
-            //A response once the results of attempting to add a friend finishes
-			function friendResult(result, addedFriend) {
-                if (result === 1) {
-                    swal("OK!",addedFriend + " has been added as a friend","success")
-                        .then((value) => {
-                            window.location.href = "./main";
-                        });
-                }
-
-                else if (result === -1) {
-                    swal("Error",addedFriend + " was not added as a friend: User does not exist","error");
-                }
-                else {
-                    swal("Error",addedFriend + " was not added as a friend: User is already a friend","error");
-                }
-            }
-
-            //Appends the "Online" or "Offline" status to friends in list
-            function appendOnlineStatus(status, friendName) {
-                var onlineStatus;
-                var x = document.getElementById(friendName);
-                if (status == true)
-                    x.className += " online ";
-                else
-                    x.className += " offline ";
-            }
-            socket.on('tokenVerifyRequest', function(msg) {
-                //Commenting this out won't get you magical access,
-                // it is server-side verified
-                socket.emit("tokenVerifyAnswer",sessionStorage
-                 .getItem("whisperIOToken") || 'defaultValue');
-            });
-
-            //Signs the current user out
-            function signOut() {
-                sessionStorage.removeItem("whisperIOToken");
-                gapi.load('client:auth2', function() {
-                    gapi.auth2.init()
-                        .then(function() {
-                            gapi.auth2.getAuthInstance()
-                                .signOut()
-                        })
-                        .then(function() {
-                            swal("Thank you for using Whisper.io")
-                                .then((value) => {
-
-                                    console.log('Logging out user');
-                                    console.log('User signed out.');
-                                    // Kill login token
-                                    sessionStorage.clear();
-                                    window.location.href = "/";
-                                });
-
-                        })
-                        .catch(function(err){
-                            console.log("Wokriiiinnnnnggg err: ", err);
-                        });
-                });
-            }
-            function sleep(milliseconds) {
-                var start = new Date().getTime();
-                for (var i = 0; i < 1e7; i++) {
-                    if ((new Date().getTime() - start) > milliseconds){
-                        break;
+                    if (first === false)
+                    {
+                        console.log("Clicking " + msg[k].Receiver);
+                        document.getElementById(msg[k].Receiver).click();
+                        first = true;
                     }
                 }
-            }
+            });
+        });
+    </script>
 
-            function deleteAccount()
-            {
-                var deleteAcc = confirm("Are you SURE you want to delete your account? This will get rid of any friend associations you have as well as any messages you've sent or been sent.");
-                if (deleteAcc)
+    <div id="main" class="cell small-12 medium-11" style="height:50px;background:#002B36">
+        <form id="messenger">
+            <div class="grid-container">
+                <div class="grid-x grid-padding-x">
+                    <div class="medium-6 cell">
+                        <label>
+                            <input id="messageSender" type="text" placeholder="Send a Message">
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- JQuery Script-->
+<script src="vendor/jquery.js"></script>
+<script src="vendor/foundation.js"></script>
+
+<script>
+    $(document).foundation();
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+<script>
+    //var URL_SERVER = 'https://whisperio.club:3000';
+    var URL_SERVER = 'https://localhost:3000';
+    var socket = io.connect(URL_SERVER);
+    var whisperIOUser = sessionStorage.getItem("whisperIOUser") || 'defaultValue';
+
+    console.log(whisperIOUser);
+    userName = whisperIOUser;
+    socket.emit('userNameSend', whisperIOUser);
+    socket.emit('userLogin', whisperIOUser);
+    console.log(whisperIOUser);
+
+    //All receiving socket stuff
+    socket.on('chat message', receiveMessage);
+    socket.on('addFriendResult', friendResult);
+    socket.on('isOnlineResult', appendOnlineStatus);
+    socket.on('removeFriendResult', removeFriendAction);
+
+    //Sends messages when user presses enter
+    //TODO Add Send Button
+    $('#messenger').keypress(function(e)
+    {
+        //When enter is pressed submit the current message
+        if (e.which === 13)
+        {
+            addMessage();
+            document.getElementById("messageSender").value = "";
+            return false;
+        }
+    });
+
+    //Alerts something, unsure as to what
+    function addMessage()
+    {
+        //Get the message, and send that message on the socket to the server listener
+        var message = messageFactory(ActiveFriend, $('#messageSender').val());
+        socket.emit('chat message', message);
+        var div = document.createElement('div');
+        div.className = 'yourMessage';
+        div.textContent = message.text;
+        document.getElementById("chatbox" + ActiveFriend).appendChild(div);
+        return 0;
+    }
+
+    function messageFactory(sendTo, text)
+    {
+        if (sendTo === null || text === null)
+        {
+            return -1
+        }
+        if (sendTo === "" || text === "")
+        {
+            return -1
+        }
+        var message = new Object();
+        message.sentTo = sendTo;
+        message.text = text;
+        return message;
+    }
+
+    //Appends message to a chat when a user receives a message
+    function receiveMessage(msg)
+    {
+        var userSentFrom = msg.sentBy;
+        var message = msg.text;
+        var chatbox = document.getElementById("chatbox" + userSentFrom);
+
+        //friends list element selector for notifiying users of new message
+        var z = document.getElementById(userSentFrom);
+        $(z).addClass("flash");
+
+        var div = document.createElement('div');
+        if (userSentFrom !== ActiveFriend)
+        {
+            $(document.getElementById(userSentFrom)).addClass('flash');
+        }
+        console.log(document.getElementById(userSentFrom));
+
+        div.className = 'theirMessage';
+        div.textContent = message;
+        console.log("Message Received!");
+
+        chatbox.appendChild(div);
+    }
+
+    //Adds a new friend for user, called when "Add Friend" button is pressed
+    function addFriend()
+    {
+        var addFriend = prompt("Enter the name of the friend you wish to add: ", "User Name");
+        if (addFriend != null && addFriend !== "")
+        {
+            socket.emit('addFriend', whisperIOUser, addFriend, friendResult);
+        }
+    }
+
+    function removeFriend()
+    {
+        var removeFriend = prompt("Enter the name of the friend you wish to remove: ", "User Name");
+        if (removeFriend != null && removeFriend !== "")
+        {
+            socket.emit('removeFriend', whisperIOUser, removeFriend);
+        }
+    }
+
+    function removeFriendAction(result, removedFriend)
+    {
+        if (result === 1)
+        {
+            swal("OK!", removedFriend + " Has been removed", "success")
+                .then((value) =>
                 {
-                    socket.emit('deleteAccount', whisperIOUser);
-                }
-                window.href="/";
+                    window.location.href = "./main";
+                });
+        }
+        else if (result === 0)
+        {
+            console.log("alert");
+            swal("Error", removedFriend + " was not removed as a friend: User is not in your friends list.", "error");
+        }
+        else
+        {
+            swal("Error", removedFriend + " was not removed as a friend: User is not in your friends list.", "error");
+        }
+    }
+
+    //A response once the results of attempting to add a friend finishes
+    function friendResult(result, addedFriend)
+    {
+        if (result === 1)
+        {
+            swal("OK!", addedFriend + " has been added as a friend", "success")
+                .then((value) =>
+                {
+                    window.location.href = "./main";
+                });
+        }
+
+        else if (result === -1)
+        {
+            swal("Error", addedFriend + " was not added as a friend: User does not exist", "error");
+        }
+        else
+        {
+            swal("Error", addedFriend + " was not added as a friend: User is already a friend", "error");
+        }
+    }
+
+    //Appends the "Online" or "Offline" status to friends in list
+    function appendOnlineStatus(status, friendName)
+    {
+        var onlineStatus;
+        var x = document.getElementById(friendName);
+        if (status == true)
+            x.className += " online ";
+        else
+            x.className += " offline ";
+    }
+    socket.on('tokenVerifyRequest', function(msg)
+    {
+        //Commenting this out won't get you magical access,
+        // it is server-side verified
+        socket.emit("tokenVerifyAnswer", sessionStorage
+            .getItem("whisperIOToken") || 'defaultValue');
+    });
+
+    //Signs the current user out
+    function signOut()
+    {
+        sessionStorage.removeItem("whisperIOToken");
+        gapi.load('client:auth2', function()
+        {
+            gapi.auth2.init()
+                .then(function()
+                {
+                    gapi.auth2.getAuthInstance()
+                        .signOut()
+                })
+                .then(function()
+                {
+                    swal("Thank you for using Whisper.io")
+                        .then((value) =>
+                        {
+
+                            console.log('Logging out user');
+                            console.log('User signed out.');
+                            // Kill login token
+                            sessionStorage.clear();
+                            window.location.href = "/";
+                        });
+
+                })
+                .catch(function(err)
+                {
+                    console.log("Wokriiiinnnnnggg err: ", err);
+                });
+        });
+    }
+
+    function sleep(milliseconds)
+    {
+        var start = new Date().getTime();
+        for (var i = 0; i < 1e7; i++)
+        {
+            if ((new Date().getTime() - start) > milliseconds)
+            {
+                break;
             }
-        </script>
+        }
+    }
 
-
-
+    function deleteAccount()
+    {
+        var deleteAcc = confirm("Are you SURE you want to delete your account? This will get rid of any friend associations you have as well as any messages you've sent or been sent.");
+        if (deleteAcc)
+        {
+            socket.emit('deleteAccount', whisperIOUser);
+        }
+        window.href = "/";
+    }
+</script>
 </body>
 </html>
