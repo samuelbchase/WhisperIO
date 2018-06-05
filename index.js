@@ -14,7 +14,9 @@ var randomstring = require("randomstring");
 var bcrypt = require('bcrypt');
 var io = require('socket.io')(http);
 app.use('/scripts', express.static(__dirname + '/node_modules/sweetalert/dist/'));
-
+//NOTE: This following code causes the file to import all functions it exports, because JS is garbage
+var thisModule = require('./index.js');
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 const tls = require('tls');
 const saltRounds = 10;
 
@@ -26,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //   process.exit(0);
 //};
 
-function messageFactory(sentBy, text)
+exports.messageFactory = function(sentBy, text)
 {
     if (sentBy === null || text === null)
     {
@@ -73,12 +75,6 @@ var mysql2 = require('sync-mysql');
 var syncConnRead;
 var syncConnWrite;
 
-function getToken(userName)
-{
-    var sql = "";
-    var result = syncConnRead.query(sql);
-    console.log("Token is" + result[0].token);
-}
 //use this for opening a file for the read and write passwords for the DB
 //PLEASE DON'T MESS WITH THIS FUNCTION OR .info.txt! IT WILL SCREW UP THE
 // DATABASE QUERYS
@@ -193,6 +189,7 @@ else
     });
 
 }
+
 io.on('connection', function(socket)
 {
 
@@ -231,7 +228,6 @@ io.on('connection', function(socket)
                 return callback(0, `${userName} logged in successfully`);
             }
         });
-        return callback(-1, `${userName} failed to login`);
     });
 
     socket.on('chat message', function(msg, callback)
@@ -273,7 +269,7 @@ io.on('connection', function(socket)
                                     "User where username = '" +
                                     userSentTo + "';");
                                 tok = tok[0].token;
-                                var messageObj = messageFactory(
+                                var messageObj = thisModule.messageFactory(
                                     name, message);
                                 if (token === tok)
                                 {
