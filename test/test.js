@@ -81,6 +81,23 @@ describe('User connections', function()
         server.closeServer();
     });
 
+    it('Testing messageFactory 1', function(done) {
+        var obj = server.messageFactory("blah","Java");
+        assert.equal(obj.text,"Java");
+        done();
+    });
+    it('Testing messageFactory 2', function(done) {
+        var obj = server.messageFactory("","Java");
+        assert.equal(obj,-1);
+        done();
+
+    });
+    it('Testing messageFactory 3', function(done) {
+        var obj = server.messageFactory(null,null);
+        assert.equal(obj,-1);
+        done();
+    });
+
     it('Is the server running?', function(done) {
         return http.get('http://localhost:3001', function(res)
         {
@@ -88,7 +105,11 @@ describe('User connections', function()
             done();
         });
     });
+    it('Check Server', function(done) {
+        var s = server.myServer.getInstance();
+        console.log(s);
 
+    });
     it('Can you add a friend?', function(done) {
         syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
         client1.emit('addFriend', "testuser1", "testuser2", function(result) {
@@ -137,6 +158,13 @@ describe('User connections', function()
         });
     });
 
+    it('Can a fake token be verified?', function(done) {
+        client1.emit('verifyToken', fake_token, function(result, token) {
+            assert.equal(-1, result);
+            done();
+        });
+    });
+
     it('Can an existing friend be removed?', function(done) {
         client1.emit('removeFriend', 'testuser1', 'testuser2', function(result, friend) {
             assert.equal(result, 1);
@@ -166,7 +194,7 @@ describe('User connections', function()
     });
     it('Does User Name Send function with a fake name?', function (done) {
         client1.emit('userNameSend', 'testuserFake', function(result, list) {
-            assert.equal(0, list);
+            assert.equal(result, 1);
             done();
         });
     });
@@ -180,12 +208,13 @@ describe('User connections', function()
 
     it('Can a user log in?', function(done) {
         client1.emit('userLogin', 'testuser1', function(result) {
-            assert.equal(0, result);
+            assert.equal(result, 0);
             done();
         });
     });
 
     it('Can I identify myself?', function(done) {
+        syncConnWrite.query("DELETE FROM Friends where Host= 'testuserbacon' OR Receiver = 'testuserbacon';");
         syncConnWrite.query("DELETE FROM User where username= 'testuserbacon';");
         var creds = {
             "emailHash": 'testuserbacon',
@@ -193,7 +222,7 @@ describe('User connections', function()
             "person": 'testuserbacon'
         };
         client1.emit('identifyMyselfNoGmail', creds, function(result) {
-            assert.equal(1, result);
+            assert.equal(result, 1);
             done();
         });
     });
@@ -203,6 +232,22 @@ describe('User connections', function()
         syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
         client1.emit('deleteAccount', 'testuser2', function(result) {
             assert.equal(result, 1);
+            done();
+        });
+    });
+
+    it('Can I verify a valid account with a valid password?', function(done) {
+        var creds = {'email' : 'testuserbacon', 'password' : 'bacon'};
+        client1.emit('verifyEmailLogin', creds, function(result) {
+            assert.equal(result, 1);
+            done();
+        });
+    });
+
+    it('Can I verify an invalid account?', function(done) {
+        var creds = {'email' : 'testusercheese', 'password' : 'itdoesntmatter'};
+        client1.emit('verifyEmailLogin', creds, function(result) {
+            assert.equal(result, 0);
             done();
         });
     });
@@ -217,28 +262,6 @@ describe('User connections', function()
         });
     });
 
-    it('Can I verify a valid account with a valid password?', function(done) {
-        var creds = {'email' : 'testuserbacon', 'password' : 'bacon'};
-        client1.emit('verifyEmailLogin', creds, function(result) {
-            assert.equal(result, 1);
-            done();
-        });
-    });
 
 
-    it('Can I verify a valid account with and invalid password?', function(done) {
-        var creds = {'email' : 'testuserbacon', 'password' : 'cheese'};
-        client1.emit('verifyEmailLogin', creds, function(result) {
-            assert.equal(result, -1);
-            done();
-        });
-    });
-
-    it('Can I verify an invalid account?', function(done) {
-        var creds = {'email' : 'testusercheese', 'password' : 'itdoesntmatter'};
-        client1.emit('verifyEmailLogin', creds, function(result) {
-            assert.equal(result, 0);
-            done();
-        });
-    });
 });
