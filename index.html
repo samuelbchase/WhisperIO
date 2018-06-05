@@ -208,16 +208,19 @@
     {
         //Get the message, and send that message on the socket to the server listener
         var message = messageFactory(ActiveFriend, $('#messageSender').val());
-        socket.emit('chat message', message, function(status, msg)
-        {
-            if (status !== 1)
-                console.log("Error: " + msg);
-        });
-        var div = document.createElement('div');
-        div.className = 'yourMessage';
-        div.textContent = message.text;
-        document.getElementById("chatbox" + ActiveFriend).appendChild(div);
-        return 0;
+        if(message !== -1) {
+            socket.emit('chat message', message, function(status, msg)
+            {
+                if (status !== 1)
+                    console.log("Error: " + msg);
+            });
+            var div = document.createElement('div');
+            div.className = 'yourMessage';
+            div.textContent = message.text;
+            document.getElementById("chatbox" + ActiveFriend).appendChild(div);
+            return 0;
+        }
+        return -1;
     }
 
     function messageFactory(sendTo, text)
