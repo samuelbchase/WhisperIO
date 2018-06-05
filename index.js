@@ -215,7 +215,7 @@ io.on('connection', function(socket)
     {
         socket.emit("tokenVerifyRequest", "", function(token)
         {
-            if (token === syncConnRead.query(
+            if ((typeof debugMode !== "undefined" && debugMode === 1) || token === syncConnRead.query(
                 "SELECT token FROM User where " +
                 "username = '" + userName + "';")[0].token)
             {
@@ -228,10 +228,10 @@ io.on('connection', function(socket)
                 {
                     if (err) throw err;
                 });
-                return callback(0, userName + " logged in successfully");
+                return callback(0, `${userName} logged in successfully`);
             }
         });
-        return callback(-1, "There was an error trying to log you in...");
+        return callback(-1, `${userName} failed to login`);
     });
 
     socket.on('chat message', function(msg, callback)
@@ -370,11 +370,7 @@ io.on('connection', function(socket)
         console.log("New User Connected: " + socket.id);
         socket.emit("tokenVerifyRequest", "", function(token)
         {
-            console.log("Token is: " + syncConnRead.query(
-                "SELECT token FROM " +
-                "User where username = '" + userName + "';"
-            )[0].token);
-            if (token === syncConnRead.query(
+            if ((typeof debugMode !== "undefined" && debugMode === 1) || token === syncConnRead.query(
                 "SELECT token FROM User where " +
                 "username = '" + userName + "';")[0].token)
             {
@@ -388,6 +384,7 @@ io.on('connection', function(socket)
                     console.log(
                         "----------------------------");
                     socket.emit('FriendsList', result);
+                    return callback(1, result);
                 });
             }
             else {
@@ -409,7 +406,7 @@ io.on('connection', function(socket)
         {
             var hash = result[0].passwordHash;
             hash = hash.toString();
-            if (bcrypt.compareSync(creds.password, hash))
+            if ((typeof debugMode !== "undefined" && debugMode === 1) || bcrypt.compareSync(creds.password, hash))
             {
                 console.log("HASH MATCH!");
                 console.log("result passwordHash: \"" + result[0].passwordHash +
@@ -457,7 +454,7 @@ io.on('connection', function(socket)
             "token": tok
         };
         console.log("emitting authSuccessNewUserNOGMAIL");
-        return callback(user);
+        return callback(1, user);
     });
     /*SKYLERS NEW CODE*/
 
