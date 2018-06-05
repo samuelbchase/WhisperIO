@@ -21,8 +21,14 @@
     var userName;
 </script>
 
-<body style="background:#073642">
-<div class="grid-x" style="background:#073642">
+<body style="background:black">
+<div class="topnav">
+    <div id="addFriendButton" class="button secondary" onClick="addFriend()">ADD FRIEND</div>
+    <div id="removeFriendButton" class="button secondary" onClick="removeFriend()">REMOVE FRIEND</div>
+    <div id="testButtonDeleteAccount" class="button secondary" onClick="deleteAccount()">DELETE ACCOUNT</div>
+    <div id="signOutButton" class="button secondary" onClick="signOut()" style="float:right">SIGN OUT</div>
+</div>
+<div class="grid-x" style="background:black">
     <!--side bar -->
     <div id="sidebar" class="cell small-12 medium-1">
         <div>
@@ -102,18 +108,9 @@
             </script>
         </ul>
         <div style="height:25px"></div>
-        <div id="addFriendButton" onclick="addFriend()" class="button expanded" style="background:#adff2f">
-            <button>Add Friend</button>
-        </div>
-        <div id="removeFriendButton" onClick="removeFriend()" class="button expanded" style="...">
-            <button style="...">Remove Friend</button>
-        </div>
-        <div id="signOutButton" class="button expanded alert" onclick="signOut()">
-            <button href="#">Sign out</button>
-        </div>
-        <div id="testButtonDeleteAccount" class="button extended" onClick="deleteAccount()">Delete Account</div>
     </div>
     <!--main chat interface-->
+
     <script>
         //When the document is ready make the chatboxes & open a socket to receive the friendslist
         $(document).ready(function()
@@ -143,7 +140,7 @@
         });
     </script>
 
-    <div id="main" class="cell small-12 medium-11" style="height:50px;background:#002B36">
+    <div id="main" class="cell small-12 medium-11" style="height:50px;background:black">
         <form id="messenger">
             <div class="grid-container">
                 <div class="grid-x grid-padding-x">
@@ -157,6 +154,8 @@
         </form>
     </div>
 </div>
+
+$docu
 
 <!-- JQuery Script-->
 <script src="vendor/jquery.js"></script>
