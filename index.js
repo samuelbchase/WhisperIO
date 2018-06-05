@@ -384,7 +384,7 @@ io.on('connection', function(socket)
                     console.log(
                         "----------------------------");
                     socket.emit('FriendsList', result);
-                    return callback(1, result);
+                    return callback(1, userName);
                 });
             }
             else {

@@ -172,7 +172,13 @@
 
     console.log(whisperIOUser);
     userName = whisperIOUser;
-    socket.emit('userNameSend', whisperIOUser);
+    socket.emit('userNameSend', whisperIOUser, function(result, userName)
+    {
+        if (result === 0)
+        {
+            console.log("Error getting friends list for " + userName);
+        }
+    });
     socket.emit('userLogin', whisperIOUser, function(result, msg) {
         if (result !== 0) {
             console.log("Hey, you failed to log in properly? This shouldn't happen...");
