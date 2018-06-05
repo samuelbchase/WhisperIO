@@ -229,3 +229,14 @@ div ul li:hover {
     border: 3px solid goldenrod;
     color:goldenrod;
 }
+
+.gold {
+    background:darkgrey;
+}
+.gold:hover{
+    background:goldenrod;
+}
+
+.danger:hover{
+    background:indianred;
+}
