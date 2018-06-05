@@ -105,11 +105,6 @@ describe('User connections', function()
             done();
         });
     });
-    it('Check Server', function(done) {
-        var s = server.myServer.getInstance();
-        console.log(s);
-
-    });
     it('Can you add a friend?', function(done) {
         syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
         client1.emit('addFriend', "testuser1", "testuser2", function(result) {
