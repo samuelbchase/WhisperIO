@@ -1,3 +1,4 @@
+debugMode = 1;
 const { Given, When, Then, After, Before } = require('cucumber');
 var assert = require('chai').assert;
 var server = require('../../index.js');
@@ -53,30 +54,33 @@ var syncConnWrite = new mysql2({
 });
 
 Before(function() {
-    syncConnWrite.query("DELETE FROM Friends where Host= 'testuser1' OR Receiver = 'testuser1';");
-    syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
-    syncConnWrite.query("DELETE FROM Message where SentFrom= 'testuser1' OR SentTo = 'testuser1';");
-    syncConnWrite.query("DELETE FROM Message where SentFrom= 'testuser2' OR SentTo = 'testuser2';");
-    syncConnWrite.query("DELETE FROM User where username= 'testuser1';");
-    syncConnWrite.query("DELETE FROM User where username= 'testuser2';");
+    syncConnWrite.query("DELETE FROM Friends where Host = 'testuser1' OR Receiver = 'testuser1';");
+    syncConnWrite.query("DELETE FROM Friends where Host = 'testuser2' OR Receiver = 'testuser2';");
+    syncConnWrite.query("DELETE FROM Message where SentFrom = 'testuser2' OR SentTo = 'testuser2';");
+    syncConnWrite.query("DELETE FROM User where username = 'testuser1';");
+    syncConnWrite.query("DELETE FROM User where username = 'testuser2';");
 
     syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash,token) VALUES ('testuser1','Y','1','123');");
     syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash) VALUES ('testuser2','N','2');");
 
-    //server.runServer();
+    server.runServer();
     client1 = ioClient.connect('http://localhost:3001', options);
     client2 = ioClient.connect('http://localhost:3001', options);
+    client1.on('tokenVerifyRequest', function(msg, callback)
+    {
+        return callback("123");
+    });
 });
 
 After(function() {
-    //server.closeServer();
+    server.closeServer();
 
-    syncConnWrite.query("DELETE FROM Friends where Host= 'testuser1' OR Receiver = 'testuser1';");
-    syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
-    syncConnWrite.query("DELETE FROM Message where SentFrom= 'testuser1' OR SentTo = 'testuser1';");
-    syncConnWrite.query("DELETE FROM Message where SentFrom= 'testuser2' OR SentTo = 'testuser2';");
-    syncConnWrite.query("DELETE FROM User where username= 'testuser1';");
-    syncConnWrite.query("DELETE FROM User where username= 'testuser2';");
+    syncConnWrite.query("DELETE FROM Friends where Host = 'testuser1' OR Receiver = 'testuser1';");
+    syncConnWrite.query("DELETE FROM Friends where Host = 'testuser2' OR Receiver = 'testuser2';");
+    syncConnWrite.query("DELETE FROM Message where SentFrom = 'testuser1' OR SentTo = 'testuser1';");
+    syncConnWrite.query("DELETE FROM Message where SentFrom = 'testuser2' OR SentTo = 'testuser2';");
+    syncConnWrite.query("DELETE FROM User where username = 'testuser1';");
+    syncConnWrite.query("DELETE FROM User where username = 'testuser2';");
 });
 
 var userTo;
@@ -107,7 +111,7 @@ When("That user comes online", function() {
     // no when here
 });
 
-Then("Contact lists should display that user as online", function() {
+Then("Contact lists should display that user as online", function(done) {
     client1.emit('isOnline', userTo, function(result) {
         assert(result === true, "Error! Result was not true! Was " + result);
         done();
@@ -116,12 +120,12 @@ Then("Contact lists should display that user as online", function() {
 
 
 /*                            addFriends.feature                             */
-Given("A User griffin", function() {
-    userTo = "griffin";
+Given("A User testuser1", function() {
+    userTo = "testuser1";
 });
 
 When("I want to add a friend", function() {
-    userFrom = "testuser1";
+    userFrom = "testuser2";
 });
 
 Then("That friend is added to my friends list", function(done) {
@@ -132,7 +136,9 @@ Then("That friend is added to my friends list", function(done) {
 });
 
 When("I want to add a friend that I already have as a friend", function() {
-    userFrom = "testuser1";
+    userFrom = "testuser2";
+    syncConnWrite.query("INSERT INTO Friends(Host, Receiver) VALUES ('testuser1','testuser2');");
+
 });
 
 Then("That friend is not added to my friends list", function(done) {
@@ -154,9 +160,9 @@ Then("That friend is not added to my friends list, and the program tells me the 
 });
 
 /*  Removing Friends */
-When("I want to remove a friend a friend", function() {
-    userFrom = "testuser1";
-    syncConnWrite.query("INSERT INTO Friends(Host, Receiver) VALUES('griffin', 'testuser1');");
+When("I want to remove a friend", function() {
+    userFrom = "testuser2";
+    syncConnWrite.query("INSERT INTO Friends(Host, Receiver) VALUES('testuser1', 'testuser2');");
 });
 
 Then("That friend is removed from my friends list", function (done) {
@@ -190,9 +196,10 @@ Then("That friend is not removed from my list, and the system throws an error.",
 /* account deletion */
 Given("A User oldUser", function() {
     userTo = "oldUser";
-})
+    syncConnWrite.query("INSERT INTO User(username, emailHash) VALUES ('oldUser', '123456789010');");
+});
 When("I want to delete my account", function() {
-    syncConnWrite.query("INSERT INTO User(username, emailHash) VALUES ('" + userTo + "', '123456789010');");
+    //nothing here
 });
 Then("The account is entirely removed from the system.", function(done) {
    client1.emit('deleteAccount', userTo, function(result) {
@@ -214,4 +221,49 @@ Then("The account isn't removed, and the system throws an error.", function(done
         assert(result === -1, "Deleted an account that doesn't exist!");
         done();
     });
+});
+
+Given("A logged-out user", function()
+{
+
+});
+
+When("They want to log in", function()
+{
+
+});
+
+Then("The system logs them in", function()
+{
+
+});
+
+Given("A User that is logged in", function()
+{
+
+});
+
+When("They want to log out", function()
+{
+
+});
+
+Then("The system logs them out", function()
+{
+
+});
+
+Given("A user without an account", function()
+{
+
+});
+
+When("They want to use the program", function()
+{
+
+});
+
+Then("Creates an account for them", function()
+{
+
 });
