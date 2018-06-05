@@ -54,7 +54,7 @@ input[type=password]:focus {
     margin-top:10vh;
 }
 #loginButton{
-    background:cornflowerblue;
+    background:goldenrod;
     width:100px;
     height:50px;
     line-height: 50px;
@@ -153,9 +153,10 @@ div ul li:hover {
     padding-left: 20px;
     margin-top:5px;
     margin-bottom:0;
-    color:white;
+    color:goldenrod;
     position:absolute;
     bottom: 10px;
+    border: 1px solid goldenrod;
 }
 
 .flash{
@@ -223,4 +224,8 @@ div ul li:hover {
     background-color:goldenrod;
     color:black;
 }
-
+#login {
+    background-color:black;
+    border: 3px solid goldenrod;
+    color:goldenrod;
+}
