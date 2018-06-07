@@ -140,8 +140,6 @@ describe('Integration Tests 1&2', function()
         syncConnWrite.query("DELETE FROM User where username= 'testuser2';");
         syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash,token) VALUES ('testuser1','Y','1','123');");
         syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash) VALUES ('testuser2','N','2');");
-        syncConnWrite.query("INSERT INTO Friends(Host,Receiver) VALUES ('testuser1','testuser2');");
-        syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
         client1.emit('userLogin', 'testuser1', function(result) {
             client1.emit('addFriend', "testuser1", "wot", function(result) {
                 client1.emit('chathistory', 'testuser1', 'testuser2', function(result) {
@@ -186,43 +184,27 @@ describe('Integration Test 4', function()
 
     resetState();
 
-    //see if  friend shows up as online.
-    it('Add testuser1 as friend for testuser2', function(done) {
-        //can you add a friend?
-        client1.emit('addFriend', "testuser2", "testuser1", function(result) {
-            assert.equal(result, 1, "Friend added successfully");
-            done();
-        });
-    });
-
-
-    it('Does the program show your online friends?', function(done) {
+    // Does online/offline status work as intended, i.e. does the program recognize when you've gone offline/come online
+    it('Does the database properly update when a user comes online/goes offline?', function(done) {
+        syncConnWrite.query("DELETE FROM Friends where Host= 'testuser1' OR Receiver = 'testuser1';");
+        syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
+        syncConnWrite.query("DELETE FROM Message where SentFrom= 'testuser1' OR SentTo = 'testuser1';");
+        syncConnWrite.query("DELETE FROM Message where SentFrom= 'testuser2' OR SentTo = 'testuser2';");
+        syncConnWrite.query("DELETE FROM User where username= 'testuser1';");
+        syncConnWrite.query("DELETE FROM User where username= 'testuser2';");
+        syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash,token) VALUES ('testuser1','Y','1','123');");
+        syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash) VALUES ('testuser2','N','2');");
         client1.emit('isOnline', "testuser1", function(result) {
-            assert.equal(result, 1, "Offline friends are not offline - result is " + result);
-            done();
-        });
-    });
-
-
-    it('Does the program show your offline friends?', function(done) {
-        client1.emit('isOnline', "testuser2", function(result) {
-            assert.equal(result, 0, "Offline friends are not offline - result is " + result);
-            done();
-        });
-    });
-
-    it('Can you add a friend you are already friends with?', function(done) {
-        client1.emit('addFriend', "testuser2", "testuser1", function(result) {
-            assert.equal(result, 0, "Added friend either does not exist or is not already friends");
-            done();
-        });
-    });
-
-    //see if re-added friend shows up as online.
-    it('Does the program show your online friends?', function(done) {
-        client1.emit('isOnline', "testuser1", function(result) {
-            assert.equal(result, 1, "Offline friends are not offline - result is " + result);
-            done();
+            assert(result === true);
+            syncConnWrite.query("UPDATE User SET isOnline = 'N' WHERE username = 'testuser1';");
+            client1.emit('isOnline', "testuser1", function(result) {
+               assert(result === false);
+               syncConnWrite.query("UPDATE User SET isOnline = 'Y' WHERE username = 'testuser1';");
+               client1.emit('isOnline', "testuser1", function(result) {
+                   assert(result === true);
+                   done();
+               });
+            });
         });
     });
 });
@@ -251,71 +233,31 @@ describe('Integration Test 5', function()
 
     resetState();
 
-    it('Add a friend', function(done) {
-        //can you add a friend?
-        client1.emit('addFriend', "testuser1", "testuserbacon", function(result) {
-            assert.equal(result, 1, "Friend added successfully");
-            done();
-        });
-    });
+    it('Does adding a friend and sending them messages update your chat history?', function(done) {
+        syncConnWrite.query("DELETE FROM Friends where Host= 'testuser1' OR Receiver = 'testuser1';");
+        syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
+        syncConnWrite.query("DELETE FROM Message where SentFrom= 'testuser1' OR SentTo = 'testuser1';");
+        syncConnWrite.query("DELETE FROM Message where SentFrom= 'testuser2' OR SentTo = 'testuser2';");
+        syncConnWrite.query("DELETE FROM User where username= 'testuser1';");
+        syncConnWrite.query("DELETE FROM User where username= 'testuser2';");
+        syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash,token) VALUES ('testuser1','Y','1','123');");
+        syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash) VALUES ('testuser2','N','2');");
 
-    it('Can I verify a valid account with a valid password?', function(done) {
-        var creds = {'email' : 'testuserbacon', 'password' : 'bacon'};
-        client1.emit('verifyEmailLogin', creds, function(result) {
-            assert.equal(1, result);
-            done();
-        });
-    });
-
-    it('Can I verify an invalid account?', function(done) {
-        var creds = {'email' : 'testusercheese', 'password' : 'itdoesntmatter'};
-        client1.emit('verifyEmailLogin', creds, function(result) {
-            assert.equal(0, result);
-            done();
-        });
-    });
-
-    it('Can I verify a testUser account?', function(done) {
-        var creds = {'email' : 'testuser1', 'password' : 'wrongpassword'};
-        client1.emit('verifyEmailLogin', creds, function(result) {
-            assert.equal(0, result);
-            done();
-        });
-    });
-});
-
-/****************************************/
-//tests integration of
-describe('Integration Test 6', function()
-{
-    this.timeout(6000);
-
-    beforeEach(function ()
-    {
-        server.runServer();
-        console.log("Host: " + syncConnWrite.host);
-        client1 = ioClient.connect('http://localhost:3001', options);
-        client1.on('tokenVerifyRequest', function(msg, callback)
-        {
-            return callback("123");
-        });
-    });
-
-    afterEach(function() {
-        client1.disconnect();
-        server.closeServer();
-    });
-
-    resetState();
-
-    it('Can I send a message?', function(done) {
+        userTo = "testuser1";
+        userFrom = "testuser2";
         var message = new Object();
-        message.sentTo = "testuser1";
-        message.text = "Test";
-        client1.emit('chat message', message, function(result) {
-            assert.equal(result, 0);
-            done();
+        message.sentTo = userFrom;
+        message.text = "asdf";
+        syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
+        client1.emit('addFriend', userTo, userFrom, function(result) {
+            assert(result === 1);
+            client1.emit('chat message', message, function(result) {
+                assert(result === 1);
+                client1.emit('chathistory', userTo, userFrom, function(result) {
+                    assert(result !== 0);
+                    done();
+                });
+            })
         });
     });
-
 });
