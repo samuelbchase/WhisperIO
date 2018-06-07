@@ -19,12 +19,11 @@
         <div class="cell small-1 medium-2 large-4"></div>
         <div class="cell small-10 medium-8 large-4">
             <form class="log-in-form">
-                <h4 class="text-center"><img src="/images/aque_black.png" alt="Whisper.io"></h4>
+                <h4 class="text-center"><img src="/images/gold.png" alt="Whisper.io"></h4>
                 <input class="black black-input" id="emailBox" type="text" placeholder="Username">
                 <input class="black black-input" id="passwordBox" type="password" placeholder="Password">
-                <div id="login" onclick="onLogin();" class="button expanded">Log in</div>
+                <div id = "login" onclick="onLogin()" class="button expanded">Log in</div>
                 <div class="g-signin2" data-width="100vw" data-onsuccess="onSignIn"></div>
-                <p class="text-center"><a href="#"><span style="color:aqua">Forgot your password?</span></a></p>
             </form>
         </div>
         <div class="cell small-1 medium-2 large-4"></div>
@@ -153,9 +152,9 @@
     {
         swal("Cool! Auth success! Thank you for joining Whisper.io, " + user.name)
             .then((value) =>
-        {
-            authSuccess(user);
-        });
+            {
+                authSuccess(user);
+            });
     }
 
     function authSuccessNewUserNOGMAIL(user)

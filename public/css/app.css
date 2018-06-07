@@ -3,11 +3,11 @@
     vertical-align: middle;
     line-height: 50px;
     font-family: 'Roboto', sans-serif;
-    color:#A082BD;
+    color:goldenrod;
 }
 
 .log-in-form {
-    border: 1px solid aqua;
+    border: 1px solid goldenrod;
     padding: 1rem;
     border-radius: 0;
 }
@@ -18,19 +18,19 @@
 }
 body{
     overflow-x:hidden;
+    overflow-y:hidden;
 }
 #sidebar{
-    background:#073642;
+    background:black;
     height:100vh;
 }
 .black{
     background-color: black;
-    text:aqua;
-    color:aqua;
+    color:goldenrod;
 
 }
 .black-input{
-    border: 1px solid aqua!important;
+    border: 1px solid goldenrod!important;
 }
 input[type=text]:focus {
     background-color:black;
@@ -42,8 +42,8 @@ input[type=password]:focus {
     width: 100vw;
 }
 .chatbox{
-     background:#002B36;
-     height:calc(100vh - 55px);
+     background:black;
+     height:calc(100vh - 125px);
      overflow-y: scroll;
      max-width: 93vw;
     position:static;
@@ -54,7 +54,7 @@ input[type=password]:focus {
     margin-top:10vh;
 }
 #loginButton{
-    background:cornflowerblue;
+    background:goldenrod;
     width:100px;
     height:50px;
     line-height: 50px;
@@ -68,7 +68,7 @@ input[type=password]:focus {
 }
 
 .online {
-    background:dodgerblue;
+    background:#01AABD;
 }
 
 .offline {
@@ -90,7 +90,7 @@ input[type=password]:focus {
 }
 
 div ul li {
-    background-color:#2AA198;
+    background-color:black;
     margin-bottom: 10px;
     width:100%;
     -webkit-user-select:none;
@@ -115,7 +115,7 @@ div ul li:hover {
 }
 
 .yourMessage {
-    background-color:violet;
+    background-color:gold;
     border-radius: 50px;
 
     width:100vh;
@@ -131,7 +131,7 @@ div ul li:hover {
 }
 
 .theirMessage {
-    background-color:darkolivegreen;
+    background-color:darkgrey;
     width:100vh;
     border-radius: 50px;
 
@@ -148,12 +148,15 @@ div ul li:hover {
 }
 #messageSender {
     background-color: transparent;
-    width:200%;
+    width:80%;
     border-radius: 50px;
     padding-left: 20px;
     margin-top:5px;
     margin-bottom:0;
-    color:white;
+    color:goldenrod;
+    position:absolute;
+    bottom: 10px;
+    border: 1px solid goldenrod;
 }
 
 .flash{
@@ -194,4 +197,46 @@ div ul li:hover {
     0% { opacity: 1.0; }
     50% { opacity: 0.5; }
     100% { opacity: 1.0; }
+}
+
+/* Style the top navigation bar */
+.topnav {
+    overflow: hidden;
+    background-color: #000000;
+}
+
+/* Style the topnav links */
+.topnav a {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+/* Change color on hover */
+.topnav a:hover {
+    background-color: gold;
+    color: gold;
+}
+#login:hover {
+    background-color:goldenrod;
+    color:black;
+}
+#login {
+    background-color:black;
+    border: 3px solid goldenrod;
+    color:goldenrod;
+}
+
+.gold {
+    background:darkgrey;
+}
+.gold:hover{
+    background:goldenrod;
+}
+
+.danger:hover{
+    background:indianred;
 }

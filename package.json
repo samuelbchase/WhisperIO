@@ -25,6 +25,6 @@
     "nyc": "^11.8.0"
   },
   "scripts": {
-    "test": "mocha --exit"
+    "test": "nyc mocha --exit"
   }
 }

@@ -67,19 +67,35 @@ describe('User connections', function()
         syncConnWrite.query("DELETE FROM User where username= 'testuser1';");
         syncConnWrite.query("DELETE FROM User where username= 'testuser2';");
 
-        syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash,token) VALUES ('testuser1','Y','1','123');");
+        syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash,token, passwordHash) VALUES ('testuser1','Y','testuser1','123', 'pass');");
         syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash) VALUES ('testuser2','N','2');");
         syncConnWrite.query("INSERT INTO Friends(Host,Receiver) VALUES ('testuser1','testuser2');");
         client1 = ioClient.connect('http://localhost:3001', options);
-        client1.on('tokenVerifyRequest', function(msg)
-        {
-            client1.emit("tokenVerifyAnswer", "123");
+        client1.on('tokenVerifyRequest', function(msg, callback) {
+            return callback('123');
         });
 
     });
     afterEach(function() {
         client1.disconnect();
         server.closeServer();
+    });
+
+    it('Testing messageFactory 1', function(done) {
+        var obj = server.messageFactory("blah","Java");
+        assert.equal(obj.text,"Java");
+        done();
+    });
+    it('Testing messageFactory 2', function(done) {
+        var obj = server.messageFactory("","Java");
+        assert.equal(obj,-1);
+        done();
+
+    });
+    it('Testing messageFactory 3', function(done) {
+        var obj = server.messageFactory(null,null);
+        assert.equal(obj,-1);
+        done();
     });
 
     it('Is the server running?', function(done) {
@@ -89,7 +105,6 @@ describe('User connections', function()
             done();
         });
     });
-
     it('Can you add a friend?', function(done) {
         syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
         client1.emit('addFriend', "testuser1", "testuser2", function(result) {
@@ -138,6 +153,13 @@ describe('User connections', function()
         });
     });
 
+    it('Can a fake token be verified?', function(done) {
+        client1.emit('verifyToken', fake_token, function(result, token) {
+            assert.equal(-1, result);
+            done();
+        });
+    });
+
     it('Can an existing friend be removed?', function(done) {
         client1.emit('removeFriend', 'testuser1', 'testuser2', function(result, friend) {
             assert.equal(result, 1);
@@ -160,14 +182,14 @@ describe('User connections', function()
     });
 
     it('Does User Name Send function correctly?', function(done) {
-        client1.emit('userNameSend', 'testuser1', function(result) {
-            assert.equal(0, result);
+        client1.emit('userNameSend', 'testuser1', function(result, list) {
+            assert.equal(1, result);
             done();
         });
     });
     it('Does User Name Send function with a fake name?', function (done) {
         client1.emit('userNameSend', 'testuserFake', function(result, list) {
-            assert.equal(result, 0, list);
+            assert.equal(result, 1);
             done();
         });
     });
@@ -186,10 +208,41 @@ describe('User connections', function()
         });
     });
 
+    it('Can I identify myself?', function(done) {
+        syncConnWrite.query("DELETE FROM Friends where Host= 'testuserbacon' OR Receiver = 'testuserbacon';");
+        syncConnWrite.query("DELETE FROM User where username= 'testuserbacon';");
+        var creds = {
+            "emailHash": 'testuserbacon',
+            "password": 'bacon',
+            "person": 'testuserbacon'
+        };
+        client1.emit('identifyMyselfNoGmail', creds, function(result) {
+            assert.equal(result, 1);
+            done();
+        });
+    });
+
+
     it('Can an existing user delete their account?', function(done) {
         syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
         client1.emit('deleteAccount', 'testuser2', function(result) {
             assert.equal(result, 1);
+            done();
+        });
+    });
+
+    it('Can I verify a valid account with a valid password?', function(done) {
+        var creds = {'email' : 'testuserbacon', 'password' : 'bacon'};
+        client1.emit('verifyEmailLogin', creds, function(result) {
+            assert.equal(result, 1);
+            done();
+        });
+    });
+
+    it('Can I verify an invalid account?', function(done) {
+        var creds = {'email' : 'testusercheese', 'password' : 'itdoesntmatter'};
+        client1.emit('verifyEmailLogin', creds, function(result) {
+            assert.equal(result, 0);
             done();
         });
     });
@@ -199,40 +252,8 @@ describe('User connections', function()
         message.sentTo = "testuser1";
         message.text = "Test";
         client1.emit('chat message', message, function(result) {
-            assert.equal(result, 0);
+            assert.equal(result, 1);
             done();
         });
     });
-
-    it('Can I verify a valid account with a valid password?', function(done) {
-        var creds = {'email' : 'testuserbacon', 'password' : 'bacon'};
-        client1.emit('verifyEmailLogin', creds, function(result) {
-            assert.equal(1, result);
-            done();
-        });
-    });
-
-    it('Can I verify a valid account with and invalid password?', function(done) {
-        var creds = {'email' : 'testuserbacon', 'password' : 'cheese'};
-        client1.emit('verifyEmailLogin', creds, function(result) {
-            assert.equal(-1, result);
-            done();
-        });
-    });
-
-    it('Can I verify an invalid account?', function(done) {
-        var creds = {'email' : 'testusercheese', 'password' : 'itdoesntmatter'};
-        client1.emit('verifyEmailLogin', creds, function(result) {
-            assert.equal(0, result);
-            done();
-        });
-    });
-
-    /*INTEGRATION TESTS*/
-
-    //integration test for friends list
-    it('Test friends integration', function(done) {
-
-    });
-    
 });

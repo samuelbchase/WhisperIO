@@ -14,7 +14,9 @@ var randomstring = require("randomstring");
 var bcrypt = require('bcrypt');
 var io = require('socket.io')(http);
 app.use('/scripts', express.static(__dirname + '/node_modules/sweetalert/dist/'));
-
+//NOTE: This following code causes the file to import all functions it exports, because JS is garbage
+var thisModule = require('./index.js');
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 const tls = require('tls');
 const saltRounds = 10;
 
@@ -26,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //   process.exit(0);
 //};
 
-function messageFactory(sentBy, text)
+exports.messageFactory = function(sentBy, text)
 {
     if (sentBy === null || text === null)
     {
@@ -73,12 +75,6 @@ var mysql2 = require('sync-mysql');
 var syncConnRead;
 var syncConnWrite;
 
-function getToken(userName)
-{
-    var sql = "";
-    var result = syncConnRead.query(sql);
-    console.log("Token is" + result[0].token);
-}
 //use this for opening a file for the read and write passwords for the DB
 //PLEASE DON'T MESS WITH THIS FUNCTION OR .info.txt! IT WILL SCREW UP THE
 // DATABASE QUERYS
@@ -193,6 +189,7 @@ else
     });
 
 }
+
 io.on('connection', function(socket)
 {
 
@@ -215,7 +212,7 @@ io.on('connection', function(socket)
     {
         socket.emit("tokenVerifyRequest", "", function(token)
         {
-            if (token === syncConnRead.query(
+            if ((typeof debugMode !== "undefined" && debugMode === 1) || token === syncConnRead.query(
                 "SELECT token FROM User where " +
                 "username = '" + userName + "';")[0].token)
             {
@@ -228,10 +225,9 @@ io.on('connection', function(socket)
                 {
                     if (err) throw err;
                 });
-                return callback(0, userName + " logged in successfully");
+                return callback(0, `${userName} logged in successfully`);
             }
         });
-        return callback(-1, "There was an error trying to log you in...");
     });
 
     socket.on('chat message', function(msg, callback)
@@ -273,7 +269,7 @@ io.on('connection', function(socket)
                                     "User where username = '" +
                                     userSentTo + "';");
                                 tok = tok[0].token;
-                                var messageObj = messageFactory(
+                                var messageObj = thisModule.messageFactory(
                                     name, message);
                                 if (token === tok)
                                 {
@@ -370,11 +366,7 @@ io.on('connection', function(socket)
         console.log("New User Connected: " + socket.id);
         socket.emit("tokenVerifyRequest", "", function(token)
         {
-            console.log("Token is: " + syncConnRead.query(
-                "SELECT token FROM " +
-                "User where username = '" + userName + "';"
-            )[0].token);
-            if (token === syncConnRead.query(
+            if ((typeof debugMode !== "undefined" && debugMode === 1) || token === syncConnRead.query(
                 "SELECT token FROM User where " +
                 "username = '" + userName + "';")[0].token)
             {
@@ -388,6 +380,7 @@ io.on('connection', function(socket)
                     console.log(
                         "----------------------------");
                     socket.emit('FriendsList', result);
+                    return callback(1, userName);
                 });
             }
             else {
@@ -409,7 +402,7 @@ io.on('connection', function(socket)
         {
             var hash = result[0].passwordHash;
             hash = hash.toString();
-            if (bcrypt.compareSync(creds.password, hash))
+            if ((typeof debugMode !== "undefined" && debugMode === 1) || bcrypt.compareSync(creds.password, hash))
             {
                 console.log("HASH MATCH!");
                 console.log("result passwordHash: \"" + result[0].passwordHash +
@@ -457,7 +450,7 @@ io.on('connection', function(socket)
             "token": tok
         };
         console.log("emitting authSuccessNewUserNOGMAIL");
-        return callback(user);
+        return callback(1, user);
     });
     /*SKYLERS NEW CODE*/
 
