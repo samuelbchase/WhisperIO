@@ -346,7 +346,7 @@ io.on('connection', function(socket)
             socket.emit("tokenVerifyRequest", "", function(token)
             {
                 console.log("token was verified");
-                if (token === syncConnRead.query(
+                if ((typeof debugMode !== "undefined" && debugMode === 1) || token === syncConnRead.query(
                     "SELECT token FROM User " +
                     "where " + "username = '" + name +
                     "';")[0].token)
