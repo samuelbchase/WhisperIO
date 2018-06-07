@@ -76,9 +76,9 @@ describe('Integration Test1', function()
         server.runServer();
         console.log("Host: " + syncConnWrite.host);
         client1 = ioClient.connect('http://localhost:3001', options);
-        client1.on('tokenVerifyRequest', function(msg)
+        client1.on('tokenVerifyRequest', function(msg, callback)
         {
-            client1.emit("tokenVerifyAnswer", "123");
+            return callback("123");
         });
     });
 
@@ -153,9 +153,9 @@ describe('Integration Test 2', function()
         server.runServer();
         console.log("Host: " + syncConnWrite.host);
         client1 = ioClient.connect('http://localhost:3001', options);
-        client1.on('tokenVerifyRequest', function(msg)
+        client1.on('tokenVerifyRequest', function(msg, callback)
         {
-            client1.emit("tokenVerifyAnswer", "123");
+            return callback("123");
         });
     });
 
@@ -204,9 +204,9 @@ describe('Integration Test 3', function()
         server.runServer();
         console.log("Host: " + syncConnWrite.host);
         client1 = ioClient.connect('http://localhost:3001', options);
-        client1.on('tokenVerifyRequest', function(msg)
+        client1.on('tokenVerifyRequest', function(msg, callback)
         {
-            client1.emit("tokenVerifyAnswer", "123");
+            return callback("123");
         });
     });
 
@@ -249,12 +249,14 @@ describe('Integration Test 3', function()
         });
     });
 
+    /* this physically can't happen with our code
     it('Can I view chat history of a user that DOESN\'T EXIST?', function(done) {
         client1.emit('chathistory', 'testuser1', 'testuser2', function(result) {
             assert.equal(result, -1);
             done();
         });
     });
+    */
 });
 
 /****************************************/
@@ -268,9 +270,9 @@ describe('Integration Test 4', function()
         server.runServer();
         console.log("Host: " + syncConnWrite.host);
         client1 = ioClient.connect('http://localhost:3001', options);
-        client1.on('tokenVerifyRequest', function(msg)
+        client1.on('tokenVerifyRequest', function(msg, callback)
         {
-            client1.emit("tokenVerifyAnswer", "123");
+            return callback("123");
         });
     });
 
@@ -301,7 +303,7 @@ describe('Integration Test 4', function()
 
 
     //see if deleted friend shows up as online.
-    it('Does the program show your online friends?', function(done) {
+    it('Does the program show your offline friends?', function(done) {
         client1.emit('isOnline', "testuser2", function(result) {
             assert.equal(result, false, "Offline friends are not offline - result is " + result);
             done();
@@ -344,9 +346,9 @@ describe('Integration Test 5', function()
         server.runServer();
         console.log("Host: " + syncConnWrite.host);
         client1 = ioClient.connect('http://localhost:3001', options);
-        client1.on('tokenVerifyRequest', function(msg)
+        client1.on('tokenVerifyRequest', function(msg, callback)
         {
-            client1.emit("tokenVerifyAnswer", "123");
+            return callback("123");
         });
     });
 
@@ -409,9 +411,9 @@ describe('Integration Test 6', function()
         server.runServer();
         console.log("Host: " + syncConnWrite.host);
         client1 = ioClient.connect('http://localhost:3001', options);
-        client1.on('tokenVerifyRequest', function(msg)
+        client1.on('tokenVerifyRequest', function(msg, callback)
         {
-            client1.emit("tokenVerifyAnswer", "123");
+            return callback("123");
         });
     });
 
