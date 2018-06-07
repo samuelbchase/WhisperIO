@@ -35,8 +35,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
 <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
 <script>
-    //var URL_SERVER = 'https://whisperio.club:3000';
-    var URL_SERVER = 'https://localhost:3000';
+    var URL_SERVER = 'https://whisperio.club:3000';
+    //var URL_SERVER = 'https://localhost:3000';
     var socket = io.connect(URL_SERVER);
     //handle login form submission
     function onLogin()
@@ -159,8 +159,8 @@
 
     function authSuccessNewUserNOGMAIL(user)
     {
-        swal("Cool!", "Auth Success! Thank you for joining Whisper.io, " +
-            user.name + "\n Please re-enter your password for security reasons", "success");
+        swal("Cool!", "Auth Success! Thank you for joining Whisper.io! " +
+            "\n Please re-enter your password for security reasons", "success");
         document.getElementById('passwordBox').value = "";
     }
 
