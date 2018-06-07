@@ -187,6 +187,7 @@ describe('User connections', function()
             done();
         });
     });
+
     it('Does User Name Send function with a fake name?', function (done) {
         client1.emit('userNameSend', 'testuserFake', function(result, list) {
             assert.equal(result, 1);
@@ -256,4 +257,5 @@ describe('User connections', function()
             done();
         });
     });
+
 });
