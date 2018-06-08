@@ -59,7 +59,7 @@ function resetState() {
 
 /****************************************/
 //tests integration of addFriend and isOnline
-describe('Integration Tests 1&2', function()
+describe('Integration Tests 1-3', function()
 {
     this.timeout(6000);
 
@@ -105,6 +105,41 @@ describe('Integration Tests 1&2', function()
                 done();
             });
         });
+    });
+
+    it('Testing sequential creation & deletion of account with friends', function(done) {
+        syncConnWrite.query("DELETE FROM Friends where Host= 'testuser1' OR Receiver = 'testuser1';");
+        syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
+        syncConnWrite.query("DELETE FROM Message where SentFrom= 'testuser1' OR SentTo = 'testuser1';");
+        syncConnWrite.query("DELETE FROM Message where SentFrom= 'testuser2' OR SentTo = 'testuser2';");
+        syncConnWrite.query("DELETE FROM User where username= 'testuser1';");
+        syncConnWrite.query("DELETE FROM User where username= 'testuser2';");
+        syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash,token) VALUES ('testuser1','Y','1','123');");
+        syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash) VALUES ('testuser2','N','2');");
+        syncConnWrite.query("INSERT INTO Friends(Host,Receiver) VALUES ('testuser1','testuser2');");
+        client1.emit('removeFriend', 'testuser1', 'testuser2', function(result, friend) {
+            client1.emit('deleteAccount', 'testuser1', function(result) {
+                client1.emit('deleteAccount', 'testuser1', function(res) {
+                    client1.emit('deleteAccount', 'testuser1', function(res) {
+                        client1.emit('deleteAccount', 'testuser1', function(res) {
+                            client1.emit('deleteAccount', 'testuser1', function(res) {
+                                client1.emit('deleteAccount', 'testuser1', function(res) {
+                                    client1.emit('deleteAccount', 'testuser1', function(res) {
+                                        client1.emit('deleteAccount', 'testuser1', function(res) {
+                                            client1.emit('deleteAccount', 'testuser1', function(res) {
+                                                assert.equal(res, -1);
+                                                done();
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+
     });
 
     /*START INTEGRATION TESTS*/
@@ -162,7 +197,7 @@ describe('Integration Tests 1&2', function()
 
 /****************************************/
 //tests integration of addFriend, removeFriend and isOnline
-describe('Integration Test 4', function()
+describe('Integration Test 5', function()
 {
     this.timeout(6000);
 
@@ -211,7 +246,7 @@ describe('Integration Test 4', function()
 
 /****************************************/
 //tests integration of verifyEmailLogin and addFriend
-describe('Integration Test 5', function()
+describe('Integration Test 6', function()
 {
     this.timeout(6000);
 

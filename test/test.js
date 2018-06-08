@@ -153,13 +153,6 @@ describe('User connections', function()
         });
     });
 
-    it('Can a fake token be verified?', function(done) {
-        client1.emit('verifyToken', fake_token, function(result, token) {
-            assert.equal(-1, result);
-            done();
-        });
-    });
-
     it('Can an existing friend be removed?', function(done) {
         client1.emit('removeFriend', 'testuser1', 'testuser2', function(result, friend) {
             assert.equal(result, 1);
