@@ -1,3 +1,5 @@
+CREATE DATABASE whisperio;
+USE whisperio;
 CREATE TABLE IF NOT EXISTS User
 (
     username VARCHAR(255) PRIMARY KEY NOT NULL,
