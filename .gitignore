@@ -56,11 +56,3 @@ typings/
 #dot files
 .*
 
-#specifically the important files
-.info
-.privkey
-certs/*
-
-certs/
-
-sonarcube\.txt

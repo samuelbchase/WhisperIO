@@ -1,0 +1,6 @@
+localhost|
+whisperio|
+readOnlyWhisper|
+Einherjar255!|
+writeWhisper|
+AlabamaTexasOklahoma

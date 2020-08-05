@@ -94,7 +94,7 @@ fs.readFile('info.txt', 'utf8', function(err, contents)
 
     old = index + 3;
     contents.indexOf('|', old);
-    writePW = contents.slice(old);
+    writePW = 'AlabamaTexasOklahoma';
 
     syncConnRead = new mysql2(
         {
@@ -184,7 +184,6 @@ else
 
 io.on('connection', function(socket)
 {
-
     read = mysql.createConnection(
         {
             host: host,
