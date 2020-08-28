@@ -60,7 +60,7 @@ var readUN;
 var readPW;
 var writeUN;
 var writePW;
-
+var appAud
 var key;
 var contents = fs.readFileSync('.privkey', 'utf8');
 key = new NodeRSA(contents);
@@ -69,6 +69,12 @@ var mysql2 = require('sync-mysql');
 
 var syncConnRead;
 var syncConnWrite;
+
+fs.readFile('aud.txt','utf8', function(err,contents) {
+	var index = contents.indexOf('|')
+	var old = 0;
+	appAud = contents.slice(old,index);
+});
 
 fs.readFile('info.txt', 'utf8', function(err, contents)
 {
@@ -95,7 +101,6 @@ fs.readFile('info.txt', 'utf8', function(err, contents)
     old = index + 3;
     index = contents.indexOf('|', old);
     writePW = contents.slice(old,index);
-    console.log("WritePW=" + writePW);
     //= 'AlabamaTexasOklahoma';
 
     syncConnRead = new mysql2(
@@ -488,10 +493,8 @@ io.on('connection', function(socket)
             email = email.substring(email.indexOf('"') + 1,
                 email.length);
             email = email.substring(0, email.indexOf('"'));
-            if (aud !==
-                "521002119514-k8kp3p42fpoq7ia5868k9s9e62bj87n3.apps." +
-                "googleusercontent.com")
-                return callback(-1, token);
+            if (aud !== appAud)    
+	        return callback(-1, token);
                 //If you're attempting to login with a token for another app
 
             var hash = sha256(email);
