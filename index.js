@@ -62,7 +62,7 @@ var writeUN;
 var writePW;
 var appAud
 var key;
-var contents = fs.readFileSync('.privkey', 'utf8');
+var contents = fs.readFileSync('privkey', 'utf8');
 key = new NodeRSA(contents);
 
 var mysql2 = require('sync-mysql');
