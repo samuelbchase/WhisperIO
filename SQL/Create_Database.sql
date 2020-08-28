@@ -1,5 +1,5 @@
-CREATE USER IF NOT EXISTS 'readOnlyWhisper'@'localhost' IDENTIFIED BY 'DefaultRead';
-CREATE USER IF NOT EXISTS 'writeWhisper'@'localhost' IDENTIFIED BY 'DefaultWrite';
+CREATE USER IF NOT EXISTS 'readOnlyWhisper'@'localhost' IDENTIFIED WITH  mysql_native_password BY 'DefaultRead';
+CREATE USER IF NOT EXISTS 'writeWhisper'@'localhost' IDENTIFIED WITH mysql_native_password BY 'DefaultWrite';
 GRANT SELECT ON *.* TO 'readOnlyWhisper'@'localhost';
 GRANT ALL ON *.* TO 'writeWhisper'@'localhost';
 CREATE DATABASE whisperio;
