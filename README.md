@@ -18,11 +18,20 @@ Install steps:
 
     npm install
 
-[Go to https://console.developers.google.com/apis/credentials and press "create credentials". Select an Oauth client ID](https://ibb.co/Lp9qZGD)
+Go to https://console.developers.google.com/apis/credentials and press "create credentials". 
 
-[Select type Web Application, and give it any name you want. Set the URIs to contain "https://YOUR_IP.xip.io:3000" and the authorized redirect URIS to contain "https://YOUR_IP.xip.io:3000" and "https://YOUR_IP.xip.io:3000/main"](https://ibb.co/RgVd7sh)
+Select "Oauth client ID"
+[Image](https://ibb.co/Lp9qZGD)
 
-[Save the press save, and save your client id value.](https://ibb.co/gRvyp3n)
+Select type Web Application, and give it any name you want.
+
+Set the URIs to contain "https://YOUR_IP.xip.io:3000" 
+and set the authorized redirect URIS to contain "https://YOUR_IP.xip.io:3000" and "https://YOUR_IP.xip.io:3000/main"
+
+[Image](https://ibb.co/RgVd7sh)
+
+Press save, and record your client id value.
+[Image](https://ibb.co/gRvyp3n)
 
 Update login.html and index.html: 
 1) Set google-signin-client_id's content value to be your new Google client ID
