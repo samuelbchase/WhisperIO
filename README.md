@@ -18,27 +18,27 @@ Install steps:
 
     npm install
 
-Go to https://console.developers.google.com/apis/credentials and press "create credentials". 
+1. Go to https://console.developers.google.com/apis/credentials and press "create credentials". 
 
-Select "Oauth client ID"
+2. Select "Oauth client ID"
 
 ![Image](/images/1.png))
 
-Select type Web Application, and give it any name you want.
+3. Select type Web Application, and give it any name you want.
 
-Set the URIs to contain "https://YOUR_IP.xip.io:3000" 
-and set the authorized redirect URIS to contain "https://YOUR_IP.xip.io:3000" and "https://YOUR_IP.xip.io:3000/main"
+4. Set the URIs to contain "https://YOUR_IP.xip.io:3000" 
+5. Set the authorized redirect URIS to contain "https://YOUR_IP.xip.io:3000" and "https://YOUR_IP.xip.io:3000/main"
 
 ![Image](/images/2.png)
 
-Press save, and record your client id value.
+6. Press save, and record your client id value.
 
 ![Image](/images/3.png)
 
-Update login.html and index.html: 
-1) Set google-signin-client_id's content value to be your new Google client ID
-2) set URL_SERVER to be equal to https://YOUR_IP.xip.io:3000
+7. Update login.html and index.html: 
+   a) Set google-signin-client_id's content value to be your new Google client ID
+   b) set URL_SERVER to be equal to https://YOUR_IP.xip.io:3000
 
-Update aud.txt to contain your Google client ID
+8. Update aud.txt to contain your Google client ID
 
-Then run `node index.js` and navigate to https://YOUR_IP.xip.io:3000/ to sign in!
+9. Finally run `node index.js` and navigate to https://YOUR_IP.xip.io:3000/ to sign in!
