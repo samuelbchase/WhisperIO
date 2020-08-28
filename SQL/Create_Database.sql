@@ -1,7 +1,7 @@
-CREATE USER IF NOT EXISTS 'readOnlyWhisper'@'localhost' IDENTIFIED BY 'Einherjar255!';                                                      ;
-CREATE USER IF NOT EXISTS 'writeWhisper'@'localhost' IDENTIFIED BY 'AlabamaTexasOklahoma';
-GRANT SELECT PRIVILEGES ON *.* TO 'readOnlyWhisper'@'localhost';
-GRANT ALL PRIVILEGES ON *.* TO 'writeWhisper'@'localhost';
+CREATE USER IF NOT EXISTS 'readOnlyWhisper'@'localhost' IDENTIFIED BY 'DefaultRead';
+CREATE USER IF NOT EXISTS 'writeWhisper'@'localhost' IDENTIFIED BY 'DefaultWrite';
+GRANT SELECT ON *.* TO 'readOnlyWhisper'@'localhost';
+GRANT ALL ON *.* TO 'writeWhisper'@'localhost';
 CREATE DATABASE whisperio;
 USE whisperio;
 CREATE TABLE IF NOT EXISTS User

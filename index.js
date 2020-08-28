@@ -93,8 +93,10 @@ fs.readFile('info.txt', 'utf8', function(err, contents)
     writeUN = contents.slice(old, index);
 
     old = index + 3;
-    contents.indexOf('|', old);
-    writePW = 'AlabamaTexasOklahoma';
+    index = contents.indexOf('|', old);
+    writePW = contents.slice(old,index);
+    console.log("WritePW=" + writePW);
+    //= 'AlabamaTexasOklahoma';
 
     syncConnRead = new mysql2(
         {
