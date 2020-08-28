@@ -18,14 +18,9 @@ Install steps:
 
     npm install
 
-[Go to https://console.developers.google.com/apis/credentials and press "create credentials". 
+[Go to https://console.developers.google.com/apis/credentials and press "create credentials". Select an Oauth client ID](https://ibb.co/Lp9qZGD)
 
-Select an Oauth client ID](https://ibb.co/Lp9qZGD)
-
-[Select type Web Application, and give it any name you want. 
-
-Set the URIs to contain "https://YOUR_IP.xip.io:3000" and the authorized redirect URIS to contain 
-"https://YOUR_IP.xip.io:3000" and "https://YOUR_IP.xip.io:3000/main"](https://ibb.co/RgVd7sh)
+[Select type Web Application, and give it any name you want. Set the URIs to contain "https://YOUR_IP.xip.io:3000" and the authorized redirect URIS to contain "https://YOUR_IP.xip.io:3000" and "https://YOUR_IP.xip.io:3000/main"](https://ibb.co/RgVd7sh)
 
 [Save the press save, and save your client id value.](https://ibb.co/gRvyp3n)
 
