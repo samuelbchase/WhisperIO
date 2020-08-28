@@ -21,17 +21,19 @@ Install steps:
 Go to https://console.developers.google.com/apis/credentials and press "create credentials". 
 
 Select "Oauth client ID"
-![Image](https://ibb.co/Lp9qZGD)
+
+![Image](/images/1.png))
 
 Select type Web Application, and give it any name you want.
 
 Set the URIs to contain "https://YOUR_IP.xip.io:3000" 
 and set the authorized redirect URIS to contain "https://YOUR_IP.xip.io:3000" and "https://YOUR_IP.xip.io:3000/main"
 
-![Image](https://ibb.co/RgVd7sh)
+![Image](/images/2.png)
 
 Press save, and record your client id value.
-![Image](https://ibb.co/gRvyp3n)
+
+![Image](/images/3.png)
 
 Update login.html and index.html: 
 1) Set google-signin-client_id's content value to be your new Google client ID
