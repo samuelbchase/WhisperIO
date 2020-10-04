@@ -129,12 +129,6 @@ describe('User connections', function()
     });
 
     it('Can you add a friend you are already friends with?', function(done) {
-        //Create friendship
-        client1.emit('addFriend', "testuser1", "testuser2", function(result) {
-            assert.equal(result, 1);
-            done();
-        });
-        //Try to create friendship again, should fail
         client1.emit('addFriend', "testuser1", "testuser2", function(result) {
             assert.equal(result, 0, "Added friend either does not exist or is not already friends");
             done();
@@ -179,11 +173,7 @@ describe('User connections', function()
     });
 
     it('Can an existing user be removed even when friend relationship does not exist?', function(done) {
-        //Remove friend - should succeed
-        client1.emit('removeFriend', 'testuser1', 'testuser2', function(result, friend) {
-            assert.equal(result, 1);
-            done();
-        });
+        syncConnWrite.query("DELETE FROM Friends where Host= 'testuser1' OR Receiver = 'testuser1';");
         //Remove friend again - should fail
         client1.emit('removeFriend', 'testuser1', 'testuser2', function(result, friend) {
             assert.equal(result,0);
