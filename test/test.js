@@ -15,31 +15,44 @@ const test_token = 'ziVZyHk5xeNBNhO2PyEg6XUykWXZae96FCTionjRCrKzrZaPJUba9Ek5JbYQ
 const fake_token = 'alteredTokenUzI1NiIsImtpZCI6ImFmZmM2MjkwN2E0NDYxODJhZGMxZmE0ZTgxZmRiYTYzMTBkY2U2M2YifQ.eyJhenAiOiI1MjEwMDIxMTk1MTQtazhrcDNwNDJmcG9xN2lhNTg2OGs5czllNjJiajg3bjMuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI1MjEwMDIxMTk1MTQtazhrcDNwNDJmcG9xN2lhNTg2OGs5czllNjJiajg3bjMuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDQ1ODgyMTEyNjI4ODU0NTQxODgiLCJlbWFpbCI6InR3ZWx2ZWluY2h3aGVlbHNAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiJ4N08wdnJEWF9teTM5NURXeDMtaHpBIiwiZXhwIjoxNTI0NzA0MDY1LCJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwianRpIjoiYWFkZGJmMDBjZWU4NGNmNTJiNTY4NDliMGYwNDgzNGJiOGZkZTBiNiIsImlhdCI6MTUyNDcwMDQ2NSwibmFtZSI6IkdlcmFsZG8gTWFjaWFzIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS8tQXg0Yk1PWFFtNWMvQUFBQUFBQUFBQUkvQUFBQUFBQUFBR00va3d1MlJJTnNxRkUvczk2LWMvcGhvdG8uanBnIiwiZ2l2ZW5fbmFtZSI6IkdlcmFsZG8iLCJmYW1pbHlfbmFtZSI6Ik1hY2lhcyIsImxvY2FsZSI6ImVuIn0.bRqgreXFRQ6ABCKyVl8lM-rtlwpH6u48JY1ALYpT0pdQwgMKFpTycLy0ue7BFjvFqZG2mFJKyA9ao0jV5aj2USFBjBjx7Fl4fXRnqprM1ncI3roMfnRQjv72s3UBPWcJVHp-JS6SLAR-PqbimZtdUulf9U2CSALI12a6yp_b52qXnsA9VtlnQgs_ZPF9mkszG3eigg13cGT4Y3yFig-e31VdDbu1zdsF3S059wGS_QJtDevxZCa30yD11TG_TXgPjZ-mJtFl2enraUEvCn0q8QmJCMHN3TDui1ze9KtsKg1rmpRkXQZJLatwSB9xf6D0CAjvN4KBaBOSDuPPcUGlCg';
 var mysql2 = require('sync-mysql');
 var fs = require("fs");
+var host;
+var database;
 
-var contents = fs.readFileSync('.info.txt');
-var index = contents.indexOf('|');
-var old = 0;
-var host = contents.slice(old, index);
+var writeUN;
+var writePW;
 
-old = index + 3;
-index = contents.indexOf('|', old);
-var database = contents.slice(old, index);
+var contents = fs.readFileSync('config.ini');
+var mysqlServerConfigTag = "mysql_server:"
+var databaseNameConfigTag = "database_name:"
+var readOnlyUsernameConfigTag = "readOnly_user:"
+var readOnlyPasswordConfigTag = "readOnly_pass:"
+var writeUsernameConfigTag = "write_user:"
+var writePasswordConfigTag = "write_pass:"
 
-old = index + 3;
-index = contents.indexOf('|', old);
-var readUN = contents.slice(old, index);
+var end = contents.indexOf('|')
+var start = contents.indexOf(mysqlServerConfigTag) + mysqlServerConfigTag.length
+host = contents.slice(start, end)
 
-old = index + 3;
-index = contents.indexOf('|', old);
-var readPW = contents.slice(old, index);
+start = contents.indexOf(databaseNameConfigTag) + databaseNameConfigTag.length
+end = contents.indexOf('|', start)
+database = contents.slice(start, end)
 
-old = index + 3;
-index = contents.indexOf('|', old);
-var writeUN = contents.slice(old, index);
+start = contents.indexOf(readOnlyUsernameConfigTag) + readOnlyUsernameConfigTag.length
+end = contents.indexOf('|', start)
+readUN = contents.slice(start, end)
 
-old = index + 3;
-index = contents.indexOf('|', old);
-var writePW = contents.slice(old);
+start = contents.indexOf(readOnlyPasswordConfigTag) + readOnlyPasswordConfigTag.length
+end = contents.indexOf('|', start)
+readPW = contents.slice(start, end)
+
+start = contents.indexOf(writeUsernameConfigTag) + writeUsernameConfigTag.length
+end = contents.indexOf('|', start)
+writeUN = contents.slice(start, end)
+
+start = contents.indexOf(writePasswordConfigTag) + writePasswordConfigTag.length
+end = contents.indexOf('|', start)
+writePW = contents.slice(start, end)
+
 host = host.toString();
 writeUN = writeUN.toString();
 writePW = writePW.toString();
@@ -67,7 +80,7 @@ describe('User connections', function()
         syncConnWrite.query("DELETE FROM User where username= 'testuser1';");
         syncConnWrite.query("DELETE FROM User where username= 'testuser2';");
 
-        syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash,token, passwordHash) VALUES ('testuser1','Y','testuser1','123', 'pass');");
+        syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash,token,passwordHash) VALUES ('testuser1','Y','testuser1','123', 'pass');");        
         syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash) VALUES ('testuser2','N','2');");
         syncConnWrite.query("INSERT INTO Friends(Host,Receiver) VALUES ('testuser1','testuser2');");
         client1 = ioClient.connect('http://localhost:3001', options);
@@ -116,7 +129,6 @@ describe('User connections', function()
     });
 
     it('Can you add a friend you are already friends with?', function(done) {
-        syncConnWrite.query("DELETE FROM Friends where Host= 'testuser2' OR Receiver = 'testuser2';");
         client1.emit('addFriend', "testuser1", "testuser2", function(result) {
             assert.equal(result, 0, "Added friend either does not exist or is not already friends");
             done();
@@ -161,8 +173,10 @@ describe('User connections', function()
     });
 
     it('Can an existing user be removed even when friend relationship does not exist?', function(done) {
+        syncConnWrite.query("DELETE FROM Friends where Host= 'testuser1' OR Receiver = 'testuser1';");
+        //Remove friend again - should fail
         client1.emit('removeFriend', 'testuser1', 'testuser2', function(result, friend) {
-            assert.equal(result, 0);
+            assert.equal(result,0);
             done();
         });
     });
