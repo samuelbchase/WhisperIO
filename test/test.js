@@ -80,7 +80,8 @@ describe('User connections', function()
         syncConnWrite.query("DELETE FROM User where username= 'testuser1';");
         syncConnWrite.query("DELETE FROM User where username= 'testuser2';");
 
-        syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash,token,passwordHash) VALUES ('testuser1','Y','testuser1','123', 'pass');");        syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash) VALUES ('testuser2','N','2');");
+        syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash,token,passwordHash) VALUES ('testuser1','Y','testuser1','123', 'pass');");        
+        syncConnWrite.query("INSERT INTO User(username,isOnline,emailHash) VALUES ('testuser2','N','2');");
         syncConnWrite.query("INSERT INTO Friends(Host,Receiver) VALUES ('testuser1','testuser2');");
         client1 = ioClient.connect('http://localhost:3001', options);
         client1.on('tokenVerifyRequest', function(msg, callback) {
