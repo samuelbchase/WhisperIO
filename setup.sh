@@ -1,4 +1,5 @@
 #!/bin/bash
+mysql < SQL/Create_Database.sql
 echo "Please enter the server's IP address, followed by [ENTER]:"
 
 read ip

@@ -14,8 +14,6 @@ Install steps:
 
     git clone https://github.com/samuelbchase/WhisperIO.git
 
-    mysql < SQL/Create_Database.sql
-
     npm install
 
 1. Go to https://console.developers.google.com/apis/credentials and press "create credentials". 
@@ -39,4 +37,8 @@ Install steps:
 
 8. Run setup.sh to configure values in your HTML files
 
-10. Finally run `node index.js` and navigate to https://YOUR_IP.xip.io:3000/ to sign in!
+9. Finally run `node index.js` and navigate to https://YOUR_IP.xip.io:3000/ to sign in!
+
+OPTIONAL STEPS:
+
+10. Although not needed to test out the app, you can change your MySQL credentials, and update the values in config.ini
