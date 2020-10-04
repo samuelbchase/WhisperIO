@@ -2,7 +2,7 @@ CREATE USER IF NOT EXISTS 'readOnlyWhisper'@'localhost' IDENTIFIED WITH  mysql_n
 CREATE USER IF NOT EXISTS 'writeWhisper'@'localhost' IDENTIFIED WITH mysql_native_password BY 'DefaultWrite';
 GRANT SELECT ON *.* TO 'readOnlyWhisper'@'localhost';
 GRANT ALL ON *.* TO 'writeWhisper'@'localhost';
-CREATE DATABASE whisperio;
+CREATE DATABASE IF NOT EXISTS whisperio;
 USE whisperio;
 CREATE TABLE IF NOT EXISTS User
 (
