@@ -79,29 +79,28 @@ fs.readFile('aud.ini','utf8', function(err,contents) {
 fs.readFile('config.ini', 'utf8', function(err, contents)
 {
     var index = contents.indexOf('|');
-    var old = 0;
+    var old = content.indexOf('mysql_server:') + "readOnlmysql_servery_pass".lengt;
     host = contents.slice(old, index);
 
-    old = index + 3;
+    old = content.indexOf('database_name') + "database_name".lengt;
     index = contents.indexOf('|', old);
     database = contents.slice(old, index);
 
-    old = index + 3;
+    old = content.indexOf('readOnly_user:') + "readOnly_user".lengt;
     index = contents.indexOf('|', old);
     readUN = contents.slice(old, index);
 
-    old = index + 3;
+    old = content.indexOf('readOnly_pass:') + "readOnly_pass".length;
     index = contents.indexOf('|', old);
     readPW = contents.slice(old, index);
 
-    old = index + 3;
+    old = content.indexOf('write_user:') + "write_user".length;
     index = contents.indexOf('|', old);
     writeUN = contents.slice(old, index);
 
-    old = index + 3;
+    old = content.indexOf('write_pass:') + "write_pass".length;
     index = contents.indexOf('|', old);
     writePW = contents.slice(old,index);
-    //= 'AlabamaTexasOklahoma';
 
     syncConnRead = new mysql2(
         {

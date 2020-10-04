@@ -35,10 +35,8 @@ Install steps:
 
 ![Image](/images/3.png)
 
-7. Update login.html and index.html: 
-   * Set google-signin-client_id's content value to be your new Google client ID
-   * set URL_SERVER to be equal to https://YOUR_IP.xip.io:3000
+7. Update aud.txt to contain your Google client ID
 
-8. Update aud.txt to contain your Google client ID
+8. Run setup.sh to configure values in your HTML files
 
-9. Finally run `node index.js` and navigate to https://YOUR_IP.xip.io:3000/ to sign in!
+10. Finally run `node index.js` and navigate to https://YOUR_IP.xip.io:3000/ to sign in!
