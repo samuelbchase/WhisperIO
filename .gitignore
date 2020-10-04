@@ -53,14 +53,3 @@ typings/
 # dotenv environment variables file
 .env
 
-#dot files
-.*
-
-#specifically the important files
-.info
-.privkey
-certs/*
-
-certs/
-
-sonarcube\.txt

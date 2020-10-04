@@ -1,3 +1,9 @@
+CREATE USER IF NOT EXISTS 'readOnlyWhisper'@'localhost' IDENTIFIED WITH  mysql_native_password BY 'DefaultRead';
+CREATE USER IF NOT EXISTS 'writeWhisper'@'localhost' IDENTIFIED WITH mysql_native_password BY 'DefaultWrite';
+GRANT SELECT ON *.* TO 'readOnlyWhisper'@'localhost';
+GRANT ALL ON *.* TO 'writeWhisper'@'localhost';
+CREATE DATABASE whisperio;
+USE whisperio;
 CREATE TABLE IF NOT EXISTS User
 (
     username VARCHAR(255) PRIMARY KEY NOT NULL,

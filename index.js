@@ -14,7 +14,6 @@ var randomstring = require("randomstring");
 var bcrypt = require('bcrypt');
 var io = require('socket.io')(http);
 app.use('/scripts', express.static(__dirname + '/node_modules/sweetalert/dist/'));
-//NOTE: This following code causes the file to import all functions it exports, because JS is garbage
 var thisModule = require('./index.js');
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 const tls = require('tls');
@@ -23,10 +22,6 @@ const saltRounds = 10;
 app.use(express.static(path.join(__dirname, 'public')));
 /////////////////////////////////////////////////////////////////////
 
-// Not sure if this is proper
-//gulp.task('travis', ['build', testServerJS'], function () {
-//   process.exit(0);
-//};
 
 exports.messageFactory = function(sentBy, text)
 {
@@ -65,9 +60,9 @@ var readUN;
 var readPW;
 var writeUN;
 var writePW;
-
+var appAud
 var key;
-var contents = fs.readFileSync('.privkey', 'utf8');
+var contents = fs.readFileSync('privkey', 'utf8');
 key = new NodeRSA(contents);
 
 var mysql2 = require('sync-mysql');
@@ -75,10 +70,13 @@ var mysql2 = require('sync-mysql');
 var syncConnRead;
 var syncConnWrite;
 
-//use this for opening a file for the read and write passwords for the DB
-//PLEASE DON'T MESS WITH THIS FUNCTION OR .info.txt! IT WILL SCREW UP THE
-// DATABASE QUERYS
-fs.readFile('.info.txt', 'utf8', function(err, contents)
+fs.readFile('aud.txt','utf8', function(err,contents) {
+	var index = contents.indexOf('|')
+	var old = 0;
+	appAud = contents.slice(old,index);
+});
+
+fs.readFile('info.txt', 'utf8', function(err, contents)
 {
     var index = contents.indexOf('|');
     var old = 0;
@@ -101,8 +99,9 @@ fs.readFile('.info.txt', 'utf8', function(err, contents)
     writeUN = contents.slice(old, index);
 
     old = index + 3;
-    contents.indexOf('|', old);
-    writePW = contents.slice(old);
+    index = contents.indexOf('|', old);
+    writePW = contents.slice(old,index);
+    //= 'AlabamaTexasOklahoma';
 
     syncConnRead = new mysql2(
         {
@@ -192,7 +191,6 @@ else
 
 io.on('connection', function(socket)
 {
-
     read = mysql.createConnection(
         {
             host: host,
@@ -495,10 +493,8 @@ io.on('connection', function(socket)
             email = email.substring(email.indexOf('"') + 1,
                 email.length);
             email = email.substring(0, email.indexOf('"'));
-            if (aud !==
-                "521002119514-k8kp3p42fpoq7ia5868k9s9e62bj87n3.apps." +
-                "googleusercontent.com")
-                return callback(-1, token);
+            if (aud !== appAud)    
+	        return callback(-1, token);
                 //If you're attempting to login with a token for another app
 
             var hash = sha256(email);
