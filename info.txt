@@ -1,6 +1,0 @@
-localhost|
-whisperio|
-readOnlyWhisper|
-DefaultRead|
-writeWhisper|
-DefaultWrite|
