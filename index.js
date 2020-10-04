@@ -70,13 +70,13 @@ var mysql2 = require('sync-mysql');
 var syncConnRead;
 var syncConnWrite;
 
-fs.readFile('aud.txt','utf8', function(err,contents) {
+fs.readFile('aud.ini','utf8', function(err,contents) {
 	var index = contents.indexOf('|')
 	var old = 0;
 	appAud = contents.slice(old,index);
 });
 
-fs.readFile('info.txt', 'utf8', function(err, contents)
+fs.readFile('config.ini', 'utf8', function(err, contents)
 {
     var index = contents.indexOf('|');
     var old = 0;

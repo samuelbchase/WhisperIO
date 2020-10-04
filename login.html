@@ -35,7 +35,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
 <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
 <script>
-    var URL_SERVER = 'https://164.90.147.74.xip.io:3000';
+    fs.readFile('ip.ini','utf8', function(err,contents) {
+        var index = contents.indexOf('|')
+        var old = 0;
+        url = contents.slice(old,index);
+    });
+    var URL_SERVER = 'https://' + url + '.xip.io:3000';
     var socket = io.connect(URL_SERVER);
     //handle login form submission
     function onLogin()
