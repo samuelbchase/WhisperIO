@@ -5,7 +5,7 @@ To be secure, this system used SSL/TLS to encrypt web traffic. However, this req
 
 This project is created primarily with NodeJS, socketIO, and Express.js. This was an excellent learning opportunity for us, and we hope you'll find this project interesting.
 
-The below guide includes install steps to deploy on a remote webserver. It uses http://xip.io/ for DNS. This has been tested on Ubuntu 16.04 LTS.
+The below guide includes install steps to deploy on a remote webserver. It uses http://xip.io/ for DNS. This has been tested on Ubuntu 18.04.3 (LTS) x64.
 
 Install steps:
 
@@ -14,7 +14,6 @@ Install steps:
 
     git clone https://github.com/samuelbchase/WhisperIO.git && cd WhisperIO
 
-    npm install -g npm@latest
     npm install
 
 1. Go to https://console.developers.google.com/apis/credentials and press "create credentials". 
