@@ -16,30 +16,38 @@ const fake_token = 'alteredTokenUzI1NiIsImtpZCI6ImFmZmM2MjkwN2E0NDYxODJhZGMxZmE0
 var mysql2 = require('sync-mysql');
 var fs = require("fs");
 
-var contents = fs.readFileSync('.info.txt');
-var index = contents.indexOf('|');
-var old = 0;
-var host = contents.slice(old, index);
+var contents = fs.readFileSync('config.ini');
+var mysqlServerConfigTag = "mysql_server:"
+var databaseNameConfigTag = "database_name:"
+var readOnlyUsernameConfigTag = "readOnly_user:"
+var readOnlyPasswordConfigTag = "readOnly_pass:"
+var writeUsernameConfigTag = "write_user:"
+var writePasswordConfigTag = "write_pass:"
 
-old = index + 3;
-index = contents.indexOf('|', old);
-var database = contents.slice(old, index);
+var end = contents.indexOf('|')
+var start = contents.indexOf(mysqlServerConfigTag) + mysqlServerConfigTag.length
+host = contents.slice(start, end)
 
-old = index + 3;
-index = contents.indexOf('|', old);
-var readUN = contents.slice(old, index);
+start = contents.indexOf(databaseNameConfigTag) + databaseNameConfigTag.length
+end = contents.indexOf('|', start)
+database = contents.slice(start, end)
 
-old = index + 3;
-index = contents.indexOf('|', old);
-var readPW = contents.slice(old, index);
+start = contents.indexOf(readOnlyUsernameConfigTag) + readOnlyUsernameConfigTag.length
+end = contents.indexOf('|', start)
+readUN = contents.slice(start, end)
 
-old = index + 3;
-index = contents.indexOf('|', old);
-var writeUN = contents.slice(old, index);
+start = contents.indexOf(readOnlyPasswordConfigTag) + readOnlyPasswordConfigTag.length
+end = contents.indexOf('|', start)
+readPW = contents.slice(start, end)
 
-old = index + 3;
-index = contents.indexOf('|', old);
-var writePW = contents.slice(old);
+start = contents.indexOf(writeUsernameConfigTag) + writeUsernameConfigTag.length
+end = contents.indexOf('|', start)
+writeUN = contents.slice(start, end)
+
+start = contents.indexOf(writePasswordConfigTag) + writePasswordConfigTag.length
+end = contents.indexOf('|', start)
+writePW = contents.slice(start, end)
+
 host = host.toString();
 writeUN = writeUN.toString();
 writePW = writePW.toString();

@@ -79,7 +79,7 @@ fs.readFile('config.ini', 'utf8', function (err, contents) {
 
   var end = contents.indexOf('|')
   var start = contents.indexOf(mysqlServerConfigTag) + mysqlServerConfigTag.length
-  host = contents.slice(old, end)
+  host = contents.slice(start, end)
 
   start = contents.indexOf(databaseNameConfigTag) + databaseNameConfigTag.length
   end = contents.indexOf('|', start)
