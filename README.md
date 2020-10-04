@@ -14,6 +14,7 @@ Install steps:
 
     git clone https://github.com/samuelbchase/WhisperIO.git && cd WhisperIO
 
+    npm install -g npm@latest
     npm install
 
 1. Go to https://console.developers.google.com/apis/credentials and press "create credentials". 
