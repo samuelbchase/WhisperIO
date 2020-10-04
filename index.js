@@ -65,48 +65,41 @@ var syncConnRead
 var syncConnWrite
 
 fs.readFile('aud.ini', 'utf8', function (err, contents) {
-  var index = contents.indexOf('|')
-  var old = 0
-  appAud = contents.slice(old, index)
+  var end = contents.indexOf('|')
+  appAud = contents.slice(0, end)
 })
 
 fs.readFile('config.ini', 'utf8', function (err, contents) {
-  var mysqlServerConfigTag = 'mysql_server:'
-  var databaseNameConfigTag = 'database_name:'
-  var readOnlyUsernameConfigTag = 'readOnly_user:'
-  var readOnlyPasswordConfigTag = 'readOnly_pass:'
-  var writeUsernameConfigTag = 'write_user:'
-  var writePasswordConfigTag = 'write_pass:'
+  var mysqlServerConfigTag = "mysql_server:"
+  var databaseNameConfigTag = "database_name:"
+  var readOnlyUsernameConfigTag = "readOnly_user:"
+  var readOnlyPasswordConfigTag = "readOnly_pass:"
+  var writeUsernameConfigTag = "write_user:"
+  var writePasswordConfigTag = "write_pass:"
 
-  var index = contents.indexOf('|')
-  var old = contents.indexOf(mysqlServerConfigTag) + mysqlServerConfigTag.length
-  host = contents.slice(old, index)
-  console.log(host)
+  var end = contents.indexOf('|')
+  var start = contents.indexOf(mysqlServerConfigTag) + mysqlServerConfigTag.length
+  host = contents.slice(old, end)
 
-  old = contents.indexOf(databaseNameConfigTag) + databaseNameConfigTag.length
-  index = contents.indexOf('|', old)
-  database = contents.slice(old, index)
-  console.log(database)
+  start = contents.indexOf(databaseNameConfigTag) + databaseNameConfigTag.length
+  end = contents.indexOf('|', start)
+  database = contents.slice(start, end)
 
-  old = contents.indexOf(readOnlyUsernameConfigTag) + readOnlyUsernameConfigTag.length
-  index = contents.indexOf('|', old)
-  readUN = contents.slice(old, index)
-  console.log(readUN)
+  start = contents.indexOf(readOnlyUsernameConfigTag) + readOnlyUsernameConfigTag.length
+  end = contents.indexOf('|', start)
+  readUN = contents.slice(start, end)
 
-  old = contents.indexOf(readOnlyPasswordConfigTag) + readOnlyPasswordConfigTag.length
-  index = contents.indexOf('|', old)
-  readPW = contents.slice(old, index)
-  console.log(readPW)
+  start = contents.indexOf(readOnlyPasswordConfigTag) + readOnlyPasswordConfigTag.length
+  end = contents.indexOf('|', start)
+  readPW = contents.slice(start, end)
 
-  old = contents.indexOf(writeUsernameConfigTag) + writeUsernameConfigTag.length
-  index = contents.indexOf('|', old)
-  writeUN = contents.slice(old, index)
-  console.log(writeUN)
+  start = contents.indexOf(writeUsernameConfigTag) + writeUsernameConfigTag.length
+  end = contents.indexOf('|', start)
+  writeUN = contents.slice(start, end)
 
-  old = contents.indexOf(writePasswordConfigTag) + writePasswordConfigTag.length
-  index = contents.indexOf('|', old)
-  writePW = contents.slice(old, index)
-  console.log(writePW)
+  start = contents.indexOf(writePasswordConfigTag) + writePasswordConfigTag.length
+  end = contents.indexOf('|', start)
+  writePW = contents.slice(start, end)
 
   syncConnRead = new mysql2(
     {
