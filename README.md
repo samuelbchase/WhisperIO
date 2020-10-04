@@ -42,3 +42,8 @@ Install steps:
 OPTIONAL STEPS:
 
 10. Although not needed to test out the app, you can change your MySQL credentials, and update the values in config.ini
+
+## Running tests
+Unit & Integration Tests:
+    npm test
+    
