@@ -12,7 +12,7 @@ Install steps:
     sudo apt-get update
     sudo apt-get install nodejs npm mysql-server
 
-    git clone https://github.com/samuelbchase/WhisperIO.git
+    git clone https://github.com/samuelbchase/WhisperIO.git && cd WhisperIO
 
     npm install
 

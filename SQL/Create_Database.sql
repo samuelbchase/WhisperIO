@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS User
     username VARCHAR(255) PRIMARY KEY NOT NULL,
     emailHash CHAR(64),
     isOnline char(1),
-    token char(255)
+    token char(255),
+    passwordHash char(1200)
 );
 
 CREATE TABLE IF NOT EXISTS Message
