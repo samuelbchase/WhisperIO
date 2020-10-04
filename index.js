@@ -70,38 +70,53 @@ var mysql2 = require('sync-mysql');
 var syncConnRead;
 var syncConnWrite;
 
-fs.readFile('aud.txt','utf8', function(err,contents) {
+fs.readFile('aud.ini','utf8', function(err,contents) {
 	var index = contents.indexOf('|')
 	var old = 0;
 	appAud = contents.slice(old,index);
 });
 
-fs.readFile('info.txt', 'utf8', function(err, contents)
-{
-    var index = contents.indexOf('|');
-    var old = 0;
-    host = contents.slice(old, index);
+fs.readFile('config.ini', 'utf8', function(err, contents)
+{   
+    var mysqlServerConfigTag = 'mysql_server:';
+    var databaseNameConfigTag = 'database_name:';
+    var readOnlyUsernameConfigTag = 'readOnly_user:';
+    var readOnlyPasswordConfigTag = 'readOnly_pass:';
+    var writeUsernameConfigTag = 'write_user:';
+    var writePasswordConfigTag = 'write_pass:';
 
-    old = index + 3;
+    var index = contents.indexOf('|');
+    var old = contents.indexOf(mysqlServerConfigTag) + mysqlServerConfigTag.length;
+    host = contents.slice(old, index);
+    console.log(host);
+
+    old = contents.indexOf(databaseNameConfigTag) + databaseNameConfigTag.length;
     index = contents.indexOf('|', old);
     database = contents.slice(old, index);
+    console.log(database);
 
-    old = index + 3;
+    old = contents.indexOf(readOnlyUsernameConfigTag) + readOnlyUsernameConfigTag.length;
     index = contents.indexOf('|', old);
     readUN = contents.slice(old, index);
+    console.log(readUN);
 
-    old = index + 3;
+    old = contents.indexOf(readOnlyPasswordConfigTag) + readOnlyPasswordConfigTag.length;
     index = contents.indexOf('|', old);
     readPW = contents.slice(old, index);
+    console.log(readPW);
 
-    old = index + 3;
+
+    old = contents.indexOf(writeUsernameConfigTag) + writeUsernameConfigTag.length;
     index = contents.indexOf('|', old);
     writeUN = contents.slice(old, index);
+    console.log(writeUN);
 
-    old = index + 3;
+
+    old = contents.indexOf(writePasswordConfigTag) + writePasswordConfigTag.length;
     index = contents.indexOf('|', old);
     writePW = contents.slice(old,index);
-    //= 'AlabamaTexasOklahoma';
+    console.log(writePW);
+
 
     syncConnRead = new mysql2(
         {
