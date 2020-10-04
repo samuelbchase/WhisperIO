@@ -77,35 +77,42 @@ fs.readFile('aud.ini','utf8', function(err,contents) {
 });
 
 fs.readFile('config.ini', 'utf8', function(err, contents)
-{
+{   
+    var mysqlServerConfigTag = 'mysql_server:';
+    var databaseNameConfigTag = 'database_name:';
+    var readOnlyUsernameConfigTag = 'readOnly_user:';
+    var readOnlyPasswordConfigTag = 'readOnly_pass:';
+    var writeUsernameConfigTag = 'write_user:';
+    var writePasswordConfigTag = 'write_pass:';
+
     var index = contents.indexOf('|');
-    var old = contents.indexOf('mysql_server:') + "mysql_server".length;
+    var old = contents.indexOf(mysqlServerConfigTag) + mysqlServerConfigTag.length;
     host = contents.slice(old, index);
     console.log(host);
 
-    old = contents.indexOf('database_name') + "database_name".length;
+    old = contents.indexOf(databaseNameConfigTag) + databaseNameConfigTag.length;
     index = contents.indexOf('|', old);
     database = contents.slice(old, index);
     console.log(database);
 
-    old = content.indexOf('readOnly_user:') + "readOnly_user".length;
+    old = contents.indexOf(readOnlyUsernameConfigTag) + readOnlyUsernameConfigTag.length;
     index = contents.indexOf('|', old);
     readUN = contents.slice(old, index);
     console.log(readUN);
 
-    old = contents.indexOf('readOnly_pass:') + "readOnly_pass".length;
+    old = contents.indexOf(readOnlyPasswordConfigTag) + readOnlyPasswordConfigTag.length;
     index = contents.indexOf('|', old);
     readPW = contents.slice(old, index);
     console.log(readPW);
 
 
-    old = contents.indexOf('write_user:') + "write_user".length;
+    old = contents.indexOf(writeUsernameConfigTag) + writeUsernameConfigTag.length;
     index = contents.indexOf('|', old);
     writeUN = contents.slice(old, index);
     console.log(writeUN);
 
 
-    old = contents.indexOf('write_pass:') + "write_pass".length;
+    old = contents.indexOf(writePasswordConfigTag) + writePasswordConfigTag.length;
     index = contents.indexOf('|', old);
     writePW = contents.slice(old,index);
     console.log(writePW);
