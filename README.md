@@ -39,7 +39,7 @@ Install steps:
 
 9. Finally run `node index.js` and navigate to https://YOUR_IP.xip.io:3000/ to sign in!
 
-## ENABLING HTTPS:
+## Enabling HTTPS:
 
 As would be hoped, this application supports HTTPS for secure connections. This requires a webserver, and a domain name.
 
@@ -57,7 +57,7 @@ As would be hoped, this application supports HTTPS for secure connections. This 
 
 6. Now you should be able to access your WhisperIO instance!
 
-## OPTIONAL STEPS:
+## Optional Steps:
 
 1. Although not needed to test out the app, you can change your MySQL credentials, and update the values in config.ini
 
