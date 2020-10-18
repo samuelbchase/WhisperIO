@@ -7,7 +7,7 @@ This project is created primarily with NodeJS, socketIO, and Express.js. This wa
 
 The below guide includes install steps to deploy on a remote webserver. It uses http://xip.io/ for DNS. This has been tested on Ubuntu 18.04.3 (LTS) x64.
 
-Install steps:
+## Install steps
 
     sudo apt-get update
     sudo apt-get install nodejs npm mysql-server
