@@ -24,8 +24,8 @@ Install steps:
 
 3. Select type Web Application, and give it any name you want.
 
-4. Set the URIs to contain "https://YOUR_IP.xip.io:3000" 
-5. Set the authorized redirect URIS to contain "https://YOUR_IP.xip.io:3000" and "https://YOUR_IP.xip.io:3000/main"
+4. Set the URIs to contain "https://YOUR_IP.xip.io" 
+5. Set the authorized redirect URIS to contain "https://YOUR_IP.xip.io" and "https://YOUR_IP.xip.io/main"
 
 ![Image](/images/2.png)
 
@@ -37,7 +37,7 @@ Install steps:
 
 8. Run setup.sh to configure values in your HTML files
 
-9. Finally run `node index.js` and navigate to https://YOUR_IP.xip.io:3000/ to sign in!
+9. Finally run `node index.js` and navigate to https://YOUR_IP.xip.io/ to sign in!
 
 OPTIONAL STEPS:
 
