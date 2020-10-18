@@ -3,7 +3,7 @@ import { ClientFunction } from 'testcafe';
 const getPageUrl = ClientFunction(() => window.location.href.toString());
 
 fixture `Getting Started`// declare the fixture
-    .page `https://localhost:3000`;  // specify the start page
+    .page `https://localhost`;  // specify the start page
 const emailBox = Selector('#emailBox');
 const passwordBox = Selector('#passwordBox');
 const loginBox = Selector('#login');
@@ -42,7 +42,7 @@ test('Check Login Box', async t => {
         .typeText(passwordBox, 'qwe')
         .click(loginBox)
         // Use the assertion to check if the actual header text is equal to the expected one
-        .expect(getPageUrl()).contains('https://localhost:3000/main', { timeout: 10000 });
+        .expect(getPageUrl()).contains('https://localhost/main', { timeout: 10000 });
 });
 
 test('Check Message Sender Box', async t => {
@@ -77,6 +77,6 @@ test('Check Google Box', async t => {
     await t
         .click(gbox)
         // Use the assertion to check if the actual header text is equal to the expected one
-        .expect(getPageUrl()).contains('https://localhost:3000/main', { timeout: 10000 });
+        .expect(getPageUrl()).contains('https://localhost/main', { timeout: 10000 });
 });
 */
