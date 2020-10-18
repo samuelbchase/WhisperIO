@@ -165,8 +165,8 @@ if (typeof debugMode !== 'undefined') {
   var server = myServer.getInstance()
   io = require('socket.io')(server)
 
-  server.listen(3000, function () {
-    console.log('server up and running at %s port', 3000)
+  server.listen(80, function () {
+    console.log('server up and running at %s port', 80)
   })
 }
 
