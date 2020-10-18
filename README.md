@@ -14,7 +14,7 @@ Install steps:
 
     git clone https://github.com/samuelbchase/WhisperIO.git && cd WhisperIO
 
-    npm install
+    yarn install
 
 1. Go to https://console.developers.google.com/apis/credentials and press "create credentials". 
 
@@ -46,5 +46,5 @@ OPTIONAL STEPS:
 ## Running tests
 Unit & Integration Tests:
 
-    npm test
+    yarn test
     
