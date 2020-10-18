@@ -39,9 +39,27 @@ Install steps:
 
 9. Finally run `node index.js` and navigate to https://YOUR_IP.xip.io:3000/ to sign in!
 
+ENABLING HTTPS:
+
+As would be hoped, this application supports HTTPS for secure connections. This requires a webserver, and a domain name.
+
+1. Use certbot (or your favorite alternative cert generating tool) to generate a certificate on your web server for your domain name.
+
+2. Copy the privkey.pem and fullchain.pem into the certs/ folder in WhisperIO
+
+3. Redirect your domain name to the WhisperIO webserver
+
+4. Rerun setup_https.sh, this time using your domain name instead of the server IP. You may use the same Google AUD.
+
+5. In your Google console (https://console.developers.google.com/apis/credentials) add entries for your domain name under both authorized origins and redirect URLs. These should be exactly the same as your IP based entries, except replacing YOUR_IP_ADDRESS.xip.io with your domain name.
+
+6. Finally, edit your index.html and login.html pages to remove ".xip.io" from your URLS
+
+6. Now you should be able to access your WhisperIO instance!
+
 OPTIONAL STEPS:
 
-10. Although not needed to test out the app, you can change your MySQL credentials, and update the values in config.ini
+1. Although not needed to test out the app, you can change your MySQL credentials, and update the values in config.ini
 
 ## Running tests
 Unit & Integration Tests:
