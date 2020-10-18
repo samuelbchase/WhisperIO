@@ -166,7 +166,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
 <script>
     var ip = "SERVER_IP_HERE"
-    var URL_SERVER = 'https://' + ip + '.xip.io:3000';
+    var URL_SERVER = 'https://' + ip + '.xip.io:80';
     var socket = io.connect(URL_SERVER);
     var whisperIOUser = sessionStorage.getItem("whisperIOUser") || 'defaultValue';
 
