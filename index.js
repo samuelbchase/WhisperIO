@@ -55,9 +55,8 @@ var readPW
 var writeUN
 var writePW
 var appAud
-var key
-var contents = fs.readFileSync('privkey', 'utf8')
-key = new NodeRSA(contents)
+var key = new NodeRSA(contents)
+var contents = fs.readFileSync('certs/privkey.pem','utf8')
 
 var mysql2 = require('sync-mysql')
 
